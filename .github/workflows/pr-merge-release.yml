@@ -18,7 +18,7 @@ jobs:
     uses: ./.github/workflows/e2e-tests.yml
   call-bump-version:
     name: Version
-    # Only run if tests pass 
+    # Only run if tests pass
     needs: [ call-get-label, call-e2e-tests ]
     uses: CruGlobal/.github/.github/workflows/bump-version.yml@main
     with:
@@ -40,5 +40,5 @@ jobs:
       type: ${{ needs.call-get-label.outputs.label }}
       app_id: ${{ vars.GS_DEV_APP_ID }}
     secrets:
-      app_token: ${{ secrets.GS_DEV_APP_PK }}
-  
+      app_secret: ${{ secrets.GS_DEV_APP_PK }}
+
