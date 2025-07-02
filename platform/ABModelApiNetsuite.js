@@ -804,8 +804,16 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             break;
          case "is_empty":
          case "is_not_empty":
-            // returns NULL if they are equal. Otherwise, the first expression is returned.
-            columnName = `NULLIF(${columnName}, '')`;
+            switch(field.key) {
+               case "date":
+               case "datetime":
+                  operator = "IS NULL";
+                  break;
+               default:
+                  // returns NULL if they are equal. Otherwise, the first expression is returned.
+                  columnName = `NULLIF(${columnName}, '')`;
+                  break;
+            }
             value = "";
             break;
 
