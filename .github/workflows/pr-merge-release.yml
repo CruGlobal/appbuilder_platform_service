@@ -10,7 +10,7 @@ jobs:
     name: Label
     # Only run if the PR closed by merging and we have a label
     if: ${{ github.event.pull_request.merged }}
-    uses: CruGlobal/.github/.github/workflows/get-pr-release-label.yml@master
+    uses: CruGlobal/.github/.github/workflows/get-pr-release-label.yml@main
   call-e2e-tests:
     name: Test
     needs: [call-get-label]
@@ -18,21 +18,21 @@ jobs:
     uses: ./.github/workflows/e2e-tests.yml
   call-bump-version:
     name: Version
-    # Only run if tests pass 
+    # Only run if tests pass
     needs: [ call-get-label, call-e2e-tests ]
-    uses: CruGlobal/.github/.github/workflows/bump-version.yml@master
+    uses: CruGlobal/.github/.github/workflows/bump-version.yml@main
     with:
       ref: ${{ github.ref }}
       type: ${{ needs.call-get-label.outputs.label }}
   call-create-release:
     name: Release
-    uses: CruGlobal/.github/.github/workflows/create-release.yml@master
+    uses: CruGlobal/.github/.github/workflows/create-release.yml@main
     needs: [call-bump-version]
     with:
       tag: v${{ needs.call-bump-version.outputs.new_version }}
   call-dispatch-update-services:
     needs: [ call-bump-version, call-get-label ]
-    uses: CruGlobal/.github/.github/workflows/dispatch-update.yml@master
+    uses: CruGlobal/.github/.github/workflows/dispatch-update.yml@main
     with:
       dispatch_repos: '["appbuilder","custom_reports","definition_manager","file_processor","process_manager","user_manager"]'
       dispatch_type: platform_new_version
@@ -40,5 +40,5 @@ jobs:
       type: ${{ needs.call-get-label.outputs.label }}
       app_id: ${{ vars.GS_DEV_APP_ID }}
     secrets:
-      app_token: ${{ secrets.GS_DEV_APP_PK }}
-  
+      app_secret: ${{ secrets.GS_DEV_APP_PK }}
+

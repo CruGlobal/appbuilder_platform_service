@@ -9,11 +9,12 @@ const _ = require("lodash");
 const Knex = require("knex");
 const moment = require("moment");
 const { nanoid } = require("nanoid");
+const Papa = require("papaparse");
 const { serializeError, deserializeError } = require("serialize-error");
 const uuid = require("uuid");
-const Papa = require("papaparse");
 
 var ABFactoryCore = require("./core/ABFactoryCore");
+const SecretManager = require("./platform/ABSecretManager");
 
 function stringifyErrors(param) {
    if (param instanceof Error) {
@@ -189,7 +190,7 @@ class ABFactory extends ABFactoryCore {
           * @param {string} date  String of a date you want converted
           * @return {string}
           */
-         toSQLDate: function (date) {
+         toSQLDate: function(date) {
             return moment(date).format("YYYY-MM-DD");
             // return moment(date).format("YYYY-MM-DD 00:00:00");
          },
@@ -200,7 +201,7 @@ class ABFactory extends ABFactoryCore {
           * @param {string} date  String of a date you want converted
           * @return {string}
           */
-         toSQLDateTime: function (date) {
+         toSQLDateTime: function(date) {
             return moment(date).utc().format("YYYY-MM-DD HH:mm:ss");
          },
 
@@ -327,13 +328,14 @@ class ABFactory extends ABFactoryCore {
       (Object.keys(platformRules) || []).forEach((k) => {
          this.rules[k] = platformRules[k];
       });
+
+      this.Secret = new SecretManager(this);
    }
 
-   // init() {
-   // super.init().then(()=>{
-   //    // perform any local setups here.
-   // });
-   // }
+   async init() {
+      await super.init();
+      await this.Secret.init(this);
+   }
 
    //
    // Definitions
@@ -520,6 +522,7 @@ class ABFactory extends ABFactoryCore {
    //
    // Utilities
    //
+
    clone(value) {
       return _.clone(value);
    }

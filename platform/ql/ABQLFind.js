@@ -134,11 +134,6 @@ class ABQLFind extends ABQLFindCore {
                ]);
                newCond.value = newCond.value?.uuid ? newCond.value.uuid : newCond.value;
                newCond.rule = cond.rule.split("context_")[1];
-
-               // previous format fix:
-               if (["equals", "not_equal"].indexOf(newCond.rule) == -1) {
-                  newCond.rule = "equals";
-               }
             }
          }
       }
