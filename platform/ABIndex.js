@@ -263,9 +263,19 @@ module.exports = class ABIndex extends ABIndexCore {
                      // Create new Index
                      else {
                         // ALTER TABLE {tableName} ADD INDEX {indexName} ({columnNames})
-                        return req.retry(() =>
-                           table.index(columnNames, indexName),
+                        return req.retry(
+                           () =>
+                              new Promise((resolve, reject) => {
+                                 try {
+                                    table.index(columnNames, indexName);
+                                    resolve();
+                                 } catch (err) {
+                                    console.error(err);
+                                    reject(err);
+                                 }
+                              })
                         );
+
                         /*.catch((err) => {
                         // if it is a duplicate keyname error, this is probably already created?
                         if (err.code == "ER_DUP_KEYNAME") return;
