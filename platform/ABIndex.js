@@ -140,9 +140,9 @@ module.exports = class ABIndex extends ABIndexCore {
          .catch((err) => {
             req.log(
                `ABIndex.migrateCheckExists(): Table[${tableName}] Column[${columnNames.join(
-                  ", ",
+                  ", "
                )}] Index[${indexName}] `,
-               err,
+               err
             );
             // throw err;
          });
@@ -153,13 +153,13 @@ module.exports = class ABIndex extends ABIndexCore {
       if (this.fields == null || !this.fields.length) {
          req.notify.builder(
             new Error(
-               `ABIndex[${this.name}][${this.id}] defined with no fields referenced`,
+               `ABIndex[${this.name}][${this.id}] defined with no fields referenced`
             ),
             {
                context: "ABIndex.migrateCreate()",
                field: this,
                // AB: this.AB,
-            },
+            }
          );
          return Promise.resolve();
       }
@@ -208,10 +208,10 @@ module.exports = class ABIndex extends ABIndexCore {
                                  knex.schema.raw(
                                     `ALTER TABLE ${tableName} ADD UNIQUE INDEX ${indexName}(${columnNames
                                        .map((c) =>
-                                          knex.client.wrapIdentifier(c),
+                                          knex.client.wrapIdentifier(c)
                                        )
-                                       .join(", ")})`,
-                                 ),
+                                       .join(", ")})`
+                                 )
                               )
                               .catch((err) => {
                                  // if it is a duplicate keyname error, this is probably already created?
@@ -220,7 +220,7 @@ module.exports = class ABIndex extends ABIndexCore {
                                  // otherwise we alert our developers
                                  req.notify.developer(err, {
                                     context: `ABIndex.migrateCreate() Unique: Table[${tableName}] Column[${columnNames.join(
-                                       ", ",
+                                       ", "
                                     )}] Index[${indexName}] `,
                                     field: this,
                                     // AB: this.AB,
@@ -292,7 +292,7 @@ module.exports = class ABIndex extends ABIndexCore {
                      });
                      */
                      }
-                  }),
+                  })
                );
             })
       );
@@ -309,8 +309,8 @@ module.exports = class ABIndex extends ABIndexCore {
       return new Promise((resolve, reject) => {
          req.retry(() =>
             knex.schema.raw(
-               `ALTER TABLE ${tableName} DROP INDEX \`${indexName}\``,
-            ),
+               `ALTER TABLE ${tableName} DROP INDEX \`${indexName}\``
+            )
          )
             .then(() => resolve())
             .catch((err) => {
