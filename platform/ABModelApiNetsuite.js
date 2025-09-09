@@ -1928,7 +1928,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
          let colVals = this.AB.cloneDeep(values[k]);
 
-         let linkType = `${field.linkType}:${field.linkViaType}`;
+         let linkType = `${field.linkType()}:${field.linkViaType()}`;
          if (linkType == "many:one") {
             allColumns.push(this.syncColumnManyOne(id, field, colVals, req));
          } else {
@@ -1996,6 +1996,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
    }
 
    async relate(id, field, values, req) {
+      if (values && !Array.isArray(values)) values = [values];
       if (values.length == 0) return;
 
       let linkField = field.fieldLink;
@@ -2009,6 +2010,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
    }
 
    async unRelate(id, field, values, req) {
+      if (values && !Array.isArray(values)) values = [values];
       if (values.length == 0) return;
 
       let linkField = field.fieldLink;
