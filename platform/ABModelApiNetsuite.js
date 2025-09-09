@@ -1977,7 +1977,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       let removeThese = [];
       oldValues.forEach((v) => {
          // if v is in values,
-         let newV = values.find((nV) => nV == v);
+         let newV = values?.find?.((nV) => nV == v);
          if (newV) {
             // if we found it, then remove that entry from values
             values = values.filter((nV) => nV != v);
@@ -1997,7 +1997,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
    async relate(id, field, values, req) {
       if (values && !Array.isArray(values)) values = [values];
-      if (values.length == 0) return;
+      if (!values?.length) return;
 
       let linkField = field.fieldLink;
       let object = field.object;
@@ -2011,7 +2011,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
    async unRelate(id, field, values, req) {
       if (values && !Array.isArray(values)) values = [values];
-      if (values.length == 0) return;
+      if (!values?.length) return;
 
       let linkField = field.fieldLink;
       let setVal = {};
