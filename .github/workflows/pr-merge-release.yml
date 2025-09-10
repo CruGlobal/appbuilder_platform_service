@@ -34,7 +34,7 @@ jobs:
     needs: [ call-bump-version, call-get-label ]
     uses: CruGlobal/.github/.github/workflows/dispatch-update.yml@main
     with:
-      dispatch_repos: '["appbuilder","custom_reports","definition_manager","file_processor","process_manager","user_manager"]'
+      dispatch_repos: '["ab_service_appbuilder","ab_service_custom_reports","ab_service_definition_manager","ab_service_file_processor","ab_service_process_manager","ab_service_user_manager"]'
       dispatch_type: platform_new_version
       version: ${{ needs.call-bump-version.outputs.new_version }}
       type: ${{ needs.call-get-label.outputs.label }}
