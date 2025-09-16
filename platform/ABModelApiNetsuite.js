@@ -1455,11 +1455,33 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       // don't need to populate anything if there is no data.
       if (data.length == 0) return;
 
+      // by default, we will populate any columns that are used in a formula field.
+      // this way, if a formula field is being requested,
+      // it will have the data it needs to calculate the formula.
+      this.object.fields().forEach((f) => {
+         switch (f.key) {
+            case "TextFormula":
+               f.settings.textFormula
+                  .match(/{[^{}]+}/gm)
+                  .map((col) => col.replace(/{|}|"/g, ""))
+                  .forEach((colName) => {
+                     const field = this.object.connectFields(
+                        (fld) => fld.columnName == colName
+                     )[0];
+                     if (field) {
+                        columns.push(field);
+                     }
+                  });
+               break;
+         }
+      });
+
       // if .populate == false
       // if .populate not set, assume no
-      if (!cond.populate || cond.populate === "false") return;
+      if ((!cond.populate || cond.populate === "false") && columns.length < 1)
+         return;
       // if .populate == true
-      else if (typeof cond.populate == "boolean" || cond.populate === "true") {
+      else if (cond.populate == true || cond.populate === "true") {
          // pick ALL relations and populate them
          columns = this.object.connectFields();
       }
