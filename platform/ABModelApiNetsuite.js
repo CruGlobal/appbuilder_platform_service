@@ -804,7 +804,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             break;
          case "is_empty":
          case "is_not_empty":
-            switch(field.key) {
+            switch (field.key) {
                case "date":
                case "datetime":
                   operator = "IS NULL";
@@ -1465,12 +1465,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                   .match(/{[^{}]+}/gm)
                   .map((col) => col.replace(/{|}|"/g, ""))
                   .forEach((colName) => {
-                     const field = this.object.connectFields(
-                        (fld) => fld.columnName == colName
-                     )[0];
-                     if (field) {
-                        columns.push(field);
-                     }
+                     this.object
+                        .connectFields((fld) => fld.columnName == colName)
+                        .forEach((field) => {
+                           columns.push(field);
+                        });
                   });
                break;
          }
@@ -1490,12 +1489,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       else if (Array.isArray(cond.populate)) {
          // find these specific columns to populate
          cond.populate.forEach((col) => {
-            let field = this.object.connectFields(
-               (f) => f.columnName == col || f.id == col
-            )[0];
-            if (field) {
-               columns.push(field);
-            }
+            this.object
+               .connectFields((f) => f.columnName == col || f.id == col)
+               .forEach((field) => {
+                  columns.push(field);
+               });
          });
       }
       if (req) {
@@ -2485,13 +2483,16 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       }
 
       try {
-         await fetchConcurrent(
-            this.AB,
-            this.credentials,
-            url,
-            "PATCH",
-            baseValues
-         );
+         // if the object set readonly skip the update, but still do the relation updates
+         if (!this.object.readonly) {
+            await fetchConcurrent(
+               this.AB,
+               this.credentials,
+               url,
+               "PATCH",
+               baseValues
+            );
+         }
       } catch (err) {
          this.processError(
             `PATCH ${url}`,
