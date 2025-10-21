@@ -2007,12 +2007,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
-      let addDrop = [];
-
-      addDrop.push(this.relate(id, field, values, req));
-      addDrop.push(this.unRelate(id, field, removeThese, req));
-
-      await Promise.all(addDrop);
+      await this.unRelate(id, field, removeThese, req);
+      await this.relate(id, field, values, req);
    }
 
    async relate(id, field, values, req) {
@@ -2157,12 +2153,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
-      let addDrop = [];
-
-      addDrop.push(this.relateMany(id, field, values, baseValues, req));
-      addDrop.push(this.unRelateMany(id, field, removeThese, req));
-
-      await Promise.all(addDrop);
+      await this.unRelateMany(id, field, removeThese, req);
+      await this.relateMany(id, field, values, baseValues, req);
    }
 
    async relateMany(id, field, values, baseValues, req) {
