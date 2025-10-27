@@ -804,7 +804,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             break;
          case "is_empty":
          case "is_not_empty":
-            switch(field.key) {
+            switch (field.key) {
                case "date":
                case "datetime":
                   operator = "IS NULL";
@@ -1463,11 +1463,32 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       // don't need to populate anything if there is no data.
       if (data.length == 0) return;
 
+      // by default, we will populate any columns that are used in a formula field.
+      // this way, if a formula field is being requested,
+      // it will have the data it needs to calculate the formula.
+      this.object.fields().forEach((f) => {
+         switch (f.key) {
+            case "TextFormula":
+               f.settings.textFormula
+                  .match(/{[^{}]+}/gm)
+                  .map((col) => col.replace(/{|}|"/g, ""))
+                  .forEach((colName) => {
+                     this.object
+                        .connectFields((fld) => fld.columnName == colName)
+                        .forEach((field) => {
+                           columns.push(field);
+                        });
+                  });
+               break;
+         }
+      });
+
       // if .populate == false
       // if .populate not set, assume no
-      if (!cond.populate || cond.populate === "false") return;
+      if ((!cond.populate || cond.populate === "false") && columns.length < 1)
+         return;
       // if .populate == true
-      else if (typeof cond.populate == "boolean" || cond.populate === "true") {
+      else if (cond.populate == true || cond.populate === "true") {
          // pick ALL relations and populate them
          columns = this.object.connectFields();
       }
@@ -1476,12 +1497,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       else if (Array.isArray(cond.populate)) {
          // find these specific columns to populate
          cond.populate.forEach((col) => {
-            let field = this.object.connectFields(
-               (f) => f.columnName == col || f.id == col
-            )[0];
-            if (field) {
-               columns.push(field);
-            }
+            this.object
+               .connectFields((f) => f.columnName == col || f.id == col)
+               .forEach((field) => {
+                  columns.push(field);
+               });
          });
       }
       if (req) {
@@ -1937,7 +1957,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
          let colVals = this.AB.cloneDeep(values[k]);
 
-         let linkType = `${field.linkType}:${field.linkViaType}`;
+         let linkType = `${field.linkType()}:${field.linkViaType()}`;
          if (linkType == "many:one") {
             allColumns.push(this.syncColumnManyOne(id, field, colVals, req));
          } else {
@@ -1986,7 +2006,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       let removeThese = [];
       oldValues.forEach((v) => {
          // if v is in values,
-         let newV = values.find((nV) => nV == v);
+         let newV = values?.find?.((nV) => nV == v);
          if (newV) {
             // if we found it, then remove that entry from values
             values = values.filter((nV) => nV != v);
@@ -1996,16 +2016,13 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
-      let addDrop = [];
-
-      addDrop.push(this.relate(id, field, values, req));
-      addDrop.push(this.unRelate(id, field, removeThese, req));
-
-      await Promise.all(addDrop);
+      await this.unRelate(id, field, removeThese, req);
+      await this.relate(id, field, values, req);
    }
 
    async relate(id, field, values, req) {
-      if (values.length == 0) return;
+      if (values && !Array.isArray(values)) values = [values];
+      if (!values?.length) return;
 
       let linkField = field.fieldLink;
       let object = field.object;
@@ -2018,7 +2035,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
    }
 
    async unRelate(id, field, values, req) {
-      if (values.length == 0) return;
+      if (values && !Array.isArray(values)) values = [values];
+      if (!values?.length) return;
 
       let linkField = field.fieldLink;
       let setVal = {};
@@ -2144,12 +2162,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
-      let addDrop = [];
-
-      addDrop.push(this.relateMany(id, field, values, baseValues, req));
-      addDrop.push(this.unRelateMany(id, field, removeThese, req));
-
-      await Promise.all(addDrop);
+      await this.unRelateMany(id, field, removeThese, req);
+      await this.relateMany(id, field, values, baseValues, req);
    }
 
    async relateMany(id, field, values, baseValues, req) {
@@ -2474,13 +2488,16 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       }
 
       try {
-         await fetchConcurrent(
-            this.AB,
-            this.credentials,
-            url,
-            "PATCH",
-            baseValues
-         );
+         // if the object set readonly skip the update, but still do the relation updates
+         if (!this.object.readonly) {
+            await fetchConcurrent(
+               this.AB,
+               this.credentials,
+               url,
+               "PATCH",
+               baseValues
+            );
+         }
       } catch (err) {
          this.processError(
             `PATCH ${url}`,

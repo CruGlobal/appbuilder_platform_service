@@ -951,7 +951,9 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
       var linkObject = this.datasourceLink;
       var tableName = "";
 
-      if (this.object.isExternal && linkObject.isExternal) {
+      if (this.settings?.joinTable) {
+         return this.settings.joinTable;
+      } else if (this.object.isExternal && linkObject.isExternal) {
          var errorNoSails = new Error(
             "ABFieldConnect.joinTableName(): two ABObjectExternal are connected and current code wants to search sails.models for the connection info. That's a problem",
          );
