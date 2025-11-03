@@ -52,10 +52,28 @@ function createObject(key, config, AB) {
 //   return new ViewClass(config);
 // }
 
+function pluginRegister(pluginClass) {
+   let type = pluginClass.getPluginType();
+   switch(type) {
+      case "object":
+         let { registerObjectType } = getPluginAPI();
+         registerObjectType(pluginClass.getPluginKey(), pluginClass);
+         break;
+      // case "objectProperty":
+      //    break;
+      // case "field":
+      //    break;
+      // case "view":
+      //    break;
+      default:
+         throw new Error(`ABClassManager.pluginRegister():: Unknown plugin type: ${type}`);
+   }
+
+}
 ///
 /// For development
 ///
-let devPlugins = [require("./plugins/developer/ObjectNetsuite.js")];
+let devPlugins = []; // [require("./plugins/developer/ObjectNetsuite.js")];
 
 function registerLocalPlugins(API) {
    let { registerObjectType } = API;
@@ -73,4 +91,5 @@ module.exports = {
    // createView,
    // classRegistry, // Expose the registry for testing or introspection
    registerLocalPlugins,
+   pluginRegister,
 };

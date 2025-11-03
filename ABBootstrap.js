@@ -89,7 +89,7 @@ function requireFromURL(url) {
                   require,
                   console,
                   // NOTE: when adding these, I start getting errors about not
-                  // being able to find the stream module ... 
+                  // being able to find the stream module ...
                   // so we'll leave them out for now and include them as fallback
                   // in webpack.common.js config.
                   // vm,
@@ -126,7 +126,6 @@ function requireFromURL(url) {
 }
 
 async function loadPlugin(p, newFactory) {
-   console.log("::::: LOADING PLUGIN :::::", p.url);
    try {
       let plgn = await requireFromURL(p.url);
       newFactory.pluginRegister(plgn);
