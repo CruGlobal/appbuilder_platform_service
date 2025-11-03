@@ -1719,8 +1719,25 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
+      // Define our SELECT columns:
+      let selectCols = "*";
+      if (cond.select) {
+         selectCols = cond.select;
+
+         if (!Array.isArray(selectCols)) selectCols = [selectCols];
+
+         selectCols = selectCols
+            .map((fldId) => {
+               if (!this.AB.rules.isUUID(fldId)) return fldId;
+
+               const field = this.object.fieldByID(fldId);
+               return field?.columnName ?? fldId;
+            })
+            .join(",");
+      }
+
       // Now put this SQL together:
-      let sql = `SELECT * FROM ${tableNJoin.join(" ")}`;
+      let sql = `SELECT ${selectCols} FROM ${tableNJoin.join(" ")}`;
       if (where.length) {
          sql = `${sql} WHERE ${where.join(" AND ")}`;
       }
