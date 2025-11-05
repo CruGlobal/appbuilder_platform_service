@@ -84,10 +84,24 @@ function requireFromURL(url) {
                const module = { exports };
                // const context = vm.createContext({ module, exports, require });
                const context = vm.createContext({
-                  module,
-                  exports,
-                  require,
+                  // Node.js globals
+                  Buffer,
                   console,
+                  exports,
+                  global: {},
+                  module,
+                  process,
+                  require,
+                  setTimeout,
+                  clearTimeout,
+                  setInterval,
+                  clearInterval,
+                  
+                  // Browser globals
+                  fetch,
+                  https,
+                  URL,
+            
                   // NOTE: when adding these, I start getting errors about not
                   // being able to find the stream module ...
                   // so we'll leave them out for now and include them as fallback
@@ -95,15 +109,6 @@ function requireFromURL(url) {
                   // vm,
                   // crypto,
                   // stream,
-                  Buffer,
-                  fetch,
-                  https,
-                  process,
-                  setTimeout,
-                  clearTimeout,
-                  setInterval,
-                  clearInterval,
-                  global: {}, // Add a global object if needed
                });
                /*const exported = */ script.runInContext(context);
 
@@ -175,8 +180,8 @@ async function setupFactory(req, tenantID) {
          platform: newFactory.platform,
       });
 
-      console.log("::::::::::::::::::::::::");
-      console.log(plugins);
+      // console.log("::::::::::::::::::::::::");
+      // console.log(plugins);
 
       let allPluginLoads = [];
       plugins.forEach((p) => {
