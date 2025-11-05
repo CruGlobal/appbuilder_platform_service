@@ -54,8 +54,9 @@ function createObject(key, config, AB) {
 
 function pluginRegister(pluginClass) {
    let type = pluginClass.getPluginType();
-   switch(type) {
+   switch (type) {
       case "object":
+         // eslint-disable-next-line no-case-declarations
          let { registerObjectType } = getPluginAPI();
          registerObjectType(pluginClass.getPluginKey(), pluginClass);
          break;
@@ -66,9 +67,10 @@ function pluginRegister(pluginClass) {
       // case "view":
       //    break;
       default:
-         throw new Error(`ABClassManager.pluginRegister():: Unknown plugin type: ${type}`);
+         throw new Error(
+            `ABClassManager.pluginRegister():: Unknown plugin type: ${type}`
+         );
    }
-
 }
 ///
 /// For development
