@@ -96,12 +96,12 @@ function requireFromURL(url) {
                   clearTimeout,
                   setInterval,
                   clearInterval,
-                  
+
                   // Browser globals
                   fetch,
                   https,
                   URL,
-            
+
                   // NOTE: when adding these, I start getting errors about not
                   // being able to find the stream module ...
                   // so we'll leave them out for now and include them as fallback
@@ -173,9 +173,6 @@ async function setupFactory(req, tenantID) {
          });
       });
 
-      Factories[tenantID] = newFactory;
-      delete PendingFactory[tenantID];
-
       let plugins = await queryPlugins(req, {
          platform: newFactory.platform,
       });
@@ -189,7 +186,12 @@ async function setupFactory(req, tenantID) {
       });
 
       await Promise.all(allPluginLoads);
-      return await newFactory.init();
+
+      await newFactory.init();
+
+      Factories[tenantID] = newFactory;
+      delete PendingFactory[tenantID];
+      return;
    }
    // if we get here, we had no definitions for this tenant
    let errorNoDefinitions = new Error(
