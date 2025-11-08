@@ -1,7 +1,7 @@
 /**
- * allPlugins.js
- * returns all the Plugin definitions in our SITE_PLUGIN table that
- * match the given platform.
+ * allPluginLinks.js
+ * returns all the Link definitions in our SITE_PLUGIN_LINK table that
+ * match the given condition.
  * @param {ABFactory} AB
  *        The ABFactory that manages the Tenant Data this request should
  *        operate under.
@@ -20,7 +20,7 @@ module.exports = async function (req, cond, options = {}) {
 
       tenantDB += ".";
 
-      let sql = `SELECT * FROM ${tenantDB}\`SITE_PLUGIN\``;
+      let sql = `SELECT * FROM ${tenantDB}\`SITE_PLUGIN_LINK\``;
 
       let { condition, values } = req.queryWhereCondition(cond);
       if (condition) {

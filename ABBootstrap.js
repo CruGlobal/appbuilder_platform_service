@@ -7,7 +7,7 @@ const queryAllDefinitions = require("./queries/allDefinitions");
 // {sql} queryAllDefinitions
 // the sql query to load all the Definitions from a specific tenant.
 
-const queryPlugins = require("./queries/allPlugins");
+const queryPluginLinks = require("./queries/allPluginLinks");
 
 const Create = require("./queries/definitionCreate");
 const Destroy = require("./queries/definitionDestroy");
@@ -173,15 +173,15 @@ async function setupFactory(req, tenantID) {
          });
       });
 
-      let plugins = await queryPlugins(req, {
+      let pluginLinks = await queryPluginLinks(req, {
          platform: newFactory.platform,
       });
 
       // console.log("::::::::::::::::::::::::");
-      // console.log(plugins);
+      // console.log(pluginLinks);
 
       let allPluginLoads = [];
-      plugins.forEach((p) => {
+      pluginLinks.forEach((p) => {
          allPluginLoads.push(loadPlugin(p, newFactory));
       });
 
