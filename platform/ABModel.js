@@ -1472,6 +1472,16 @@ module.exports = class ABModel extends ABModelCore {
             }
             break;
 
+         case "is_current_email":
+            operator = "=";
+            value = quoteMe(userData.email);
+            break;
+
+         case "is_not_current_email":
+            operator = "<>";
+            value = quoteMe(userData.email);
+            break;
+
          case "is_null":
             operator = "IS NULL";
             value = "";
