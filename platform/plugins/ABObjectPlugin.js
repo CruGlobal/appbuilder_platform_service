@@ -11,6 +11,10 @@ module.exports = class ABObjectPlugin extends ABObject {
       return "ab-object-plugin";
    }
 
+   static getPluginType() {
+      return "object";
+   }
+
    /**
     * @method fromValues()
     *
@@ -21,6 +25,7 @@ module.exports = class ABObjectPlugin extends ABObject {
       super.fromValues(attributes);
       this.isPlugin = true;
       this.plugin_key = this.constructor.getPluginKey();
+      // plugin_key : is what tells our ABFactory.objectNew() to create this object from the plugin class.
    }
 
    /**
