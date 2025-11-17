@@ -704,6 +704,16 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             }
             break;
 
+         case "is_current_email":
+            operator = "=";
+            value = quoteMe(userData.email);
+            break;
+
+         case "is_not_current_email":
+            operator = "<>";
+            value = quoteMe(userData.email);
+            break;
+
          case "is_null":
             operator = "IS NULL";
             value = "";
@@ -981,6 +991,15 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             baseValues[this.object.columnRef[field]] = val;
          }
       });
+
+      // Save the user that created this record
+      if (req._user?.email) {
+         this.object
+            .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+            .forEach((f) => {
+               baseValues[f.columnName] = req._user?.email;
+            });
+      }
 
       // Boolean Fields
       // in our AB system, we use 1/0 for true/false values.  Netsuite will
@@ -2059,6 +2078,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
       let allUpdates = [];
       values.forEach((vid) => {
+         if (vid == null) return;
+
          let url = `${
             this.credentials.NETSUITE_BASE_URL
          }/${linkObject.dbTableName()}/${vid}`;
@@ -2229,7 +2250,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             }
             throw errorMissingEntity;
          }
-         newVal[field.settings.joinTableEntity] = entityValue;
+         if (field.settings?.joinTableEntity)
+            newVal[field.settings.joinTableEntity] = entityValue;
 
          if (req) {
             req.log("relateMany:");
@@ -2436,6 +2458,15 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             baseValues[this.object.columnRef[field]] = val;
          }
       });
+
+      // Save the user that updated this record
+      this.object
+         .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+         .forEach((f) => {
+            if (req._user?.email) {
+               baseValues[f.columnName] = req._user?.email;
+            }
+         });
 
       // All Netsuite DateTime fields need to be in ISOFormat:
       this.object
