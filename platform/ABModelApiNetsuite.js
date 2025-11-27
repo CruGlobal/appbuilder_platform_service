@@ -1154,6 +1154,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       for (let i = 0; i < data.length; i++) {
          let row = data[i];
          let v = row[field.columnName];
+
+         // if v is a string of comma separated values, split it into an array
+         if (typeof v == "string" && v.indexOf(","))
+            v = v.split(",").map((vv) => vv.trim());
+
          if (typeof v != "undefined") {
             if (Array.isArray(v)) {
                v.forEach((vv) => {
@@ -1172,7 +1177,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       pks = pks
          .filter((v) => v)
          .map((val) => val[PK] || val)
-         .filter((v) => v);
+         .filter((v, pos) => v && pks.indexOf(v) == pos); // Remove duplicates
 
       let values = [];
       let where = {};

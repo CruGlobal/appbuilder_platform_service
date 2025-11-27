@@ -2399,8 +2399,10 @@ module.exports = class ABModel extends ABModelCore {
          }
 
          let joinTable = field.joinTableName();
-         let sourceFkName = field.object.name;
-         let targetFkName = fieldLink.object.name;
+         let sourceFkName =
+            field.settings.joinTableReference ?? field.object.name;
+         let targetFkName =
+            fieldLink.settings.joinTableReference ?? fieldLink.object.name;
 
          let mnOperators = {
             contains: "LIKE",
