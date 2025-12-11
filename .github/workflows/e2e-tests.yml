@@ -108,7 +108,7 @@ jobs:
          - run: mv web ab_service_web
          # install and test
          - name: Install AppBuilder
-           uses: CruGlobal/ab-install-action@v1
+           uses: CruGlobal/ab-install-action@v1.0.1
          - name: Check out kitchen-sink tests
            uses: actions/checkout@v2
            with:
