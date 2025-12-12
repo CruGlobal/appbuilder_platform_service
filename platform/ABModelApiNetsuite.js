@@ -1156,7 +1156,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          let v = row[field.columnName];
 
          // if v is a string of comma separated values, split it into an array
-         if (typeof v == "string" && v.indexOf(","))
+         if (typeof v == "string" && v.indexOf(",") > -1)
             v = v.split(",").map((vv) => vv.trim());
 
          if (typeof v != "undefined") {
@@ -1797,7 +1797,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          let offset = dOffset;
          // now construct the URL (including limit & skip)
          let qs = "";
-         if (dLimit) qs = `limit=${dLimit}`;
+         // NetSuite requires a limit value between 1 and 1000
+         if (dLimit && dLimit <= 1000) qs = `limit=${dLimit}`;
          if (offset) {
             if (qs) qs += "&";
             qs = `${qs}offset=${offset}`;
