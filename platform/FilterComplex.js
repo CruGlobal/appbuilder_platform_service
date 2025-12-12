@@ -1,5 +1,5 @@
 const FilterComplexCore = require("../core/FilterComplexCore");
-
+// 3) Just a test to ensure our tests are running the correct version:
 module.exports = class FilterComplex extends FilterComplexCore {
    constructor(idBase, AB) {
       idBase = idBase || "ab_row_filter";
