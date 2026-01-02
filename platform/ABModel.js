@@ -1476,6 +1476,16 @@ module.exports = class ABModel extends ABModelCore {
             }
             break;
 
+         case "is_current_email":
+            operator = "=";
+            value = quoteMe(userData.email);
+            break;
+
+         case "is_not_current_email":
+            operator = "<>";
+            value = quoteMe(userData.email);
+            break;
+
          case "is_null":
             operator = "IS NULL";
             value = "";
@@ -2393,8 +2403,10 @@ module.exports = class ABModel extends ABModelCore {
          }
 
          let joinTable = field.joinTableName();
-         let sourceFkName = field.object.name;
-         let targetFkName = fieldLink.object.name;
+         let sourceFkName =
+            field.settings.joinTableReference ?? field.object.name;
+         let targetFkName =
+            fieldLink.settings.joinTableReference ?? fieldLink.object.name;
 
          let mnOperators = {
             contains: "LIKE",

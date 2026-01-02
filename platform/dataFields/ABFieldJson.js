@@ -89,7 +89,12 @@ module.exports = class ABFieldJson extends ABFieldJsonCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(/* allParameters */) {
+   isValidData(allParameters) {
+      // json values can't be ""
+      if (allParameters[this.columnName] == "") {
+         // rather than rejecting the request, we will set the value to null
+         allParameters[this.columnName] = null;
+      }
       return [];
    }
 };

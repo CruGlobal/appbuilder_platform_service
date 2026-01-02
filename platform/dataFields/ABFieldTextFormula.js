@@ -113,6 +113,10 @@ module.exports = class ABFieldTextFormula extends ABFieldTextFormulaCore {
    isValidData(allParameters) {
       var errors = [];
 
+      if (allParameters[this.columnName] == "") {
+         // rather than rejecting the request, we will remove it's value
+         delete allParameters[this.columnName];
+      }
       return errors;
    }
 };

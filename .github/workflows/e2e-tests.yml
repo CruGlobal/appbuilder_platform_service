@@ -87,6 +87,25 @@ jobs:
               path: ab_service_user_manager/AppBuilder
               submodules: true
               ref: ${{ inputs.ref }}
+         # Checkout ab_platform_web and build new app.js
+         - name: Checkout ab_platform_web
+           uses: actions/checkout@v3
+           with:
+              path: ab_platform_web
+              submodules: true
+              repository: CruGlobal/ab_platform_web
+         - name: Checkout ab_service_web
+           uses: actions/checkout@v3
+           with:
+              path: web
+              repository: CruGlobal/ab_service_web
+         - run: npm i
+           working-directory: ./ab_platform_web
+         - name: Webpack
+           run: npm run build:update
+           working-directory: ./ab_platform_web
+         # webpack expects the folder to be called "web" ab-install action expects "ab_service_web"
+         - run: mv web ab_service_web
          # install and test
          - name: Install AppBuilder
            uses: CruGlobal/ab-install-action@v1

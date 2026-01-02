@@ -190,7 +190,7 @@ class ABFactory extends ABFactoryCore {
           * @param {string} date  String of a date you want converted
           * @return {string}
           */
-         toSQLDate: function(date) {
+         toSQLDate: function (date) {
             return moment(date).format("YYYY-MM-DD");
             // return moment(date).format("YYYY-MM-DD 00:00:00");
          },
@@ -201,7 +201,7 @@ class ABFactory extends ABFactoryCore {
           * @param {string} date  String of a date you want converted
           * @return {string}
           */
-         toSQLDateTime: function(date) {
+         toSQLDateTime: function (date) {
             return moment(date).utc().format("YYYY-MM-DD HH:mm:ss");
          },
 
@@ -531,6 +531,10 @@ class ABFactory extends ABFactoryCore {
       return _.cloneDeep(value);
    }
 
+   defaultsDeep(target, source) {
+      return _.defaultsDeep(target, source);
+   }
+
    defaultSystemRoles() {
       return [
          "dd6c2d34-0982-48b7-bc44-2456474edbea", // System Admin
@@ -604,6 +608,66 @@ class ABFactory extends ABFactoryCore {
 
    jsonToCsv(jsonData) {
       return Papa.unparse(jsonData);
+   }
+
+   async jsonToCsvBatched(
+      data,
+      batchSize = 10000,
+      jobID = this.jobID(8),
+      columns = null,
+      start = 0,
+      headers = true,
+      batches = []
+   ) {
+      return new Promise((resolve, reject) => {
+         // make sure data is an array
+         if (!Array.isArray(data)) {
+            data = [data];
+         }
+
+         if (Array.isArray(data) && data.length === 0) {
+            resolve("");
+            return;
+         }
+
+         if (!columns) {
+            columns = Object.keys(data[0]);
+         }
+
+         let end = start + batchSize;
+         if (data.length > batchSize) {
+            console.log(
+               `${jobID}:: jsonToCSVBatched:[${data.length}] : ${start} - ${end}`
+            );
+         }
+
+         batches.push(
+            Papa.unparse(data.slice(start, end), {
+               header: headers,
+               newline: "\r\n",
+               columns,
+            })
+         );
+
+         if (data.length <= end) {
+            resolve(batches.join("\r\n"));
+            return;
+         }
+
+         setImmediate(() => {
+            this.jsonToCsvBatched(
+               data,
+               batchSize,
+               jobID,
+               columns,
+               end,
+               false,
+               batches
+            )
+               .then(resolve)
+               .catch(reject);
+         });
+      });
    }
 }
 

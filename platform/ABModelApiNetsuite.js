@@ -704,6 +704,16 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             }
             break;
 
+         case "is_current_email":
+            operator = "=";
+            value = quoteMe(userData.email);
+            break;
+
+         case "is_not_current_email":
+            operator = "<>";
+            value = quoteMe(userData.email);
+            break;
+
          case "is_null":
             operator = "IS NULL";
             value = "";
@@ -986,6 +996,15 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          }
       });
 
+      // Save the user that created this record
+      if (req._user?.email) {
+         this.object
+            .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+            .forEach((f) => {
+               baseValues[f.columnName] = req._user?.email;
+            });
+      }
+
       // Boolean Fields
       // in our AB system, we use 1/0 for true/false values.  Netsuite will
       // want those as true/false.
@@ -1143,6 +1162,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       for (let i = 0; i < data.length; i++) {
          let row = data[i];
          let v = row[field.columnName];
+
+         // if v is a string of comma separated values, split it into an array
+         if (typeof v == "string" && v.indexOf(","))
+            v = v.split(",").map((vv) => vv.trim());
+
          if (typeof v != "undefined") {
             if (Array.isArray(v)) {
                v.forEach((vv) => {
@@ -1161,7 +1185,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       pks = pks
          .filter((v) => v)
          .map((val) => val[PK] || val)
-         .filter((v) => v);
+         .filter((v, pos) => v && pks.indexOf(v) == pos); // Remove duplicates
 
       let values = [];
       let where = {};
@@ -2068,6 +2092,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
       let allUpdates = [];
       values.forEach((vid) => {
+         if (vid == null) return;
+
          let url = `${
             this.credentials.NETSUITE_BASE_URL
          }/${linkObject.dbTableName()}/${vid}`;
@@ -2238,7 +2264,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             }
             throw errorMissingEntity;
          }
-         newVal[field.settings.joinTableEntity] = entityValue;
+         if (field.settings?.joinTableEntity)
+            newVal[field.settings.joinTableEntity] = entityValue;
 
          if (req) {
             req.log("relateMany:");
@@ -2449,6 +2476,15 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             baseValues[this.object.columnRef[field]] = val;
          }
       });
+
+      // Save the user that updated this record
+      this.object
+         .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+         .forEach((f) => {
+            if (req._user?.email) {
+               baseValues[f.columnName] = req._user?.email;
+            }
+         });
 
       // All Netsuite DateTime fields need to be in ISOFormat:
       this.object

@@ -10,9 +10,9 @@ var path = require("path");
 // prettier-ignore
 var ABFieldCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldCore.js"));
 
-function L(key, altText) {
-   return altText; // AD.lang.label.getLabel(key) || altText;
-}
+// function L(key, altText) {
+//    return altText; // AD.lang.label.getLabel(key) || altText;
+// }
 
 module.exports = class ABField extends ABFieldCore {
    constructor(values, object, fieldDefaults) {
@@ -128,7 +128,7 @@ module.exports = class ABField extends ABFieldCore {
       );
       req.logError(error);
 
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
          // skip to MODIFY exists column
          resolve();
       });
@@ -163,7 +163,7 @@ module.exports = class ABField extends ABFieldCore {
 
             // if the table exists:
             .then(() => {
-               return new Promise((next, err) => {
+               return new Promise((next /*, err */) => {
                   knex.schema.hasTable(tableName).then((exists) => {
                      next(exists);
                   });
@@ -177,7 +177,7 @@ module.exports = class ABField extends ABFieldCore {
                return new Promise((next, err) => {
                   // get the .table editor and drop the column
                   knex.schema
-                     .table(tableName, (t) => {
+                     .table(tableName, (/* t */) => {
                         knex.schema
                            .hasColumn(tableName, this.columnName)
                            .then((exists) => {
@@ -192,7 +192,7 @@ module.exports = class ABField extends ABFieldCore {
             // drop foreign key of the column (if exists)
             .then(
                (isColumnExists) =>
-                  new Promise((next, err) => {
+                  new Promise((next /*, err */) => {
                      if (!isColumnExists) return next();
 
                      knex.schema
@@ -200,7 +200,7 @@ module.exports = class ABField extends ABFieldCore {
                            t.dropForeign(this.columnName);
                         })
                         .then(() => next(isColumnExists))
-                        .catch((error) => next(isColumnExists));
+                        .catch((/* error */) => next(isColumnExists));
                   })
             )
 
@@ -230,7 +230,7 @@ module.exports = class ABField extends ABFieldCore {
 
             // Update queries who include the removed column
             .then(() => {
-               return new Promise((next, err) => {
+               return new Promise((next /*, err */) => {
                   let tasks = [];
 
                   let queries = this.AB.queries(
@@ -268,8 +268,8 @@ module.exports = class ABField extends ABFieldCore {
     * @method jsonSchemaProperties
     * register your current field's properties here:
     */
-   jsonSchemaProperties(obj) {
-      sails.log.error(
+   jsonSchemaProperties(/* obj */) {
+      console.error(
          "!!! Field [" +
             this.fieldKey() +
             "] has not implemented jsonSchemaProperties()!!! "
@@ -298,7 +298,8 @@ module.exports = class ABField extends ABFieldCore {
 
       if (
          !_.isUndefined(allParameters[this.columnName]) &&
-         (this.key == "connectObject" || this.key == "user")
+         this.isConnection
+         //(this.key == "connectObject" || this.key == "user")
       ) {
          myParameter = {};
          myParameter[this.columnName] = allParameters[this.columnName];
@@ -314,9 +315,9 @@ module.exports = class ABField extends ABFieldCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* allParameters */) {
       var errors = [];
-      sails.log.error(
+      console.error(
          "!!! Field [" +
             this.fieldKey() +
             "] has not implemented .isValidData()!!!"
@@ -330,8 +331,8 @@ module.exports = class ABField extends ABFieldCore {
     * it is returned to the client.
     * @param {obj} data  a json object representing the current table row
     */
-   postGet(data) {
-      return new Promise((resolve, reject) => {
+   postGet(/* data */) {
+      return new Promise((resolve) => {
          resolve();
       });
    }
