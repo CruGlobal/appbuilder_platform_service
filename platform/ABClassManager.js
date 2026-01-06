@@ -1,0 +1,97 @@
+const ABObjectPlugin = require("./plugins/ABObjectPlugin.js");
+const ABModelPlugin = require("./plugins/ABModelPlugin.js");
+
+// import { ABObjectPlugin } from './plugins/ABObjectPlugin.js';
+// import { ABObjectPropertiesPlugin } from './plugins/ABObjectPropertiesPlugin.js';
+// import { ABFieldPlugin } from './ABFieldPlugin.js';
+// import { ABViewPlugin } from './ABViewPlugin.js';
+
+const classRegistry = {
+   ObjectTypes: new Map(),
+   ObjectPropertiesTypes: new Map(),
+   FieldTypes: new Map(),
+   ViewTypes: new Map(),
+};
+
+function getPluginAPI() {
+   return {
+      ABObjectPlugin,
+      ABModelPlugin,
+      // ABObjectPropertiesPlugin,
+      //  ABFieldPlugin,
+      //  ABViewPlugin,
+      registerObjectType: (name, ctor) =>
+         classRegistry.ObjectTypes.set(name, ctor),
+      // registerObjectPropertyType: (name, ctor) => classRegistry.ObjectPropertiesTypes.set(name, ctor),
+      //  registerFieldType: (name, ctor) => classRegistry.FieldTypes.set(name, ctor),
+      //  registerViewType: (name, ctor) => classRegistry.ViewTypes.set(name, ctor),
+   };
+}
+
+// export function createField(type, config) {
+//   const FieldClass = classRegistry.FieldTypes.get(type);
+//   if (!FieldClass) throw new Error(`Unknown object type: ${type}`);
+//   return new FieldClass(config);
+// }
+
+function createObject(key, config, AB) {
+   const ObjectClass = classRegistry.ObjectTypes.get(key);
+   if (!ObjectClass) throw new Error(`Unknown object type: ${key}`);
+   return new ObjectClass(config, AB);
+}
+
+// export function createObjectProperty(key, config) {
+//    const ObjectClass = classRegistry.ObjectPropertiesTypes.get(key);
+//    if (!ObjectClass) throw new Error(`Unknown object type: ${key}`);
+//    return new ObjectClass(config);
+//  }
+
+// export function createView(type, config) {
+//   const ViewClass = classRegistry.ViewTypes.get(type);
+//   if (!ViewClass) throw new Error(`Unknown object type: ${type}`);
+//   return new ViewClass(config);
+// }
+
+function pluginRegister(pluginClass) {
+   let type = pluginClass.getPluginType();
+   switch (type) {
+      case "object":
+         // eslint-disable-next-line no-case-declarations
+         let { registerObjectType } = getPluginAPI();
+         registerObjectType(pluginClass.getPluginKey(), pluginClass);
+         break;
+      // case "objectProperty":
+      //    break;
+      // case "field":
+      //    break;
+      // case "view":
+      //    break;
+      default:
+         throw new Error(
+            `ABClassManager.pluginRegister():: Unknown plugin type: ${type}`
+         );
+   }
+}
+///
+/// For development
+///
+let devPlugins = []; // [require("./plugins/developer/ObjectNetsuite.js")];
+
+function registerLocalPlugins(API) {
+   let { registerObjectType } = API;
+   devPlugins.forEach((p) => {
+      let pluginClass = p(API);
+      registerObjectType(pluginClass.getPluginKey(), pluginClass);
+   });
+}
+
+module.exports = {
+   getPluginAPI,
+   createObject,
+   // createField,
+   // createObjectProperty,
+   // createView,
+   // classRegistry, // Expose the registry for testing or introspection
+   registerLocalPlugins,
+   pluginRegister,
+};

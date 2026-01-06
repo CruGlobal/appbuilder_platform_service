@@ -25,6 +25,8 @@ module.exports = class ABModel extends ABModelCore {
     * @return {Promise} resolved with the result of the find()
     */
    create(values, trx = null, condDefaults = null, req = null) {
+      this.prepareMultilingualData(values);
+
       // make sure we ONLY have valid field values in {values}
       var baseValues = this.object.requestParams(values);
       var addRelationParams = this.object.requestRelationParams(values);
@@ -541,6 +543,8 @@ module.exports = class ABModel extends ABModelCore {
       // id should be just the .uuid or .id value of the row we are updating
       // but in case they sent in a condition obj: { uuid: 'xyz' } lets try to
       // de-reference it.
+
+      this.prepareMultilingualData(values);
 
       let updateParams = this.object.requestParams(values);
       // {valueHash} updateParams
