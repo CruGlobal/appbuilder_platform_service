@@ -15,6 +15,7 @@ const uuid = require("uuid");
 
 var ABFactoryCore = require("./core/ABFactoryCore");
 const SecretManager = require("./platform/ABSecretManager");
+const LocalPlugins = require("./platform/plugins/included");
 
 function stringifyErrors(param) {
    if (param instanceof Error) {
@@ -517,6 +518,18 @@ class ABFactory extends ABFactoryCore {
     */
    notify(domain, error, info) {
       return this.req.notify(domain, error, this._notifyInfo(info));
+   }
+
+   //
+   // Plugins
+   //
+   /**
+    * pluginLocalLoad()
+    * load the local plugins for the current ABFactory.
+    * @returns {Promise}
+    */
+   pluginLocalLoad() {
+      return LocalPlugins.load(this);
    }
 
    //
