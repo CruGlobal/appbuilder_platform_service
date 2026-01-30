@@ -1231,8 +1231,9 @@ module.exports = class ABModel extends ABModelCore {
                condition.rule != "next_days" &&
                condition.rule != "is_current_date"
             ) {
-               condition.key = `DATE(${condition.key})`;
+               condition.key = `DATE("${condition.key}")`;
                condition.value = `DATE("${condition.value}")`;
+               skipQuotes = true;
             }
 
             // Search string value of FK column
@@ -1302,7 +1303,7 @@ module.exports = class ABModel extends ABModelCore {
          like: "LIKE",
       };
 
-      // normal field name:
+      // normal field name: ... or DATE(...)
       var columnName = condition.key;
       if (typeof columnName == "string" && !skipQuotes) {
          // make sure to ` ` columnName (if it isn't our special '1' condition )
@@ -1337,8 +1338,8 @@ module.exports = class ABModel extends ABModelCore {
       var operator = conversionHash[condition.rule];
       var value = condition.value;
 
-      // If a function, then ignore quote. like DATE('05-05-2020')
-      if (!RegExp("^[A-Z]+[(].*[)]$").test(value)) {
+      // If a function, then ignore quote. e.g. DATE('05-05-2020') or DATE(829c8d74.Ended)
+      if (!/^[A-Z][A-Z0-9]*\([^)]*\)$/.test(value)) {
          value = quoteMe(value);
       }
 
