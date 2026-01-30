@@ -1224,12 +1224,15 @@ module.exports = class ABModel extends ABModelCore {
             // DATE (not DATETIME)
             else if (
                field.key == "date" &&
+               condition.rule != "greater_current" &&
+               condition.rule != "greater_or_equal_current" &&
+               condition.rule != "less_current" &&
+               condition.rule != "less_or_equal_current" &&
                condition.rule != "last_days" &&
                condition.rule != "next_days" &&
+               condition.rule != "is_current_date" &&
                condition.rule != "is_empty" &&
-               condition.rule != "is_not_empty" &&
-               condition.rule != "next_days" &&
-               condition.rule != "is_current_date"
+               condition.rule != "is_not_empty"
             ) {
                condition.key = `DATE("${condition.key}")`;
                condition.value = `DATE("${condition.value}")`;
