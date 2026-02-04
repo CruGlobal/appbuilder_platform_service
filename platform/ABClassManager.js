@@ -68,7 +68,7 @@ function pluginRegister(pluginClass) {
       //    break;
       default:
          throw new Error(
-            `ABClassManager.pluginRegister():: Unknown plugin type: ${type}`
+            `ABClassManager.pluginRegister():: Unknown plugin type: ${type}`,
          );
    }
 }

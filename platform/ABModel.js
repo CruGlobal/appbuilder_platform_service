@@ -848,8 +848,12 @@ module.exports = class ABModel extends ABModelCore {
          };
          var currObject = this.object;
          var allFields = this.object.fields();
+         var jsonAttributes = [];
          allFields.forEach(function (f) {
             f.jsonSchemaProperties(jsonSchema.properties);
+            if (["json", "list"].indexOf(f.key) > -1) {
+               jsonAttributes.push(f.columnName);
+            }
          });
 
          class MyModel extends Model {
@@ -864,6 +868,17 @@ module.exports = class ABModel extends ABModelCore {
 
             static get jsonSchema() {
                return jsonSchema;
+            }
+
+            // NOTE: the Objectionjs documentation states that
+            // "If this property is left unset all properties declared as
+            // objects or arrays in the jsonSchema are implicitly added to
+            // this list."
+
+            // However, when debugging, I can see that ALL the fields are
+            // being returned. So, we are explicitly setting the jsonAttributes.
+            static get jsonAttributes() {
+               return jsonAttributes;
             }
 
             // Move relation setup to below
@@ -1961,7 +1976,10 @@ module.exports = class ABModel extends ABModelCore {
             });
 
          // Exclude .id column
-         if (this.object.PK() === "uuid") query.omit(this.modelKnex(), ["id"]);
+         //.omit() is no longer avaiable in v3.
+         // however, we take care of removing .id in later stages of our
+         // transactions, so let's just leave it now.
+         // if (this.object.PK() === "uuid") query.omit(this.modelKnex(), ["id"]);
       }
    }
 
