@@ -1,5 +1,3 @@
-const _ = require("lodash");
-
 // prettier-ignore
 const ABApplicationMobileCore = require("../core/ABApplicationMobileCore.js");
 

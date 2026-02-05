@@ -8,13 +8,13 @@ const ABView = require(path.join(__dirname, "views", "ABView"));
 module.exports = class ABClassApplication extends ABApplicationCore {
    static applications(/*fn = () => true*/) {
       console.error(
-         "ABApplication.applicationForID(): Depreciated. Who is doing this?"
+         "ABApplication.applicationForID(): Depreciated. Who is doing this?",
       );
       return null;
    }
    static applicationForID(/*id*/) {
       var errDepreciated = new Error(
-         "ABApplication.applicationForID(): Depreciated. Who is doing this?"
+         "ABApplication.applicationForID(): Depreciated. Who is doing this?",
       );
       console.error(errDepreciated);
       return null;
@@ -22,7 +22,7 @@ module.exports = class ABClassApplication extends ABApplicationCore {
 
    static definitionForID(/*id*/) {
       var errDepreciated = new Error(
-         "ABApplication.definitionForID(): Depreciated. Who is doing this?"
+         "ABApplication.definitionForID(): Depreciated. Who is doing this?",
       );
       console.error(errDepreciated);
       return null;
