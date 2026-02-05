@@ -43,7 +43,10 @@ var Listener = null;
 function staleHandler(req) {
    var tenantID = req.tenantID();
    Factories[tenantID]?.emit("bootstrap.stale.reset");
-   KnexPool[tenantID] = Factories[tenantID]?.Knex.connection();
+
+   const knexConn = Factories[tenantID]?.Knex.connection();
+   if (knexConn) KnexPool[tenantID] = knexConn;
+
    delete Factories[tenantID];
    req.log(`:: Definitions reset for tenant[${tenantID}]`);
 }
@@ -147,6 +150,8 @@ async function setupFactory(req, tenantID) {
          hashDefs[d.id] = d;
       });
 
+      req.log(`Tenant[${tenantID}] Knex pool exists: ${!!KnexPool[tenantID]}`);
+
       var newFactory = new ABFactory(
          hashDefs,
          DefinitionManager,
@@ -168,7 +173,10 @@ async function setupFactory(req, tenantID) {
       resetOnEvents.forEach((event) => {
          newFactory.on(event, () => {
             Factories[tenantID]?.emit("bootstrap.stale.reset");
-            KnexPool[tenantID] = Factories[tenantID]?.Knex.connection();
+
+            const knexConn = Factories[tenantID]?.Knex.connection();
+            if (knexConn) KnexPool[tenantID] = knexConn;
+
             delete Factories[tenantID];
          });
       });
