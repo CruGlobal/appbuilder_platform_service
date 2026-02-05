@@ -854,6 +854,13 @@ module.exports = class ABModel extends ABModelCore {
             if (["json", "list"].indexOf(f.key) > -1) {
                jsonAttributes.push(f.columnName);
             }
+            if (["string", "LongText"].indexOf(f.key) > -1) {
+               if (f.isMultilingual) {
+                  if (jsonAttributes.indexOf("translations") == -1) {
+                     jsonAttributes.push("translations");
+                  }
+               }
+            }
          });
 
          class MyModel extends Model {
