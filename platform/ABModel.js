@@ -1968,7 +1968,8 @@ module.exports = class ABModel extends ABModelCore {
             .modifiers({
                // if the linked object's PK is uuid, then exclude .id
                unselectId: (builder) => {
-                  builder.omit(["id"]);
+                  // See note below on .omit()
+                  // builder.omit(["id"]);
                },
                username: (builder) => {
                   builder.select(["username"]);
