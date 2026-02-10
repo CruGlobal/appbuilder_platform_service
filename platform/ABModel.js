@@ -3,7 +3,7 @@ const { Model, raw } = require("objection");
 
 const ABFieldDateTime = require("../core/dataFields/ABFieldDateTimeCore");
 
-const _ = require("lodash");
+// const _ = require("lodash");
 
 // var __ModelPool = {};
 // reuse any previously created Model connections
@@ -505,7 +505,7 @@ module.exports = class ABModel extends ABModelCore {
          // figure it out:
 
          conditionFields.forEach((f) => {
-            if (!_.isUndefined(cond[f])) {
+            if (!this.AB.isUndefined(cond[f])) {
                defaultCond[f] = cond[f];
                delete cond[f];
             }
@@ -518,7 +518,7 @@ module.exports = class ABModel extends ABModelCore {
       } else {
          // make sure cond has our defaults set:
          conditionFields.forEach((f) => {
-            if (_.isUndefined(cond[f])) {
+            if (this.AB.isUndefined(cond[f])) {
                cond[f] = defaultCond[f];
             }
          });
@@ -851,7 +851,7 @@ module.exports = class ABModel extends ABModelCore {
          var jsonAttributes = [];
          allFields.forEach(function (f) {
             f.jsonSchemaProperties(jsonSchema.properties);
-            if (["json", "list"].indexOf(f.key) > -1) {
+            if (["json", "list", "file"].indexOf(f.key) > -1) {
                jsonAttributes.push(f.columnName);
             }
             if (["string", "LongText"].indexOf(f.key) > -1) {
@@ -1676,7 +1676,7 @@ module.exports = class ABModel extends ABModelCore {
       }
 
       // maybe it is an empty condition {}
-      if (_.isEmpty(cond)) {
+      if (this.AB.isEmpty(cond)) {
          return null; // <-- this gets cleared out later
       }
 
@@ -1794,7 +1794,7 @@ module.exports = class ABModel extends ABModelCore {
     */
    queryConditions(query, where, userData, req) {
       // Apply filters
-      if (!_.isEmpty(where)) {
+      if (!this.AB.isEmpty(where)) {
          // if (req) {
          //    req.log(
          //       "ABModel.queryConditions(): .where condition:",
@@ -1915,7 +1915,7 @@ module.exports = class ABModel extends ABModelCore {
                   .fields((fld) => fld?.key == "user")
                   .map((userFld) => `${userFld.relationName()}(username)`);
                if (userFieldRelations.length) {
-                  userFieldRelations = _.uniq(userFieldRelations);
+                  userFieldRelations = this.AB.uniq(userFieldRelations);
                   relationNames.push(
                      `${relationName}.[${userFieldRelations.join(",")}]`
                   );
@@ -1942,7 +1942,7 @@ module.exports = class ABModel extends ABModelCore {
             relationNames.push("translations");
          }
 
-         const finalRelationNames = _.uniq(relationNames);
+         const finalRelationNames = this.AB.uniq(relationNames);
 
          // TODO: test for faulty relationNames
          /*
@@ -2065,7 +2065,7 @@ module.exports = class ABModel extends ABModelCore {
     *    The included user data for this request.
     */
    querySort(query, sort, userData) {
-      if (!_.isEmpty(sort)) {
+      if (!this.AB.isEmpty(sort)) {
          sort.forEach((o) => {
             if (o.key == "updated_at" || o.key == "created_at") {
                query.orderBy(o.key, o.dir.toLowerCase());

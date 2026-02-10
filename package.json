@@ -8,14 +8,14 @@
    },
    "repository": {
       "type": "git",
-      "url": "git+https://github.com/appdevdesigns/appbuilder_platform_service.git"
+      "url": "git+https://github.com/CruGlobal/appbuilder_platform_service.git"
    },
    "author": "Johnny Hausman",
    "license": "ISC",
    "bugs": {
-      "url": "https://github.com/appdevdesigns/appbuilder_platform_service/issues"
+      "url": "https://github.com/CruGlobal/appbuilder_platform_service/issues"
    },
-   "homepage": "https://github.com/appdevdesigns/appbuilder_platform_service#readme",
+   "homepage": "https://github.com/CruGlobal/appbuilder_platform_service#readme",
    "dependencies": {
       "axios": "^1.7.7",
       "ejs": "^3.1.10",
