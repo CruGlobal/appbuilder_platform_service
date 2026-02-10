@@ -1,5 +1,5 @@
 const ABModelCore = require("../core/ABModelCore");
-const { Model, raw } = require("objection");
+const { Model, raw, AjvValidator } = require("objection");
 
 const ABFieldDateTime = require("../core/dataFields/ABFieldDateTimeCore");
 
@@ -886,6 +886,20 @@ module.exports = class ABModel extends ABModelCore {
             // being returned. So, we are explicitly setting the jsonAttributes.
             static get jsonAttributes() {
                return jsonAttributes;
+            }
+
+            // Allow union types in jsonSchema (e.g. json field: type: ["string", "object", "array", "null"])
+            // to avoid Ajv strict mode warning: "use allowUnionTypes to allow union type keyword"
+            static createValidator() {
+               return new AjvValidator({
+                  options: {
+                     allErrors: true,
+                     validateSchema: false,
+                     ownProperties: true,
+                     v5: true,
+                     allowUnionTypes: true,
+                  },
+               });
             }
 
             // Move relation setup to below
