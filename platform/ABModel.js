@@ -68,7 +68,7 @@ module.exports = class ABModel extends ABModelCore {
                   req.log(
                      `${
                         this.object.label || this.object.name
-                     }.create() successful. Now loading full value from DB.`
+                     }.create() successful. Now loading full value from DB.`,
                   );
                }
                if (returnVals) {
@@ -84,7 +84,7 @@ module.exports = class ABModel extends ABModelCore {
 
                      let fPK = "uuid";
                      let field = this.object.fields(
-                        (f) => f.columnName == colName
+                        (f) => f.columnName == colName,
                      )[0];
                      if (field) {
                         let objectLink = field.datasourceLink;
@@ -107,7 +107,7 @@ module.exports = class ABModel extends ABModelCore {
                         returnVals[PK],
                         newVals,
                         trx,
-                        req
+                        req,
                      );
                   }
                }
@@ -142,7 +142,7 @@ module.exports = class ABModel extends ABModelCore {
                         populate: true,
                      },
                      condDefaults,
-                     req
+                     req,
                   )
                      .then((rows) => {
                         // this returns an [] so pull 1st value:
@@ -363,7 +363,7 @@ module.exports = class ABModel extends ABModelCore {
          this.queryIncludeExternalMultilingualFields(
             query,
             cond.where,
-            cond.sort
+            cond.sort,
          );
 
          // add sort into into Query
@@ -608,7 +608,7 @@ module.exports = class ABModel extends ABModelCore {
                   req.performance.mark("update-relations");
                   req.log(
                      "ABModel.update(): updating relationships",
-                     updateRelationParams
+                     updateRelationParams,
                   );
                }
 
@@ -626,8 +626,8 @@ module.exports = class ABModel extends ABModelCore {
                      updateRelationParams,
                      oldValue,
                      trx,
-                     req
-                  )
+                     req,
+                  ),
                );
 
                // update translation of the external table
@@ -641,8 +641,8 @@ module.exports = class ABModel extends ABModelCore {
                         this.AB,
                         this.object,
                         id,
-                        transParams
-                     )
+                        transParams,
+                     ),
                   );
                }
 
@@ -658,12 +658,12 @@ module.exports = class ABModel extends ABModelCore {
                         (newItem) => {
                            if (req) {
                               req.performance.measure(
-                                 "update-find-updated-entry"
+                                 "update-find-updated-entry",
                               );
                            }
                            let result = newItem[0];
                            resolve(result);
-                        }
+                        },
                      );
                   })
                   .catch((err) => {
@@ -714,17 +714,17 @@ module.exports = class ABModel extends ABModelCore {
          return errorReturn("ABModel.relate(): missing value");
 
       var abField = this.object.fields(
-         (f) => f.id == fieldRef || f.columnName == fieldRef
+         (f) => f.id == fieldRef || f.columnName == fieldRef,
       )[0];
       if (!abField)
          return errorReturn(
-            "ABModel.relate(): unknown field reference[" + fieldRef + "]"
+            "ABModel.relate(): unknown field reference[" + fieldRef + "]",
          );
 
       var dl = abField.datasourceLink;
       if (!dl)
          return errorReturn(
-            `ABModel.relate(): provided field[${fieldRef}] could not resolve its object`
+            `ABModel.relate(): provided field[${fieldRef}] could not resolve its object`,
          );
 
       let indexField = abField.indexField;
@@ -776,7 +776,7 @@ module.exports = class ABModel extends ABModelCore {
                      } else {
                         resolve();
                      }
-                  }
+                  },
                );
             })
             .catch(reject);
@@ -1182,13 +1182,13 @@ module.exports = class ABModel extends ABModelCore {
                      if (field.alias) {
                         prefix = "{alias}_Trans".replace(
                            "{alias}",
-                           field.alias
+                           field.alias,
                         );
                      } else {
                         prefix = "{databaseName}.{tableName}"
                            .replace(
                               "{databaseName}",
-                              field.object.dbSchemaName()
+                              field.object.dbSchemaName(),
                            )
                            .replace("{tableName}", transTable);
                      }
@@ -1209,11 +1209,11 @@ module.exports = class ABModel extends ABModelCore {
                   } else {
                      req.notify.developer(
                         new Error(
-                           "running code to manage external multilingual Tables"
+                           "running code to manage external multilingual Tables",
                         ),
                         {
                            field,
-                        }
+                        },
                      );
                   }
                } else {
@@ -1236,7 +1236,7 @@ module.exports = class ABModel extends ABModelCore {
                         'JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT({transCol}, SUBSTRING(JSON_UNQUOTE(JSON_SEARCH({transCol}, "one", "{languageCode}")), 1, 4)), \'$."{columnName}"\'))'
                            .replace(/{transCol}/g, transCol)
                            .replace(/{languageCode}/g, userData.languageCode)
-                           .replace(/{columnName}/g, field.columnName)
+                           .replace(/{columnName}/g, field.columnName),
                      );
                }
             }
@@ -1252,7 +1252,7 @@ module.exports = class ABModel extends ABModelCore {
                var desiredOption = field.settings.options.filter(
                   (option) =>
                      option.id == condition.value ||
-                     option.text == condition.value
+                     option.text == condition.value,
                )[0];
                if (desiredOption) condition.value = desiredOption.id;
             }
@@ -1695,7 +1695,7 @@ module.exports = class ABModel extends ABModelCore {
       }
 
       var error = new Error(
-         "unknown cond type in .queryConditionsJoinCondition"
+         "unknown cond type in .queryConditionsJoinCondition",
       );
       req.notify.developer(error, {
          context:
@@ -1759,7 +1759,7 @@ module.exports = class ABModel extends ABModelCore {
    queryConditionsPluckRelationConditions(
       cond,
       noRelationRules = [],
-      haveRelationRules = []
+      haveRelationRules = [],
    ) {
       if (!cond) return null;
 
@@ -1770,7 +1770,7 @@ module.exports = class ABModel extends ABModelCore {
             var pRule = this.queryConditionsPluckRelationConditions(
                r,
                noRelationRules,
-               haveRelationRules
+               haveRelationRules,
             );
             if (pRule) {
                newRules.push(pRule);
@@ -1826,7 +1826,7 @@ module.exports = class ABModel extends ABModelCore {
          where = this.queryConditionsPluckRelationConditions(
             where,
             noRelationRules,
-            hasRelationRules
+            hasRelationRules,
          );
 
          // Now walk through each of our conditions and turn them into their
@@ -1834,7 +1834,7 @@ module.exports = class ABModel extends ABModelCore {
          var whereParsed = this.queryConditionsParseConditions(
             where,
             userData,
-            req
+            req,
          );
 
          // now join our where statements according to the .glue values
@@ -1868,7 +1868,7 @@ module.exports = class ABModel extends ABModelCore {
             var field = this.object.fields((f) => f.id == r.key)[0];
 
             var relation_name = this.AB.rules.toFieldRelationFormat(
-               field.columnName
+               field.columnName,
             );
 
             var objectLink = field.datasourceLink;
@@ -1931,7 +1931,7 @@ module.exports = class ABModel extends ABModelCore {
                if (userFieldRelations.length) {
                   userFieldRelations = this.AB.uniq(userFieldRelations);
                   relationNames.push(
-                     `${relationName}.[${userFieldRelations.join(",")}]`
+                     `${relationName}.[${userFieldRelations.join(",")}]`,
                   );
                } else {
                   relationNames.push(relationName);
@@ -2042,10 +2042,10 @@ module.exports = class ABModel extends ABModelCore {
             var relationName = f.relationName();
             let colNameList = f.object.fields().map((fld) => fld?.columnName);
             colNameList = colNameList.concat(
-               f.object.connectFields().map((fld) => fld?.relationName?.())
+               f.object.connectFields().map((fld) => fld?.relationName?.()),
             );
             var keysToRemove = colNameList.filter(
-               (k) => minFields.indexOf(k) == -1
+               (k) => minFields.indexOf(k) == -1,
             );
 
             // using for loop for performance here
@@ -2107,7 +2107,7 @@ module.exports = class ABModel extends ABModelCore {
 
                   sortClause = "`{prefix}.translations`".replace(
                      "{prefix}",
-                     prefix
+                     prefix,
                   );
                } else {
                   sortClause =
@@ -2134,7 +2134,7 @@ module.exports = class ABModel extends ABModelCore {
             if (orderField.key == "list") {
                // https://dev.mysql.com/doc/refman/8.0/en/string-functions.html#function_find-in-set
                query.orderByRaw(
-                  `IFNULL(FIND_IN_SET(${sortClause}, "${o.dir}"), 999) ASC`
+                  `IFNULL(FIND_IN_SET(${sortClause}, "${o.dir}"), 999) ASC`,
                );
             } else {
                query.orderByRaw(sortClause + " " + o.dir);
@@ -2163,7 +2163,7 @@ module.exports = class ABModel extends ABModelCore {
          // NOTE: check if this object is a query, then it includes .translations already
          var multilingualFields = this.object.fields(
             (f) =>
-               f.isMultilingual && (f.object.isExternal || f.object.isImported)
+               f.isMultilingual && (f.object.isExternal || f.object.isImported),
          );
          multilingualFields.forEach((f) => {
             let whereRules = where.rules || [];
@@ -2203,7 +2203,7 @@ module.exports = class ABModel extends ABModelCore {
 
                if (
                   !(query._statements || []).filter(
-                     (s) => s.table == transTable
+                     (s) => s.table == transTable,
                   ).length
                )
                   // prevent join duplicate
@@ -2268,7 +2268,7 @@ module.exports = class ABModel extends ABModelCore {
       if (!connectedObj) return;
 
       let numberField = connectedObj.fields(
-         (f) => f.id == settings.fieldLink
+         (f) => f.id == settings.fieldLink,
       )[0];
       if (!numberField) return;
 
@@ -2295,7 +2295,7 @@ module.exports = class ABModel extends ABModelCore {
             formulaFieldQuery,
             formulaField.settings.where,
             userData,
-            req
+            req,
          );
 
          let whereString = "";
@@ -2308,12 +2308,12 @@ module.exports = class ABModel extends ABModelCore {
             }
             whereString = whereString.substring(
                wherePosition + 5,
-               whereString.length
+               whereString.length,
             ); // It should be (`DB_NAME`.`AB_TABLE_NAME`.`COLUMN` LIKE '%VALUE%')
 
             // Replace definition id with col name
             const uuid = new RegExp(
-               /[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/g
+               /[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/g,
             );
             // {Regex} should match uuids (from https://ihateregex.io/expr/uuid/)
 
@@ -2346,12 +2346,12 @@ module.exports = class ABModel extends ABModelCore {
          }\`), 0)
                   FROM ${connectedObjTable}
                   WHERE ${connectedObjTable}.\`${
-            linkField.columnName
-         }\` = ${objTable}.\`${
-            connectedField.indexField
-               ? connectedField.indexField.columnName
-               : this.object.PK()
-         }\` ${whereClause})`;
+                     linkField.columnName
+                  }\` = ${objTable}.\`${
+                     connectedField.indexField
+                        ? connectedField.indexField.columnName
+                        : this.object.PK()
+                  }\` ${whereClause})`;
       }
       // 1:M , 1:1 & source
       else if (
@@ -2363,10 +2363,10 @@ module.exports = class ABModel extends ABModelCore {
          }\`), 0)
                   FROM ${connectedObjTable}
                   WHERE ${connectedObjTable}.\`${
-            connectedField.indexField
-               ? connectedField.indexField.columnName
-               : connectedObj.PK()
-         }\` = ${objTable}.\`${connectedField.columnName}\` ${whereClause})`;
+                     connectedField.indexField
+                        ? connectedField.indexField.columnName
+                        : connectedObj.PK()
+                  }\` = ${objTable}.\`${connectedField.columnName}\` ${whereClause})`;
       }
       // M:N
       else if (LinkType == "many:many") {
@@ -2379,11 +2379,11 @@ module.exports = class ABModel extends ABModelCore {
                FROM ${connectedObjTable}
                INNER JOIN ${joinTable}
                ON ${joinTable}.\`${
-            joinColumnNames.targetColumnName
-         }\` = ${connectedObjTable}.${connectedObj.PK()}
+                  joinColumnNames.targetColumnName
+               }\` = ${connectedObjTable}.${connectedObj.PK()}
                WHERE ${joinTable}.\`${
-            joinColumnNames.sourceColumnName
-         }\` = ${objTable}.\`${this.object.PK()}\` ${whereClause})`;
+                  joinColumnNames.sourceColumnName
+               }\` = ${objTable}.\`${this.object.PK()}\` ${whereClause})`;
       }
 
       return selectSQL;
@@ -2408,7 +2408,7 @@ module.exports = class ABModel extends ABModelCore {
             .replace("{prefix}", f.dbPrefix())
             .replace(
                "{columnName}",
-               fCustomIndex ? fCustomIndex.columnName : f.object.PK()
+               fCustomIndex ? fCustomIndex.columnName : f.object.PK(),
             );
       };
 
@@ -2825,7 +2825,7 @@ function updateRelationValues(
    updateRelationParams,
    oldValue,
    trx,
-   req
+   req,
 ) {
    var updateTasks = [];
    // {array} updateTasks
@@ -2853,7 +2853,7 @@ function updateRelationValues(
 
          if (req)
             req.log(
-               `ABModel.update().updateRelationValues(): ${colName} => ${LinkType}`
+               `ABModel.update().updateRelationValues(): ${colName} => ${LinkType}`,
             );
 
          if (
@@ -2890,7 +2890,7 @@ function updateRelationValues(
                            resolve();
                         })
                         .catch((err) => reject(err));
-                  })
+                  }),
             );
 
             // set linked data
@@ -2911,7 +2911,7 @@ function updateRelationValues(
                               resolve();
                            })
                            .catch((err) => reject(err));
-                     })
+                     }),
                );
 
                updateTasks.push(
@@ -2930,7 +2930,7 @@ function updateRelationValues(
                               resolve();
                            })
                            .catch((err) => reject(err));
-                     })
+                     }),
                );
             }
          }
@@ -2986,7 +2986,7 @@ function updateRelationValues(
                   id,
                   delThese,
                   trx,
-                  req
+                  req,
                );
             }
 
@@ -2998,7 +2998,7 @@ function updateRelationValues(
                   id,
                   newValues,
                   trx,
-                  req
+                  req,
                );
             }
          }
@@ -3083,7 +3083,7 @@ function updateTranslationsValues(AB, object, id, translations, isInsert) {
                      // WORKAROUND: first update the cell to NULL and then update it again
                      return new Promise((resolve, reject) => {
                         var longTextFields = multilingualFields.filter(
-                           (f) => f.key == "LongText"
+                           (f) => f.key == "LongText",
                         );
                         if (longTextFields.length < 1) return resolve();
 
@@ -3112,7 +3112,7 @@ function updateTranslationsValues(AB, object, id, translations, isInsert) {
                   .then(next)
                   .catch(err);
             }
-         })
+         }),
       );
    });
 
