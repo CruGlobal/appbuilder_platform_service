@@ -851,9 +851,18 @@ module.exports = class ABModel extends ABModelCore {
          var jsonAttributes = [];
          allFields.forEach(function (f) {
             f.jsonSchemaProperties(jsonSchema.properties);
-            if (["json", "list", "file"].indexOf(f.key) > -1) {
+            if (["json", "file"].indexOf(f.key) > -1) {
                jsonAttributes.push(f.columnName);
             }
+
+            // lists that have MULTIPLE values, are stored as a JSON array.
+            // other lists are treated as string values.
+            if (f.key == "list") {
+               if (f.settings.isMultiple) {
+                  jsonAttributes.push(f.columnName);
+               }
+            }
+
             if (["string", "LongText"].indexOf(f.key) > -1) {
                if (f.isMultilingual) {
                   if (jsonAttributes.indexOf("translations") == -1) {
@@ -2366,7 +2375,9 @@ module.exports = class ABModel extends ABModelCore {
                      connectedField.indexField
                         ? connectedField.indexField.columnName
                         : connectedObj.PK()
-                  }\` = ${objTable}.\`${connectedField.columnName}\` ${whereClause})`;
+                  }\` = ${objTable}.\`${
+                     connectedField.columnName
+                  }\` ${whereClause})`;
       }
       // M:N
       else if (LinkType == "many:many") {
