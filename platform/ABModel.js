@@ -901,6 +901,7 @@ module.exports = class ABModel extends ABModelCore {
             // to avoid Ajv strict mode warning: "use allowUnionTypes to allow union type keyword"
             static createValidator() {
                return new AjvValidator({
+                  onCreateAjv: (ajv) => {},
                   options: {
                      allErrors: true,
                      validateSchema: false,
