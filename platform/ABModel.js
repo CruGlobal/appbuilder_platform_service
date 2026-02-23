@@ -1863,7 +1863,7 @@ module.exports = class ABModel extends ABModelCore {
             // if (!objectLink) return;
 
             // Query
-            //  .leftJoinRelation(relation_name)
+            //  .leftJoinRelated(relation_name)
             //  .whereRaw('{relation_name}.{primary_name} IS NULL'
             //    .replace('{relation_name}', relation_name)
             //    .replace('{primary_name}', objectLink.PK()));
@@ -1883,11 +1883,11 @@ module.exports = class ABModel extends ABModelCore {
             var objectLink = field.datasourceLink;
             if (!objectLink) return;
 
-            let fnJoinRelation;
+            let fnJoinRelated;
             let whereRaw;
             if (r.rule == "have_no_relation") {
                // 1:1 - Get rows that no relation with
-               fnJoinRelation = query.leftJoinRelation.bind(query);
+               fnJoinRelated = query.leftJoinRelated.bind(query);
 
                r.value = objectLink.PK();
 
@@ -1895,12 +1895,12 @@ module.exports = class ABModel extends ABModelCore {
                whereRaw = `${relation_name}.${r.value} IS NULL`;
             } else if (r.rule == "have_relation") {
                // M:1 - Get rows that have relation with
-               fnJoinRelation = query.innerJoinRelation.bind(query);
+               fnJoinRelated = query.innerJoinRelated.bind(query);
 
                whereRaw = `${relation_name}.${objectLink.PK()} = '${r.value}'`;
             }
 
-            fnJoinRelation(relation_name).whereRaw(whereRaw);
+            fnJoinRelated(relation_name).whereRaw(whereRaw);
          });
       }
    } // queryConditions()
