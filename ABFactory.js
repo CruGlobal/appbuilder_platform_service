@@ -120,13 +120,13 @@ class ABFactory extends ABFactoryCore {
                var tenantDB = this.req.tenantDB().replaceAll("`", "");
                if (!tenantDB) {
                   throw new Error(
-                     `ABFactory.Knex.connection(): Could not find Tenant DB information for id[${this.req.tenantID()}]`
+                     `ABFactory.Knex.connection(): Could not find Tenant DB information for id[${this.req.tenantID()}]`,
                   );
                }
                var config = this.req.connections()["appbuilder"];
                if (!config) {
                   throw new Error(
-                     `ABFactory.Knex.connection(): Could not find configuration settings`
+                     `ABFactory.Knex.connection(): Could not find configuration settings`,
                   );
                }
 
@@ -309,10 +309,10 @@ class ABFactory extends ABFactoryCore {
 
             // Convert to UTC by subtracting the timezone offset
             let startOfDayUTC = new Date(
-               startOfDay.getTime() + startOfDay.getTimezoneOffset() * 60000
+               startOfDay.getTime() + startOfDay.getTimezoneOffset() * 60000,
             );
             let endOfDayUTC = new Date(
-               endOfDay.getTime() + endOfDay.getTimezoneOffset() * 60000
+               endOfDay.getTime() + endOfDay.getTimezoneOffset() * 60000,
             );
 
             //  Format the date in "YYYY-MM-DD HH:MM:SS" format
@@ -322,7 +322,7 @@ class ABFactory extends ABFactoryCore {
             };
             return formatDate(startOfDayUTC).concat(
                "|",
-               formatDate(endOfDayUTC)
+               formatDate(endOfDayUTC),
             );
          },
       };
@@ -356,7 +356,7 @@ class ABFactory extends ABFactoryCore {
             let newDef = this.definitionNew(fullDef);
             this.emit("definition.created", newDef);
             return newDef;
-         }
+         },
       );
    }
 
@@ -402,7 +402,7 @@ class ABFactory extends ABFactoryCore {
             this._definitions[id] = newDef;
             this.emit("definition.updated", id);
             return newDef;
-         }
+         },
       );
    }
 
@@ -449,7 +449,7 @@ class ABFactory extends ABFactoryCore {
     */
    cacheMatch(key, data) {
       let matches = Object.keys(this.__Cache).filter(
-         (k) => k.indexOf(key) > -1
+         (k) => k.indexOf(key) > -1,
       );
       if (typeof data != "undefined") {
          matches.forEach((k) => {
@@ -630,7 +630,7 @@ class ABFactory extends ABFactoryCore {
       columns = null,
       start = 0,
       headers = true,
-      batches = []
+      batches = [],
    ) {
       return new Promise((resolve, reject) => {
          // make sure data is an array
@@ -650,7 +650,7 @@ class ABFactory extends ABFactoryCore {
          let end = start + batchSize;
          if (data.length > batchSize) {
             console.log(
-               `${jobID}:: jsonToCSVBatched:[${data.length}] : ${start} - ${end}`
+               `${jobID}:: jsonToCSVBatched:[${data.length}] : ${start} - ${end}`,
             );
          }
 
@@ -659,7 +659,7 @@ class ABFactory extends ABFactoryCore {
                header: headers,
                newline: "\r\n",
                columns,
-            })
+            }),
          );
 
          if (data.length <= end) {
@@ -675,7 +675,7 @@ class ABFactory extends ABFactoryCore {
                columns,
                end,
                false,
-               batches
+               batches,
             )
                .then(resolve)
                .catch(reject);
