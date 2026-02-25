@@ -908,6 +908,9 @@ module.exports = class ABModel extends ABModelCore {
                      v5: true,
                      allowUnionTypes: true,
                   },
+                  // Required by Objection's AjvValidator.init(); called with each ajv instance.
+                  // Use to add custom keywords/formats if needed.
+                  onCreateAjv(ajv) {},
                });
             }
 
