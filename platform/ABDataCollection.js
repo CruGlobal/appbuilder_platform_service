@@ -1,6 +1,6 @@
-const ABDataCollectionCore = require("../core/ABDataCollectionCore");
+import ABDataCollectionCore from "../core/ABDataCollectionCore.js";
 
-module.exports = class ABDataCollection extends ABDataCollectionCore {
+export default class ABDataCollection extends ABDataCollectionCore {
    // constructor(attributes, application) {
    //    super(attributes, application);
    // }
@@ -12,4 +12,4 @@ module.exports = class ABDataCollection extends ABDataCollectionCore {
       // these should only be use by Views.
       return null;
    }
-};
+}

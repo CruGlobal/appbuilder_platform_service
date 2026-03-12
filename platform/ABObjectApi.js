@@ -1,6 +1,6 @@
-const ABObjectApiCore = require("../core/ABObjectApiCore");
+import ABObjectApiCore from "../core/ABObjectApiCore.js";
 
-module.exports = class ABObjectApi extends ABObjectApiCore {
+export default class ABObjectApi extends ABObjectApiCore {
    /**
     * migrateCreate
     * verify that a table for this object exists.
@@ -44,7 +44,7 @@ module.exports = class ABObjectApi extends ABObjectApiCore {
             .modelKnex()
             .query()
             .delete()
-            .where("DefinitionID", "=", this.id)
+            .where("DefinitionID", "=", this.id),
       );
 
       // Remove secret values of this API Object
@@ -53,7 +53,7 @@ module.exports = class ABObjectApi extends ABObjectApiCore {
             .modelKnex()
             .query()
             .delete()
-            .where("DefinitionID", "=", this.id)
+            .where("DefinitionID", "=", this.id),
       );
 
       return Promise.all(dropTasks);
@@ -62,4 +62,4 @@ module.exports = class ABObjectApi extends ABObjectApiCore {
    async getSecretValue(secretName) {
       return this.AB.Secret.getValue(this.id, secretName);
    }
-};
+}

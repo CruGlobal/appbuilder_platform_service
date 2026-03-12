@@ -13,7 +13,7 @@
  *        resolve(): {array} [{value}, {value}...]
  */
 
-module.exports = async function (req, cond, options = {}) {
+export default async function allPlugins(req, cond, options = {}) {
    try {
       let tenantDB = req.queryTenantDB();
       // queryTenantDB will throw an error if not found
@@ -38,4 +38,4 @@ module.exports = async function (req, cond, options = {}) {
       }
       throw error;
    }
-};
+}

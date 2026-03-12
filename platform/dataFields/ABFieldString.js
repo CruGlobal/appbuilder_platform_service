@@ -1,17 +1,15 @@
+import _ from "lodash";
+import async from "async";
+import ABFieldStringCore from "../../core/dataFields/ABFieldStringCore.js";
+
 /*
  * ABFieldString
  *
  * An ABFieldString defines a string field type.
  *
  */
-const path = require("path");
-const _ = require("lodash");
-const async = require("async");
 
-// prettier-ignore
-const ABFieldStringCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldStringCore.js"));
-
-module.exports = class ABFieldString extends ABFieldStringCore {
+export default class ABFieldString extends ABFieldStringCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -58,7 +56,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
                      // make sure there is a 'translations' json field
                      // included:
                      req.retry(() =>
-                        knex.schema.hasColumn(tableName, "translations")
+                        knex.schema.hasColumn(tableName, "translations"),
                      )
                         .then((exists) => {
                            // create one if it doesn't exist:
@@ -67,7 +65,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
                                  .retry(() =>
                                     knex.schema.table(tableName, (t) => {
                                        t.json("translations");
-                                    })
+                                    }),
                                  )
                                  .then(() => {
                                     next();
@@ -90,7 +88,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
                   // [fix]: don't create a column for a multilingual field
                   if (!this.settings.supportMultilingual) {
                      req.retry(() =>
-                        knex.schema.hasColumn(tableName, this.columnName)
+                        knex.schema.hasColumn(tableName, this.columnName),
                      )
                         .then((exists) => {
                            return req
@@ -102,7 +100,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
                                     if (
                                        this.settings.default &&
                                        this.settings.default.indexOf(
-                                          "{uuid}"
+                                          "{uuid}",
                                        ) == -1
                                     )
                                        currCol.defaultTo(this.settings.default);
@@ -126,7 +124,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
                                     // }
 
                                     if (exists) currCol.alter();
-                                 })
+                                 }),
                               )
                               .then(() => {
                                  return next();
@@ -147,7 +145,7 @@ module.exports = class ABFieldString extends ABFieldStringCore {
             (err) => {
                if (err) reject(err);
                else resolve();
-            }
+            },
          );
       });
    }
@@ -278,4 +276,4 @@ module.exports = class ABFieldString extends ABFieldStringCore {
          resolve();
       });
    }
-};
+}

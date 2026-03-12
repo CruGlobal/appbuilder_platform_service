@@ -1,11 +1,11 @@
-module.exports = function (req) {
+export default function (req) {
    return new Promise((resolve, reject) => {
       let tenantDB = req.tenantDB();
       if (tenantDB != "") {
          tenantDB += ".";
       } else {
          let errorNoTenant = new Error(
-            `Unable to find tenant information for tenantID[${req.tenantID()}]`
+            `Unable to find tenant information for tenantID[${req.tenantID()}]`,
          );
          reject(errorNoTenant);
          return;
@@ -22,4 +22,4 @@ module.exports = function (req) {
          }
       });
    });
-};
+}

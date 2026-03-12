@@ -4,11 +4,10 @@
  * An ABFieldTree defines a List field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldTreeCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldTreeCore.js"));
+import ABFieldTreeCore from "../../core/dataFields/ABFieldTreeCore.js";
 
-module.exports = class ABFieldTree extends ABFieldTreeCore {
+export default class ABFieldTree extends ABFieldTreeCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -76,7 +75,7 @@ module.exports = class ABFieldTree extends ABFieldTreeCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -148,4 +147,4 @@ module.exports = class ABFieldTree extends ABFieldTreeCore {
    isValidData(/* allParameters */) {
       return [];
    }
-};
+}

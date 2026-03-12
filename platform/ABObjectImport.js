@@ -1,8 +1,6 @@
-const path = require("path");
+import ABObjectExternal from "./ABObjectExternal.js";
 
-const ABObjectExternal = require(path.join(__dirname, "ABObjectExternal"));
-
-module.exports = class ABObjectImport extends ABObjectExternal {
+export default class ABObjectImport extends ABObjectExternal {
    // constructor(attributes, application) {
    //    super(attributes, application);
    // }
@@ -21,7 +19,7 @@ module.exports = class ABObjectImport extends ABObjectExternal {
                objDef: objData,
                missingConn: this.connName,
                connections: this.AB.config.connections,
-            }
+            },
          );
       }
       return this.AB.config.connections[this.connName].database;
@@ -55,9 +53,9 @@ module.exports = class ABObjectImport extends ABObjectExternal {
     * @param {Knex} knex the knex sql library manager for manipulating the DB.
     * @return {Promise}
     */
-   migrateCreate(knex) {
+   migrateCreate(/* _knex */) {
       console.log(
-         "ABObjectImport.migrateCreate(): we don't create Imported Tables."
+         "ABObjectImport.migrateCreate(): we don't create Imported Tables.",
       );
       return Promise.resolve();
    }
@@ -68,9 +66,9 @@ module.exports = class ABObjectImport extends ABObjectExternal {
     * @param {Knex} knex the knex sql library manager for manipulating the DB.
     * @return {Promise}
     */
-   migrateDrop(knex) {
+   migrateDrop(/* _knex */) {
       console.log(
-         "ABObjectImport.migrateDrop(): we don't drop Imported Tables."
+         "ABObjectImport.migrateDrop(): we don't drop Imported Tables.",
       );
       return Promise.resolve();
    }
@@ -86,15 +84,15 @@ module.exports = class ABObjectImport extends ABObjectExternal {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {obj}
     */
-   requestParams(allParameters) {
+   requestParams(/* _allParameters */) {
       // REPLICATED TABLE is read-only
       var usefulParameters = {};
       return usefulParameters;
    }
 
-   requestRelationParams(allParameters) {
+   requestRelationParams(/* _allParameters */) {
       // REPLICATED TABLE is read-only
       var usefulParameters = {};
       return usefulParameters;
    }
-};
+}

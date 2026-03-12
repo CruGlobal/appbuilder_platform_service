@@ -4,11 +4,10 @@
  * An ABFieldBoolean defines a Date field type.
  *
  */
-var path = require("path");
 // prettier-ignore
-var ABFieldBooleanCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldBooleanCore.js"));
+import ABFieldBooleanCore from "../../core/dataFields/ABFieldBooleanCore.js";
 
-module.exports = class ABFieldBoolean extends ABFieldBooleanCore {
+export default class ABFieldBoolean extends ABFieldBooleanCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -48,7 +47,7 @@ module.exports = class ABFieldBoolean extends ABFieldBooleanCore {
 
          // if this column doesn't already exist (you never know)
          req.retry(() =>
-            knex.schema.hasColumn(tableName, this.columnName)
+            knex.schema.hasColumn(tableName, this.columnName),
          ).then((exists) => {
             return req
                .retry(() =>
@@ -68,7 +67,7 @@ module.exports = class ABFieldBoolean extends ABFieldBooleanCore {
                      else currCol.nullable();
 
                      if (exists) currCol.alter();
-                  })
+                  }),
                )
                .then(() => {
                   resolve();
@@ -152,9 +151,9 @@ module.exports = class ABFieldBoolean extends ABFieldBooleanCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* _allParameters */) {
       var errors = [];
 
       return errors;
    }
-};
+}

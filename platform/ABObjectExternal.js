@@ -1,51 +1,52 @@
-var path = require("path");
-var _ = require("lodash");
+// import path from "path";
+// import _ from "lodash";
+import Import_objection from "objection";
 
-var ABObject = require(path.join(__dirname, "ABObject"));
+import ABObject from "./ABObject.js";
 
-var Model = require("objection").Model;
+var Model = Import_objection.Model;
 
-function getColumnFn(colType) {
-   var result = colType;
+// function _getColumnFn(colType) {
+//    var result = colType;
 
-   switch (colType) {
-      case "bit":
-      case "int":
-      case "integer":
-      case "tinyint":
-         result = "integer";
-         break;
-      case "bigint":
-      case "decimal":
-      case "dec":
-      case "float":
-      case "double":
-      case "double_precision":
-         result = "bigInteger";
-         break;
-      case "blob":
-      case "tinyblob":
-      case "mediumblob":
-      case "longblob":
-         result = "binary";
-         break;
-      case "char":
-      case "tinytext":
-      case "varchar":
-         result = "string";
-         break;
-      case "mediumtext":
-      case "longtext":
-         result = "text";
-         break;
-   }
+//    switch (colType) {
+//       case "bit":
+//       case "int":
+//       case "integer":
+//       case "tinyint":
+//          result = "integer";
+//          break;
+//       case "bigint":
+//       case "decimal":
+//       case "dec":
+//       case "float":
+//       case "double":
+//       case "double_precision":
+//          result = "bigInteger";
+//          break;
+//       case "blob":
+//       case "tinyblob":
+//       case "mediumblob":
+//       case "longblob":
+//          result = "binary";
+//          break;
+//       case "char":
+//       case "tinytext":
+//       case "varchar":
+//          result = "string";
+//          break;
+//       case "mediumtext":
+//       case "longtext":
+//          result = "text";
+//          break;
+//    }
 
-   return result;
-}
+//    return result;
+// }
 
 // to minimize .knex bindings (and connection pools!)
 
-module.exports = class ABObjectExternal extends ABObject {
+export default class ABObjectExternal extends ABObject {
    // constructor(attributes, AB) {
    //    super(attributes, AB);
    // }
@@ -68,7 +69,7 @@ module.exports = class ABObjectExternal extends ABObject {
     * 				}
     * @return {Promise}
     */
-   migrateCreate(knex, options) {
+   migrateCreate(/* _knex, _options */) {
       console.log("ABObjectExternal.migrateCreate()");
       // We no longer create Federated Tables.
       // Now we simply accept connections to outside Tables and work with them.
@@ -82,7 +83,7 @@ module.exports = class ABObjectExternal extends ABObject {
     *        the knex sql library manager for manipulating the DB.
     * @return {Promise}
     */
-   migrateDrop(knex) {
+   migrateDrop(/* _knex */) {
       console.log("ABObject.migrateDrop()");
 
       // We no longer manage Federated Tables, so we don't drop our
@@ -106,7 +107,7 @@ module.exports = class ABObjectExternal extends ABObject {
 
          // Populate fields of the trans table
          var multilingualFields = this.fields(
-            (f) => f.settings.supportMultilingual == 1
+            (f) => f.settings.supportMultilingual == 1,
          );
          multilingualFields.forEach((f) => {
             f.jsonSchemaProperties(transJsonSchema);
@@ -184,4 +185,4 @@ module.exports = class ABObjectExternal extends ABObject {
 
       return usefulParameters;
    }
-};
+}

@@ -1,3 +1,5 @@
+import ABQLSetPluckCore from "../../core/ql/ABQLSetPluckCore.js";
+
 /*
  * ABQLSetPluck
  *
@@ -40,8 +42,6 @@ pluck("relationships"):
    ]
  *
  */
-
-const ABQLSetPluckCore = require("../../core/ql/ABQLSetPluckCore.js");
 
 class ABQLSetPluck extends ABQLSetPluckCore {
    // constructor(attributes, prevOP, task, application) {
@@ -268,4 +268,4 @@ class ABQLSetPluck extends ABQLSetPluckCore {
    }
 }
 
-module.exports = ABQLSetPluck;
+export default ABQLSetPluck;

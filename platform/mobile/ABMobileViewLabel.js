@@ -1,6 +1,6 @@
-const ABMobileViewLabelCore = require("../../core/mobile/ABMobileViewLabelCore");
+import ABMobileViewLabelCore from "../../core/mobile/ABMobileViewLabelCore.js";
 
-module.exports = class ABMobileViewLabel extends ABMobileViewLabelCore {
+export default class ABMobileViewLabel extends ABMobileViewLabelCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -14,4 +14,4 @@ module.exports = class ABMobileViewLabel extends ABMobileViewLabelCore {
    //       p.warningsEval();
    //    });
    // }
-};
+}

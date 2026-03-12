@@ -1,17 +1,13 @@
-const async = require("async");
-const _ = require("lodash");
-const path = require("path");
-const ejs = require("ejs");
-// prettier-ignore
-const ABProcessTaskEmailCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskEmailCore.js"));
-// prettier-ignore
-const ABProcessParticipant = require(path.join(__dirname, "..", "ABProcessParticipant"));
-// prettier-ignore
-const ABProcessTaskServiceGetResetPasswordUrl = require(path.join(__dirname, "ABProcessTaskServiceGetResetPasswordUrl"));
-// prettier-ignore
-const ABProcessTaskServiceQuery = require(path.join(__dirname, "ABProcessTaskServiceQuery"));
+import async from "async";
+import _ from "lodash";
+import ejs from "ejs";
 
-module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
+import ABProcessTaskEmailCore from "../../../core/process/tasks/ABProcessTaskEmailCore.js";
+import ABProcessParticipant from "../ABProcessParticipant.js";
+import ABProcessTaskServiceGetResetPasswordUrl from "./ABProcessTaskServiceGetResetPasswordUrl.js";
+import ABProcessTaskServiceQuery from "./ABProcessTaskServiceQuery.js";
+
+export default class ABProcessTaskEmail extends ABProcessTaskEmailCore {
    ////
    //// Process Instance Methods
    ////
@@ -32,7 +28,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                   .users(
                      req,
                      this.objectOfStartElement,
-                     this.startElements[0]?.myState(instance)?.data
+                     this.startElements[0]?.myState(instance)?.data,
                   )
                   .then((list) => {
                      list.forEach((l) => {
@@ -53,7 +49,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                }
                if (missingEmails.length > 0) {
                   const text = `These Accounts have missing emails: ${missingEmails.join(
-                     ", "
+                     ", ",
                   )}`;
                   const error = new Error(text);
 
@@ -64,7 +60,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                } else {
                   resolve(_.uniq(emails));
                }
-            }
+            },
          );
       });
    }
@@ -81,7 +77,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
          const tempLane = new ABProcessParticipant(
             select,
             this.process,
-            this.AB
+            this.AB,
          );
 
          const data = {};
@@ -110,7 +106,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                   // get the lanes associated with these tasks
                   tasks.forEach((t) => {
                      myLanes.push(
-                        this.process.elementForDiagramID(t.laneDiagramID)
+                        this.process.elementForDiagramID(t.laneDiagramID),
                      );
                   });
                } else {
@@ -145,8 +141,8 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                // if we use fields, load the data from previous tasks
                let usedFields =
                   field == "to"
-                     ? this.toUsers?.fields ?? this.toUsers?.userFields
-                     : this.fromUsers?.fields ?? this.fromUsers?.userFields;
+                     ? (this.toUsers?.fields ?? this.toUsers?.userFields)
+                     : (this.fromUsers?.fields ?? this.fromUsers?.userFields);
                if (Array.isArray(usedFields) && usedFields?.length) {
                   // only get the fields we need for the email lookup
                   // get the values for the field
@@ -169,7 +165,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
 
                         tempLane.account.push(foundValue);
                         tempLane.account = tempLane.account.map(
-                           (a) => a["username"] || a["uuid"] || a
+                           (a) => a["username"] || a["uuid"] || a,
                         );
                         tempLane.useAccount = 1;
                      }
@@ -206,7 +202,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
          this.to,
          this.toUsers,
          this.toCustom,
-         req
+         req,
       );
    }
 
@@ -217,7 +213,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
          this.from,
          this.fromUsers,
          this.fromCustom,
-         req
+         req,
       );
    }
 
@@ -278,7 +274,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                         if (eStr.indexOf("ECONNREFUSED")) {
                            error = this.AB.toError(
                               "NotificationEmail: The server specified in config.local is refusing to connect.",
-                              err
+                              err,
                            );
                            this.AB.notify.builder(error, { task: this });
                         }
@@ -289,7 +285,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                               `NotificationEmail responded with an error (${
                                  err.code || err.toString()
                               })`,
-                              err
+                              err,
                            );
                            this.AB.notify.developer(error, { task: this });
                         }
@@ -301,7 +297,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
                      this.stateCompleted(instance);
                      this.log(instance, "Email Sent successfully");
                      resolve(true);
-                  }
+                  },
                );
             })
             .catch((error) => {
@@ -318,7 +314,7 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
          .filter(
             (e) =>
                e instanceof ABProcessTaskServiceGetResetPasswordUrl ||
-               e instanceof ABProcessTaskServiceQuery
+               e instanceof ABProcessTaskServiceQuery,
          );
       const previousProcessData = {};
 
@@ -334,4 +330,4 @@ module.exports = class ABProcessTaskEmail extends ABProcessTaskEmailCore {
          closeDelimiter: "}",
       });
    }
-};
+}

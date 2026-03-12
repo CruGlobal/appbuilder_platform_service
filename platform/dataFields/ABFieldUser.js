@@ -1,20 +1,13 @@
+import ABFieldUserCore from "../../core/dataFields/ABFieldUserCore.js";
+
 /*
  * ABFieldUser
  *
  * An ABFieldUser defines a user field type.
  *
  */
-const path = require("path");
-const ABFieldUserCore = require(path.join(
-   __dirname,
-   "..",
-   "..",
-   "core",
-   "dataFields",
-   "ABFieldUserCore.js"
-));
 
-module.exports = class ABFieldUser extends ABFieldUserCore {
+export default class ABFieldUser extends ABFieldUserCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -62,4 +55,4 @@ module.exports = class ABFieldUser extends ABFieldUserCore {
    isValidData(/* allParameters */) {
       return [];
    }
-};
+}

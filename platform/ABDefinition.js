@@ -1,8 +1,8 @@
+import ABDefinitionCore from "../core/ABDefinitionCore.js";
+
 // import ABApplication from "./ABApplication"
 
-var ABDefinitionCore = require("../core/ABDefinitionCore");
-
-module.exports = class ABDefinition extends ABDefinitionCore {
+export default class ABDefinition extends ABDefinitionCore {
    ///
    /// Static Methods
    ///
@@ -20,7 +20,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static create(/* data */) {
       var errorDepreciated = new Error(
-         "ABDefinition.create(): Depreciated! Who is calling this!"
+         "ABDefinition.create(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -36,7 +36,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static destroy(/*id */) {
       var errorDepreciated = new Error(
-         "ABDefinition.destroy(): Depreciated! Who is calling this!"
+         "ABDefinition.destroy(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -51,7 +51,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static loadAll() {
       var errorDepreciated = new Error(
-         "ABDefinition.loadAll(): Depreciated! Who is calling this!"
+         "ABDefinition.loadAll(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -68,7 +68,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static update(/* id, data */) {
       var errorDepreciated = new Error(
-         "ABDefinition.update(): Depreciated! Who is calling this!"
+         "ABDefinition.update(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -88,7 +88,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static definition(/* id */) {
       var errorDepreciated = new Error(
-         "ABDefinition.definition(): Depreciated! Who is calling this!"
+         "ABDefinition.definition(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -108,7 +108,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
     */
    static definitions(/* fn = () => true */) {
       var errorDepreciated = new Error(
-         "ABDefinition.definitions(): Depreciated! Who is calling this!"
+         "ABDefinition.definitions(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -116,7 +116,7 @@ module.exports = class ABDefinition extends ABDefinitionCore {
 
    static allQueries(/* fn = () => true */) {
       var errorDepreciated = new Error(
-         "ABDefinition.allQueries(): Depreciated! Who is calling this!"
+         "ABDefinition.allQueries(): Depreciated! Who is calling this!",
       );
       console.error(errorDepreciated);
       throw errorDepreciated;
@@ -125,4 +125,4 @@ module.exports = class ABDefinition extends ABDefinitionCore {
    //
    // Instance Methods
    //
-};
+}

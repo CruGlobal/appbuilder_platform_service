@@ -1,3 +1,3 @@
-const ABViewManagerMobileCore = require("../core/ABViewManagerMobileCore");
+import ABViewManagerMobileCore from "../core/ABViewManagerMobileCore.js";
 
-module.exports = class ABViewManagerMobile extends ABViewManagerMobileCore {};
+export default class ABViewManagerMobile extends ABViewManagerMobileCore {}

@@ -1,8 +1,8 @@
-const SubProcessCore = require("../../../core/process/tasks/ABProcessTaskSubProcessCore");
-const ABProcessTriggerCore = require("../../../core/process/tasks/ABProcessTriggerCore");
-const ABProcessEngine = require("../ABProcessEngine");
+import SubProcessCore from "../../../core/process/tasks/ABProcessTaskSubProcessCore.js";
+import ABProcessTriggerCore from "../../../core/process/tasks/ABProcessTriggerCore.js";
+import ABProcessEngine from "../ABProcessEngine.js";
 
-module.exports = class SubProcess extends SubProcessCore {
+export default class SubProcess extends SubProcessCore {
    ////
    //// Process Instance Methods
    ////
@@ -69,8 +69,10 @@ module.exports = class SubProcess extends SubProcessCore {
 
       // Find BPMN definition of this Sub process
       // And set it into the new ABProcessEngine
-      let bpmnProcess =
-         (instance.jsonDefinition["bpmn2:definitions"] ?? instance.jsonDefinition.definition["bpmn2:definitions"])["bpmn2:process"];
+      let bpmnProcess = (instance.jsonDefinition["bpmn2:definitions"] ??
+         instance.jsonDefinition.definition["bpmn2:definitions"])[
+         "bpmn2:process"
+      ];
       let bpmnSubProcess;
 
       for (let key in bpmnProcess) {
@@ -137,7 +139,7 @@ module.exports = class SubProcess extends SubProcessCore {
          };
 
          // eslint-disable-next-line no-empty
-         while (subTasks?.length > 0 && await doTasks(subTasks)) {}
+         while (subTasks?.length > 0 && (await doTasks(subTasks))) {}
 
          // No pending tasks, then go to process the next data
          if (!subTasks || subTasks.length < 1) {
@@ -182,4 +184,4 @@ module.exports = class SubProcess extends SubProcessCore {
    exportIDs(ids) {
       return this.process.exportIDs.call(this, ids);
    }
-};
+}

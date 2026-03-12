@@ -1,3 +1,5 @@
+import ABQLSetFirstCore from "../../core/ql/ABQLSetFirstCore.js";
+
 /*
  * ABQLSetFirst
  *
@@ -5,8 +7,6 @@
  * and can perform a DB query based upon that BASE object.
  *
  */
-
-const ABQLSetFirstCore = require("../../core/ql/ABQLSetFirstCore.js");
 
 class ABQLSetFirst extends ABQLSetFirstCore {
    // constructor(attributes, prevOP, task, application) {
@@ -72,4 +72,4 @@ class ABQLSetFirst extends ABQLSetFirstCore {
    }
 }
 
-module.exports = ABQLSetFirst;
+export default ABQLSetFirst;

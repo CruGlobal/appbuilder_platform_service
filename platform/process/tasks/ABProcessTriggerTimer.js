@@ -1,5 +1,3 @@
-const ABProcessTriggerTimerCore = require("../../../core/process/tasks/ABProcessTriggerTimerCore");
+import ABProcessTriggerTimerCore from "../../../core/process/tasks/ABProcessTriggerTimerCore.js";
 
-module.exports = class ABProcessTriggerTimer extends (
-   ABProcessTriggerTimerCore
-) {};
+export default class ABProcessTriggerTimer extends ABProcessTriggerTimerCore {}

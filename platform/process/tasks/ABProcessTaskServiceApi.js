@@ -1,7 +1,7 @@
-const axios = require("axios");
-const ApiTaskCore = require("../../../core/process/tasks/ABProcessTaskServiceApiCore");
+import axios from "axios";
+import ApiTaskCore from "../../../core/process/tasks/ABProcessTaskServiceApiCore.js";
 
-module.exports = class ApiTask extends ApiTaskCore {
+export default class ApiTask extends ApiTaskCore {
    /**
     * @method do()
     * this method actually performs the action for this task.
@@ -94,4 +94,4 @@ module.exports = class ApiTask extends ApiTaskCore {
 
       return data[param];
    }
-};
+}

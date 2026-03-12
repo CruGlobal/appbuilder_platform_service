@@ -1,6 +1,6 @@
-const ABMobileViewCore = require("../../core/mobile/ABMobileViewCore.js");
+import ABMobileViewCore from "../../core/mobile/ABMobileViewCore.js";
 
-module.exports = class ABMobileView extends ABMobileViewCore {
+export default class ABMobileView extends ABMobileViewCore {
    // constructor(attributes, application, parent) {
    //    super(attributes, application, parent);
    // }
@@ -37,7 +37,7 @@ module.exports = class ABMobileView extends ABMobileViewCore {
          let dc = this.datacollections || this.datacollection;
          if (!dc) {
             this.warningsMessage(
-               `references unknown dataviewID[${this.settings.dataviewID}]`
+               `references unknown dataviewID[${this.settings.dataviewID}]`,
             );
          }
       }
@@ -47,4 +47,4 @@ module.exports = class ABMobileView extends ABMobileViewCore {
       let message = `${this.key}[${this.name}]: ${msg}`;
       this._warnings.push({ message, data });
    }
-};
+}

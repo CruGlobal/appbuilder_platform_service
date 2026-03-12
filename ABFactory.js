@@ -5,17 +5,16 @@
  * ABBootstrap.init(req).then((AB)=>{}) call.
  */
 
-const _ = require("lodash");
-const Knex = require("knex");
-const moment = require("moment");
-const { nanoid } = require("nanoid");
-const Papa = require("papaparse");
-const { serializeError, deserializeError } = require("serialize-error");
-const uuid = require("uuid");
-
-var ABFactoryCore = require("./core/ABFactoryCore");
-const SecretManager = require("./platform/ABSecretManager");
-const LocalPlugins = require("./platform/plugins/included");
+import _ from "lodash";
+import Knex from "knex";
+import moment from "moment";
+import { nanoid } from "nanoid";
+import Papa from "papaparse";
+import { serializeError, deserializeError } from "serialize-error";
+import { v4 as uuidv4 } from "uuid";
+import ABFactoryCore from "./core/ABFactoryCore.js";
+import SecretManager from "./platform/ABSecretManager.js";
+import LocalPlugins from "./platform/plugins/included/index.js";
 
 function stringifyErrors(param) {
    if (param instanceof Error) {
@@ -605,7 +604,7 @@ class ABFactory extends ABFactoryCore {
    }
 
    uuid() {
-      return uuid.v4();
+      return uuidv4();
    }
 
    toJSON() {
@@ -684,4 +683,4 @@ class ABFactory extends ABFactoryCore {
    }
 }
 
-module.exports = ABFactory;
+export default ABFactory;

@@ -4,11 +4,10 @@
  * An ABFieldFile defines a string field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldFileCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldFileCore.js"));
+import ABFieldFileCore from "../../core/dataFields/ABFieldFileCore.js";
 
-module.exports = class ABFieldFile extends ABFieldFileCore {
+export default class ABFieldFile extends ABFieldFileCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -68,7 +67,7 @@ module.exports = class ABFieldFile extends ABFieldFileCore {
                            } else {
                               t.json(this.columnName).nullable();
                            }
-                        })
+                        }),
                      )
                      .then(resolve)
                      .catch(reject);
@@ -95,7 +94,7 @@ module.exports = class ABFieldFile extends ABFieldFileCore {
 
       return new Promise((resolve, reject) => {
          this.AB.error(
-            "!!! TODO: pay attention to the .removeExistingData setting !!!"
+            "!!! TODO: pay attention to the .removeExistingData setting !!!",
          );
          super.migrateDrop(req, knex).then(resolve).catch(reject);
       });
@@ -128,4 +127,4 @@ module.exports = class ABFieldFile extends ABFieldFileCore {
          };
       }
    }
-};
+}

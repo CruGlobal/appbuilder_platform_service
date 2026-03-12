@@ -4,15 +4,13 @@
  *
  * Lanes manage users in the system, and provide a way to lookup a SiteUser.
  */
-const path = require("path");
-// prettier-ignore
-const ABProcessLaneCore = require(path.join(__dirname, "..", "..", "core", "process", "ABProcessLaneCore.js"));
+import ABProcessLaneCore from "../../core/process/ABProcessLaneCore.js";
 
-module.exports = class ABProcessLane extends ABProcessLaneCore {
+export default class ABProcessLane extends ABProcessLaneCore {
    // constructor(attributes, process, application) {
    //    super(attributes, process, application);
    // }
    ////
    //// Modeler Instance Methods
    ////
-};
+}

@@ -1,3 +1,5 @@
+import ABQLCore from "../../core/ql/ABQLCore.js";
+
 /*
  * ABQL
  *
@@ -7,8 +9,6 @@
  *
  *
  */
-const ABQLCore = require("../../core/ql/ABQLCore.js");
-
 class ABQL extends ABQLCore {
    // constructor(attributes, parameterDefinitions, prevOP, task, application) {
    //     super(attributes, parameterDefinitions, prevOP, task, application);
@@ -55,7 +55,7 @@ class ABQL extends ABQLCore {
             }
             id = `${id}ABQL[${this.constructor.key}]`;
             console.error(
-               `!!! ${id}:exportIDs(): could not find object for id[${this.objectID}]`
+               `!!! ${id}:exportIDs(): could not find object for id[${this.objectID}]`,
             );
          }
       }
@@ -88,11 +88,11 @@ class ABQL extends ABQLCore {
             }
             id = `${id}ABQL[${this.constructor.key}]`;
             console.error(
-               `!!! ${id}:exportIDs(): could not find object for id[${this.objectID}]`
+               `!!! ${id}:exportIDs(): could not find object for id[${this.objectID}]`,
             );
          }
       }
    }
 }
 
-module.exports = ABQL;
+export default ABQL;

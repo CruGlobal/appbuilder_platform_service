@@ -1,6 +1,6 @@
-const ABMobileViewFormEmailCore = require("../../core/mobile/ABMobileViewFormEmailCore");
+import ABMobileViewFormEmailCore from "../../core/mobile/ABMobileViewFormEmailCore.js";
 
-module.exports = class ABMobileViewFormEmail extends ABMobileViewFormEmailCore {
+export default class ABMobileViewFormEmail extends ABMobileViewFormEmailCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -14,4 +14,4 @@ module.exports = class ABMobileViewFormEmail extends ABMobileViewFormEmailCore {
    //       p.warningsEval();
    //    });
    // }
-};
+}

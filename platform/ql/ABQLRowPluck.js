@@ -1,5 +1,5 @@
-const ABQLRowPluckCore = require("../../core/ql/ABQLRowPluckCore.js");
-const ABQLSetPluck = require("./ABQLSetPluck.js");
+import ABQLRowPluckCore from "../../core/ql/ABQLRowPluckCore.js";
+import ABQLSetPluck from "./ABQLSetPluck.js";
 
 class ABQLRowPluck extends ABQLRowPluckCore {
    /**
@@ -48,7 +48,7 @@ class ABQLRowPluck extends ABQLRowPluckCore {
                      },
                      this,
                      null,
-                     this.AB
+                     this.AB,
                   );
                   setPluck.object = this.object;
                   return setPluck.do(prepareChain, instance, trx, req);
@@ -75,7 +75,7 @@ class ABQLRowPluck extends ABQLRowPluckCore {
                      else if (Array.isArray(nextContext.data)) {
                         if (nextContext.data.length > 1) {
                            this.process.log(
-                              `The data values have more than 1. "${this.field.columnName}" does not support multiple values.`
+                              `The data values have more than 1. "${this.field.columnName}" does not support multiple values.`,
                            );
                            nextContext.data = nextContext.data[0];
                         } else if (nextContext.data.length == 1) {
@@ -99,4 +99,4 @@ class ABQLRowPluck extends ABQLRowPluckCore {
    }
 }
 
-module.exports = ABQLRowPluck;
+export default ABQLRowPluck;

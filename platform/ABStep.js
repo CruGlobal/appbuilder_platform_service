@@ -1,8 +1,6 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-const ABStepCore = require("../core/ABStepCore.js");
+import ABStepCore from "../core/ABStepCore.js";
 
-module.exports = class ABStep extends ABStepCore {
+export default class ABStep extends ABStepCore {
    constructor(attributes, AB) {
       super(attributes, AB);
 
@@ -106,4 +104,4 @@ module.exports = class ABStep extends ABStepCore {
       //    }).length == 0;
       // return isValid;
    }
-};
+}

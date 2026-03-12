@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 /**
  * ABModelConvertFilterCondition
  *
@@ -7,8 +9,6 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-
-var _ = require("lodash");
 
 /**
  * RuleHash
@@ -55,7 +55,7 @@ function parseCondition(rule) {
    //    operator: '',
    //    inputValue: '',
 
-   result = {
+   const result = {
       key: rule.fieldName,
       rule: RuleHash[rule.operator],
       value: rule.inputValue,
@@ -93,7 +93,7 @@ function processCondition(filterCond) {
    return newCond;
 }
 
-module.exports = function (AB, cond, next) {
+export default function (AB, cond, next) {
    // We need to check a given .where value and determine if it is in our old
    // filter compatible format, and if so convert it to our QueryBuilder format.
    //
@@ -177,4 +177,4 @@ module.exports = function (AB, cond, next) {
    // Must be a Filter compatible condition:
    cond.where = processCondition(cond.where);
    next();
-};
+}

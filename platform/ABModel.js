@@ -1,11 +1,8 @@
-const ABModelCore = require("../core/ABModelCore");
-const { Model, raw, AjvValidator } = require("objection");
+import ABModelCore from "../core/ABModelCore.js";
+import ABFieldDateTime from "../core/dataFields/ABFieldDateTimeCore.js";
+import { Model, raw, AjvValidator } from "objection";
 
-const ABFieldDateTime = require("../core/dataFields/ABFieldDateTimeCore");
-
-// const _ = require("lodash");
-
-// var __ModelPool = {};
+// // var __ModelPool = {};
 // reuse any previously created Model connections
 // to minimize .knex bindings (and connection pools!)
 
@@ -13,7 +10,7 @@ var conditionFields = ["sort", "offset", "limit", "populate"];
 // the list of fields on a provided .findAll(cond) param that we should
 // consider when parsing the object.
 
-module.exports = class ABModel extends ABModelCore {
+export default class ABModel extends ABModelCore {
    /**
     * @method create
     * performs an update operation
@@ -910,7 +907,7 @@ module.exports = class ABModel extends ABModelCore {
                   },
                   // Required by Objection's AjvValidator.init(); called with each ajv instance.
                   // Use to add custom keywords/formats if needed.
-                  onCreateAjv(ajv) {},
+                  onCreateAjv(/* _ajv */) {},
                });
             }
 
@@ -2000,7 +1997,7 @@ module.exports = class ABModel extends ABModelCore {
             .withGraphFetched(`[${finalRelationNames.join(", ")}]`)
             .modifiers({
                // if the linked object's PK is uuid, then exclude .id
-               unselectId: (builder) => {
+               unselectId: (/* _builder */) => {
                   // See note below on .omit()
                   // builder.omit(["id"]);
                },
@@ -2522,7 +2519,7 @@ module.exports = class ABModel extends ABModelCore {
                : "not_in";
       }
    }
-};
+}
 
 /************************
  *** Update() Helpers ***

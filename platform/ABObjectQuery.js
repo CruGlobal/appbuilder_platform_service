@@ -1,7 +1,6 @@
-const _ = require("lodash");
-
-const ABObjectQueryCore = require("../core/ABObjectQueryCore");
-const ABFieldConnect = require("./dataFields/ABFieldConnect");
+import _ from "lodash";
+import ABObjectQueryCore from "../core/ABObjectQueryCore.js";
+import ABFieldConnect from "./dataFields/ABFieldConnect.js";
 
 function quoteMe(text) {
    return text
@@ -10,7 +9,7 @@ function quoteMe(text) {
       .join(".");
 }
 
-module.exports = class ABClassQuery extends ABObjectQueryCore {
+export default class ABClassQuery extends ABObjectQueryCore {
    fromValues(attributes) {
       super.fromValues(attributes);
 
@@ -19,7 +18,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
          var app = this.AB.applicationByID(this.createdInAppID);
          var appName = app?.name || "GEN";
          this.viewName = this.AB.rules.toObjectNameFormat(
-            `${appName}_View_${this.name}`
+            `${appName}_View_${this.name}`,
          );
          // knex does not like .(dot) in table and column names
          // https://github.com/knex/knex/issues/2762
@@ -167,7 +166,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                         joinAlias,
                         baseClause,
                         "=",
-                        connectedClause
+                        connectedClause,
                      );
                   } else {
                      // 1:1 NOT .isSource
@@ -191,7 +190,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                         joinAlias,
                         baseClause,
                         "=",
-                        connectedClause
+                        connectedClause,
                      );
                   }
                   break;
@@ -220,7 +219,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                         joinAlias,
                         baseClause,
                         "=",
-                        connectedClause
+                        connectedClause,
                      );
                   } else {
                      // TODO: alias name M:N
@@ -268,7 +267,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                         connectedAlias,
                         baseClause,
                         "=",
-                        joinClause
+                        joinClause,
                      );
 
                      //// Now connect connectedObject
@@ -304,7 +303,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                         joinAlias,
                         connectedClause,
                         "=",
-                        joinClause
+                        joinClause,
                      );
                   }
                   break;
@@ -507,7 +506,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
             if (!objLink) {
                var errObj = this.AB.toError(
                   `!!! connected.field[${f.id}] did not have an objLink`,
-                  f.toObj()
+                  f.toObj(),
                );
                if (req) {
                   req.log(errObj);
@@ -604,7 +603,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                            /{linkColumnName}/g,
                            fieldIndex
                               ? fieldIndex.columnName
-                              : fieldLink.columnName
+                              : fieldLink.columnName,
                         )
                         .replace(/{columnName}/g, objLink.PK());
                   }
@@ -637,7 +636,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
          // Aggregate fields
          else if (f.key == "formula") {
             let fieldConnect = f.object.fields(
-               (fld) => fld.id == f.settings.field
+               (fld) => fld.id == f.settings.field,
             )[0];
             if (!fieldConnect) return;
 
@@ -647,7 +646,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
             if (!objectNumber) return;
 
             let fieldNumber = objectNumber.fields(
-               (fld) => fld.id == f.settings.fieldLink
+               (fld) => fld.id == f.settings.fieldLink,
             )[0];
             if (!fieldNumber) return;
 
@@ -686,13 +685,13 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                   .replace("{column}", fieldConnect.columnName)
                   .replace(
                      "{linkTable}",
-                     quoteMe(objectNumber.dbTableName(true))
+                     quoteMe(objectNumber.dbTableName(true)),
                   )
                   .replace(
                      "{linkId}",
                      fieldCustomIndex
                         ? fieldCustomIndex.columnName
-                        : objectNumber.PK()
+                        : objectNumber.PK(),
                   );
             }
 
@@ -705,14 +704,14 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                   !fieldConnect.settings.isSource)
             ) {
                let connectedField = objectNumber.fields(
-                  (fld) => fld.id == fieldConnect.settings.linkColumn
+                  (fld) => fld.id == fieldConnect.settings.linkColumn,
                )[0];
                if (!connectedField) return;
 
                whereClause = "{linkTable}.`{linkColumn}` = {table}.`{id}`"
                   .replace(
                      "{linkTable}",
-                     quoteMe(objectNumber.dbTableName(true))
+                     quoteMe(objectNumber.dbTableName(true)),
                   )
                   .replace("{linkColumn}", connectedField.columnName)
                   .replace("{table}", f.dbPrefix())
@@ -720,7 +719,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                      "{id}",
                      fieldCustomIndex
                         ? fieldCustomIndex.columnName
-                        : f.object.PK()
+                        : f.object.PK(),
                   );
             }
 
@@ -738,7 +737,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                      .replace(/{linkObjectName}/g, objectNumber.name)
                      .replace(
                         /{linkTable}/g,
-                        quoteMe(objectNumber.dbTableName(true))
+                        quoteMe(objectNumber.dbTableName(true)),
                      )
                      .replace(/{linkColumn}/g, objectNumber.PK());
 
@@ -750,7 +749,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
                      .replace(/{id}/g, fieldConnect.object.PK())
                      .replace(
                         /{linkTable}/g,
-                        quoteMe(objectNumber.dbTableName(true))
+                        quoteMe(objectNumber.dbTableName(true)),
                      )
                      .replace(/{column}/g, fieldNumber.columnName);
             }
@@ -822,7 +821,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
 
             queryCommand += "'{colName}', `{colName}`".replace(
                /{colName}/g,
-               transCol
+               transCol,
             );
          });
 
@@ -865,7 +864,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
          selects.push(
             "#alias#.#pk# AS #alias#.#pk#"
                .replace(/#alias#/g, alias || fromBaseTable)
-               .replace(/#pk#/g, object.PK())
+               .replace(/#pk#/g, object.PK()),
          );
       });
 
@@ -1202,7 +1201,7 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
       return errors;
    }
 
-   selectFormulaFields(query) {
+   selectFormulaFields(/* _query */) {
       // Query does not need to generate formula field.
       // It should be created in CREATE VIEW command
    }
@@ -1212,4 +1211,4 @@ module.exports = class ABClassQuery extends ABObjectQueryCore {
 
       return condition;
    }
-};
+}

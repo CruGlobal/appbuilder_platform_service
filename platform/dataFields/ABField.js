@@ -1,20 +1,14 @@
+import _ from "lodash";
+import ABFieldCore from "../../core/dataFields/ABFieldCore.js";
+
 /*
  * ABField
  *
  * An ABField defines a single unique Field/Column in a ABObject.
  *
  */
-var _ = require("lodash");
-var path = require("path");
 
-// prettier-ignore
-var ABFieldCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldCore.js"));
-
-// function L(key, altText) {
-//    return altText; // AD.lang.label.getLabel(key) || altText;
-// }
-
-module.exports = class ABField extends ABFieldCore {
+export default class ABField extends ABFieldCore {
    constructor(values, object, fieldDefaults) {
       super(values, object, fieldDefaults);
 
@@ -107,7 +101,7 @@ module.exports = class ABField extends ABFieldCore {
     */
    migrateCreate(req /*, knex */) {
       var error = new Error(
-         `!!! Field [${this.fieldKey()}] has not implemented migrateCreate()!!! `
+         `!!! Field [${this.fieldKey()}] has not implemented migrateCreate()!!! `,
       );
       req.logError(error);
       return Promise.reject(error);
@@ -124,7 +118,7 @@ module.exports = class ABField extends ABFieldCore {
     */
    migrateUpdate(req /* , knex */) {
       var error = new Error(
-         `!!! Field [${this.fieldKey()}] has not implemented migrateUpdate()!!! `
+         `!!! Field [${this.fieldKey()}] has not implemented migrateUpdate()!!! `,
       );
       req.logError(error);
 
@@ -201,7 +195,7 @@ module.exports = class ABField extends ABFieldCore {
                         })
                         .then(() => next(isColumnExists))
                         .catch((/* error */) => next(isColumnExists));
-                  })
+                  }),
             )
 
             // drop the column
@@ -225,7 +219,7 @@ module.exports = class ABField extends ABFieldCore {
                               err(error);
                            }
                         });
-                  })
+                  }),
             )
 
             // Update queries who include the removed column
@@ -235,7 +229,7 @@ module.exports = class ABField extends ABFieldCore {
 
                   let queries = this.AB.queries(
                      (obj) =>
-                        obj && obj.canFilterField && obj.canFilterField(this)
+                        obj && obj.canFilterField && obj.canFilterField(this),
                   );
                   (queries || []).forEach((q) => {
                      // Remove the field from query
@@ -272,7 +266,7 @@ module.exports = class ABField extends ABFieldCore {
       console.error(
          "!!! Field [" +
             this.fieldKey() +
-            "] has not implemented jsonSchemaProperties()!!! "
+            "] has not implemented jsonSchemaProperties()!!! ",
       );
    }
 
@@ -320,7 +314,7 @@ module.exports = class ABField extends ABFieldCore {
       console.error(
          "!!! Field [" +
             this.fieldKey() +
-            "] has not implemented .isValidData()!!!"
+            "] has not implemented .isValidData()!!!",
       );
       return errors;
    }
@@ -345,4 +339,4 @@ module.exports = class ABField extends ABFieldCore {
    conditionKey() {
       return `${this.dbPrefix()}.\`${this.columnName}\``;
    }
-};
+}

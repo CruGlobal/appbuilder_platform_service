@@ -1,3 +1,6 @@
+import { v4 as uuidv4 } from "uuid";
+import queryDefinitionFind from "./definitionFind.js";
+
 /**
  * definitionCreate.js
  * insert a value into the appbuilder_definition table.
@@ -11,10 +14,7 @@
  * @return {Promise}
  *        resolve(): full {value} of the newly created entry
  */
-const uuidv4 = require("uuid");
-const queryDefinitionFind = require("./definitionFind");
-
-module.exports = function (AB, req, values, options = {}) {
+export default function definitionCreate(AB, req, values, options = {}) {
    return new Promise((resolve, reject) => {
       let tenantDB = req.queryTenantDB(reject);
       if (!tenantDB) {
@@ -74,4 +74,4 @@ module.exports = function (AB, req, values, options = {}) {
          }
       });
    });
-};
+}

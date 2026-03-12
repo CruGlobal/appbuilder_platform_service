@@ -1,3 +1,5 @@
+import ABQLRootObjectCore from "../../core/ql/ABQLRootObjectCore.js";
+
 /*
  * ABQLRootObject
  *
@@ -7,8 +9,6 @@
  *
  *
  */
-
-const ABQLRootObjectCore = require("../../core/ql/ABQLRootObjectCore.js");
 
 class ABQLObject extends ABQLRootObjectCore {
    // constructor(attributes, task, AB) {
@@ -57,4 +57,4 @@ class ABQLObject extends ABQLRootObjectCore {
    }
 }
 
-module.exports = ABQLObject;
+export default ABQLObject;

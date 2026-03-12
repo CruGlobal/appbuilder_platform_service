@@ -1,6 +1,6 @@
-const CalculateTaskCore = require("../../../core/process/tasks/ABProcessTaskServiceCalculateCore.js");
+import CalculateTaskCore from "../../../core/process/tasks/ABProcessTaskServiceCalculateCore.js";
 
-module.exports = class CalculateTask extends CalculateTaskCore {
+export default class CalculateTask extends CalculateTaskCore {
    /**
     * @method do()
     * this method actually performs the action for this task.
@@ -55,4 +55,4 @@ module.exports = class CalculateTask extends CalculateTaskCore {
 
       return eval(formula);
    }
-};
+}

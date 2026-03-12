@@ -4,11 +4,10 @@
  * An ABFieldBoolean defines a Date field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldEmailCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldEmailCore.js"));
+import ABFieldEmailCore from "../../core/dataFields/ABFieldEmailCore.js";
 
-module.exports = class ABFieldEmail extends ABFieldEmailCore {
+export default class ABFieldEmail extends ABFieldEmailCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -81,7 +80,7 @@ module.exports = class ABFieldEmail extends ABFieldEmailCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -145,7 +144,8 @@ module.exports = class ABFieldEmail extends ABFieldEmailCore {
       var errors = [];
 
       if (allParameters[this.columnName]) {
-         var Reg = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+         var Reg =
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
          var value = allParameters[this.columnName];
          value = String(value).toLowerCase();
@@ -160,4 +160,4 @@ module.exports = class ABFieldEmail extends ABFieldEmailCore {
 
       return errors;
    }
-};
+}

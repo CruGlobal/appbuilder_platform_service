@@ -1,6 +1,6 @@
-const InsertRecordTaskCore = require("../../../core/process/tasks/ABProcessTaskServiceInsertRecordCore.js");
+import InsertRecordTaskCore from "../../../core/process/tasks/ABProcessTaskServiceInsertRecordCore.js";
 
-module.exports = class InsertRecord extends InsertRecordTaskCore {
+export default class InsertRecord extends InsertRecordTaskCore {
    ////
    //// Process Instance Methods
    ////
@@ -516,4 +516,4 @@ module.exports = class InsertRecord extends InsertRecordTaskCore {
       });
       return result;
    }
-};
+}

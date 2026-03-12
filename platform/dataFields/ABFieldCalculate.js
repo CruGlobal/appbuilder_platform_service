@@ -4,11 +4,10 @@
  * An ABFieldCalculate defines a Date field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldCalculateCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldCalculateCore.js"));
+import ABFieldCalculateCore from "../../core/dataFields/ABFieldCalculateCore.js";
 
-module.exports = class ABFieldCalculate extends ABFieldCalculateCore {
+export default class ABFieldCalculate extends ABFieldCalculateCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -171,7 +170,7 @@ module.exports = class ABFieldCalculate extends ABFieldCalculateCore {
       if (invalidParts.length > 0) {
          req.notify.builder(
             `ABFieldCalculate.conditionKey(): Unsupported methods in calucate field ${this.name}. Filter will not work correctly.`,
-            { calculateField: this, invalidParts }
+            { calculateField: this, invalidParts },
          );
       }
       // replace `{columnName}` with the field.conditionKey()
@@ -192,7 +191,7 @@ module.exports = class ABFieldCalculate extends ABFieldCalculateCore {
             default:
                req.notify.builder(
                   `ABFieldCalculate.conditionKey(): Unexpected field "${formulaField.name}" in calucate field ${this.name} formula`,
-                  { calculateField: this, formulaField }
+                  { calculateField: this, formulaField },
                );
                return 0;
          }
@@ -243,4 +242,4 @@ module.exports = class ABFieldCalculate extends ABFieldCalculateCore {
       }
       return { result, i };
    }
-};
+}

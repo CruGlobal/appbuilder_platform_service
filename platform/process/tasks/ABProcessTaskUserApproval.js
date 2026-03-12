@@ -1,10 +1,4 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-
-const path = require("path");
-// prettier-ignore
-const ABProcessTaskUserApprovalCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskUserApprovalCore.js"));
-
+import ABProcessTaskUserApprovalCore from "../../../core/process/tasks/ABProcessTaskUserApprovalCore.js";
 /**
  * @function parseEntryKeys()
  * Step through an array of formbuilder.io form entry descriptions
@@ -115,9 +109,7 @@ function parseEntryArrayFields(entry) {
    return Object.keys(fieldHash);
 }
 
-module.exports = class ABProcessTaskUserApproval extends (
-   ABProcessTaskUserApprovalCore
-) {
+export default class ABProcessTaskUserApproval extends ABProcessTaskUserApprovalCore {
    ////
    //// Process Instance Methods
    ////
@@ -378,4 +370,4 @@ module.exports = class ABProcessTaskUserApproval extends (
          );
       });
    }
-};
+}

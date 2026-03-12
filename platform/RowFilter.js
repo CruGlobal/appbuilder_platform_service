@@ -1,3 +1,3 @@
-const RowFilterCore = require("../core/RowFilterCore");
+import RowFilterCore from "../core/RowFilterCore.js";
 
-module.exports = class RowFilter extends RowFilterCore {};
+export default class RowFilter extends RowFilterCore {}

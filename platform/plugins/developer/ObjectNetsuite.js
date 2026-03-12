@@ -1,6 +1,6 @@
-const FNABModelNetsuiteAPI = require("./ModelNetsuite.js");
+import FNABModelNetsuiteAPI from "./ModelNetsuite.js";
 
-module.exports = function FNObjectNetsuite({
+export default function FNObjectNetsuite({
    /*AB,*/ ABObjectPlugin,
    ABModelPlugin,
 }) {
@@ -88,4 +88,4 @@ module.exports = function FNObjectNetsuite({
          return Promise.resolve();
       }
    };
-};
+}

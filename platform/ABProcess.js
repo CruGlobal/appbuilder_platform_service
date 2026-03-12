@@ -1,18 +1,12 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-const ABProcessCore = require("../core/ABProcessCore.js");
+import ABProcessCore from "../core/ABProcessCore.js";
+import ABProcessEngine from "./process/ABProcessEngine.js";
+import async from "async";
+import hash from "object-hash";
+import convert from "xml-js";
 
-const ABProcessEngine = require("./process/ABProcessEngine");
-
-const async = require("async");
-const hash = require("object-hash");
-const convert = require("xml-js");
-
-module.exports = class ABProcess extends ABProcessCore {
+export default class ABProcess extends ABProcessCore {
    constructor(attributes, AB) {
       super(attributes, AB);
-
-      // listen
    }
 
    ///
@@ -447,4 +441,4 @@ module.exports = class ABProcess extends ABProcessCore {
          }).length == 0;
       return isValid;
    }
-};
+}

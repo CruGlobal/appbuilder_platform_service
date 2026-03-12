@@ -1,8 +1,6 @@
-const ABMobileViewFormTextboxCore = require("../../core/mobile/ABMobileViewFormTextboxCore");
+import ABMobileViewFormTextboxCore from "../../core/mobile/ABMobileViewFormTextboxCore.js";
 
-module.exports = class ABMobileViewFormTextbox extends (
-   ABMobileViewFormTextboxCore
-) {
+export default class ABMobileViewFormTextbox extends ABMobileViewFormTextboxCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormTextbox extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

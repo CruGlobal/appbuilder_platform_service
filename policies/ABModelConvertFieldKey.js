@@ -1,4 +1,4 @@
-module.exports = function (req, res, next) {
+export default function (req, res, next) {
    var where = req.options._where;
 
    if (
@@ -48,13 +48,14 @@ module.exports = function (req, res, next) {
 
                      tranColName = tranColName.replace(
                         /{tableName}/g,
-                        field.object.dbTableName(true)
+                        field.object.dbTableName(true),
                      );
 
-                     r.key = 'JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT({tranColName}, SUBSTRING(JSON_UNQUOTE(JSON_SEARCH({tranColName}, "one", "{languageCode}")), 1, 4)), \'$."{columnName}"\'))'
-                        .replace(/{tranColName}/g, tranColName)
-                        .replace(/{languageCode}/g, userData.languageCode)
-                        .replace(/{columnName}/g, field.columnName);
+                     r.key =
+                        'JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT({tranColName}, SUBSTRING(JSON_UNQUOTE(JSON_SEARCH({tranColName}, "one", "{languageCode}")), 1, 4)), \'$."{columnName}"\'))'
+                           .replace(/{tranColName}/g, tranColName)
+                           .replace(/{languageCode}/g, userData.languageCode)
+                           .replace(/{columnName}/g, field.columnName);
                   }
 
                   // if this is from a LIST, then make sure our value is the .ID
@@ -67,7 +68,7 @@ module.exports = function (req, res, next) {
                      // NOTE: Should get 'id' or 'text' from client ??
                      var inputID = field.settings.options.filter(
                         (option) =>
-                           option.id == r.value || option.text == r.value
+                           option.id == r.value || option.text == r.value,
                      )[0];
                      if (inputID) r.value = inputID.id;
                   }
@@ -77,4 +78,4 @@ module.exports = function (req, res, next) {
          next();
       })
       .catch(next);
-};
+}

@@ -1,3 +1,5 @@
+import ABQLRowSaveCore from "../../core/ql/ABQLRowSaveCore.js";
+
 /*
  * ABQLRowSave
  *
@@ -5,8 +7,6 @@
  * in, so that this data can be made available to other Process Tasks.
  *
  */
-
-const ABQLRowSaveCore = require("../../core/ql/ABQLRowSaveCore.js");
 
 class ABQLRowSave extends ABQLRowSaveCore {
    // constructor(attributes, prevOP, task, application) {
@@ -73,4 +73,4 @@ class ABQLRowSave extends ABQLRowSaveCore {
    }
 }
 
-module.exports = ABQLRowSave;
+export default ABQLRowSave;

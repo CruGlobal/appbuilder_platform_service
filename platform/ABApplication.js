@@ -1,11 +1,12 @@
-const _ = require("lodash");
-const path = require("path");
+import _ from "lodash";
+// import path from "path";
+
 // prettier-ignore
-const ABApplicationCore = require(path.join(__dirname, "..", "core", "ABApplicationCore.js"));
+import ABApplicationCore from "../core/ABApplicationCore.js";
 
-const ABView = require(path.join(__dirname, "views", "ABView"));
+import ABView from "./views/ABView.js";
 
-module.exports = class ABClassApplication extends ABApplicationCore {
+export default class ABClassApplication extends ABApplicationCore {
    static applications(/*fn = () => true*/) {
       console.error(
          "ABApplication.applicationForID(): Depreciated. Who is doing this?",
@@ -284,4 +285,4 @@ module.exports = class ABClassApplication extends ABApplicationCore {
    // mobileAppNew(values) {
    //    return new ABMobileApp(values, this);
    // }
-};
+}

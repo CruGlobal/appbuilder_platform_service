@@ -1,5 +1,5 @@
-const ABObjectPlugin = require("./plugins/ABObjectPlugin.js");
-const ABModelPlugin = require("./plugins/ABModelPlugin.js");
+import ABObjectPlugin from "./plugins/ABObjectPlugin.js";
+import ABModelPlugin from "./plugins/ABModelPlugin.js";
 
 // import { ABObjectPlugin } from './plugins/ABObjectPlugin.js';
 // import { ABObjectPropertiesPlugin } from './plugins/ABObjectPropertiesPlugin.js';
@@ -75,7 +75,7 @@ function pluginRegister(pluginClass) {
 ///
 /// For development
 ///
-let devPlugins = []; // [require("./plugins/developer/ObjectNetsuite.js")];
+let devPlugins = []; // [Import_ObjectNetsuite];
 
 function registerLocalPlugins(API) {
    let { registerObjectType } = API;
@@ -85,7 +85,7 @@ function registerLocalPlugins(API) {
    });
 }
 
-module.exports = {
+export default {
    getPluginAPI,
    createObject,
    // createField,

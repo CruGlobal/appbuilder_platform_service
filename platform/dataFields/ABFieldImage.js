@@ -4,11 +4,10 @@
  * An ABFieldImage defines a Image field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldImageCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldImageCore.js"));
+import ABFieldImageCore from "../../core/dataFields/ABFieldImageCore.js";
 
-module.exports = class ABFieldImage extends ABFieldImageCore {
+export default class ABFieldImage extends ABFieldImageCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -68,7 +67,7 @@ module.exports = class ABFieldImage extends ABFieldImageCore {
                            } else {
                               t.string(this.columnName).nullable();
                            }
-                        })
+                        }),
                      )
                      .then(resolve)
                      .catch(reject);
@@ -96,7 +95,7 @@ module.exports = class ABFieldImage extends ABFieldImageCore {
       return new Promise((resolve, reject) => {
          req.notify.developer(
             "!!! TODO: pay attention to the .removeExistingData setting !!!",
-            { field: this }
+            { field: this },
          );
          super.migrateDrop(req, knex).then(resolve).catch(reject);
 
@@ -152,4 +151,4 @@ module.exports = class ABFieldImage extends ABFieldImageCore {
          obj[this.columnName] = { type: ["null", "string"] };
       }
    }
-};
+}

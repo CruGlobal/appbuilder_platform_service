@@ -1,8 +1,6 @@
-const ABMobileViewFormReadonlyCore = require("../../core/mobile/ABMobileViewFormReadonlyCore");
+import ABMobileViewFormReadonlyCore from "../../core/mobile/ABMobileViewFormReadonlyCore.js";
 
-module.exports = class ABMobileViewFormReadonly extends (
-   ABMobileViewFormReadonlyCore
-) {
+export default class ABMobileViewFormReadonly extends ABMobileViewFormReadonlyCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormReadonly extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

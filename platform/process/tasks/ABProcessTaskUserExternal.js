@@ -1,11 +1,7 @@
-const ejs = require("ejs");
-const path = require("path");
-// prettier-ignore
-const ABProcessTaskUserExternalCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskUserExternalCore.js"));
+import ejs from "ejs";
 
-module.exports = class ABProcessTaskUserExternal extends (
-   ABProcessTaskUserExternalCore
-) {
+import ABProcessTaskUserExternalCore from "../../../core/process/tasks/ABProcessTaskUserExternalCore.js";
+export default class ABProcessTaskUserExternal extends ABProcessTaskUserExternalCore {
    ////
    //// Process Instance Methods
    ////
@@ -195,4 +191,4 @@ module.exports = class ABProcessTaskUserExternal extends (
 
       return myState[parts[1]];
    }
-};
+}

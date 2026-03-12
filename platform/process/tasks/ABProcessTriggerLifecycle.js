@@ -1,10 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessTriggerLifecycleCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTriggerLifecycleCore.js"));
+import ABProcessTriggerLifecycleCore from "../../../core/process/tasks/ABProcessTriggerLifecycleCore.js";
 
-module.exports = class ABProcessTaskTriggerLifecycle extends (
-   ABProcessTriggerLifecycleCore
-) {
+export default class ABProcessTaskTriggerLifecycle extends ABProcessTriggerLifecycleCore {
    // trigger(data) {
    //     // call my process.newInstance with
    //     if (!this.process) {
@@ -60,4 +56,4 @@ module.exports = class ABProcessTaskTriggerLifecycle extends (
          }
       }
    }
-};
+}
