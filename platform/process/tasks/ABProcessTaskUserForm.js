@@ -85,6 +85,31 @@ function parseEntryArrays(entries, data) {
    parseEntryArrays(entries, data);
 }
 
+/**
+ * @function parseEntryArrayFields()
+ * Step through the current formBuilder.io definition and find which
+ * fields are referenced in it's description.
+ * @param {array} entries
+ *        The .formBuilder description of the fields being displayed
+ *        on the form.
+ * @param {json} data
+ *        The processData that we need to pair down.
+ */
+function parseEntryArrayFields(entry) {
+   let fieldHash = {};
+   try {
+      let allMatches = [
+         ...JSON.stringify(entry).matchAll(/row\['([a-zA-Z_.0-9 ]+)'\]/g),
+      ];
+      allMatches.forEach((match) => {
+         fieldHash[match[1]] = match;
+      });
+   } catch (e) {
+      console.error(e);
+   }
+   return Object.keys(fieldHash);
+}
+
 export default class ABProcessTaskUserForm extends ABProcessTaskUserFormCore {
    ////
    //// Process Instance Methods
