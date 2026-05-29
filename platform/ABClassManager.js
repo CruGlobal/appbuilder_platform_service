@@ -1,38 +1,66 @@
 import ABObjectPlugin from "./plugins/ABObjectPlugin.js";
 import ABModelPlugin from "./plugins/ABModelPlugin.js";
-
-// import { ABObjectPlugin } from './plugins/ABObjectPlugin.js';
-// import { ABObjectPropertiesPlugin } from './plugins/ABObjectPropertiesPlugin.js';
-// import { ABFieldPlugin } from './ABFieldPlugin.js';
-// import { ABViewPlugin } from './ABViewPlugin.js';
+import * as webStubs from "./plugins/stubs/web/index.js";
+const viewStubSets = {
+   web: webStubs,
+};
 
 const classRegistry = {
    ObjectTypes: new Map(),
    ObjectPropertiesTypes: new Map(),
    FieldTypes: new Map(),
+   // platform -> Map(pluginKey -> ViewClass)
    ViewTypes: new Map(),
+   ViewPropertiesTypes: new Map(),
+   ViewEditorTypes: new Map(),
 };
 
-function getPluginAPI() {
-   return {
-      ABObjectPlugin,
-      ABModelPlugin,
-      // ABObjectPropertiesPlugin,
-      //  ABFieldPlugin,
-      //  ABViewPlugin,
-      registerObjectType: (name, ctor) =>
-         classRegistry.ObjectTypes.set(name, ctor),
-      // registerObjectPropertyType: (name, ctor) => classRegistry.ObjectPropertiesTypes.set(name, ctor),
-      //  registerFieldType: (name, ctor) => classRegistry.FieldTypes.set(name, ctor),
-      //  registerViewType: (name, ctor) => classRegistry.ViewTypes.set(name, ctor),
-   };
+function registerObjectTypes(name, ctor) {
+   classRegistry.ObjectTypes.set(name, ctor);
 }
 
-// export function createField(type, config) {
-//   const FieldClass = classRegistry.FieldTypes.get(type);
-//   if (!FieldClass) throw new Error(`Unknown object type: ${type}`);
-//   return new FieldClass(config);
-// }
+function registerObjectPropertiesTypes(name, ctor) {
+   classRegistry.ObjectPropertiesTypes.set(name, ctor);
+}
+
+function registerViewType(platform, key, ctor) {
+   if (!classRegistry.ViewTypes.has(platform)) {
+      classRegistry.ViewTypes.set(platform, new Map());
+   }
+   classRegistry.ViewTypes.get(platform).set(key, ctor);
+}
+
+function registerViewPropertiesTypes(name, ctor) {
+   classRegistry.ViewPropertiesTypes.set(name, ctor);
+}
+
+function registerViewEditorTypes(name, ctor) {
+   classRegistry.ViewEditorTypes.set(name, ctor);
+}
+
+/**
+ * @method getPluginAPI(platform)
+ * Stubs and bases provided to plugin factory functions.
+ * @param {string} platform  e.g. "web", "pwa"
+ * @returns {Object}
+ */
+function getPluginAPI(platform = "web") {
+   const base = {
+      ABObjectPlugin,
+      ABModelPlugin,
+   };
+   const stubs = viewStubSets[platform];
+   if (!stubs) {
+      // service and other non-view platforms (object plugins only)
+      return base;
+   }
+   return {
+      ABUIPlugin: stubs.ABUIPlugin,
+      ABViewPlugin: stubs.ABViewPlugin,
+      ABViewComponentPlugin: stubs.ABViewComponentPlugin,
+      ...base,
+   };
+}
 
 function createObject(key, config, AB) {
    const ObjectClass = classRegistry.ObjectTypes.get(key);
@@ -40,58 +68,111 @@ function createObject(key, config, AB) {
    return new ObjectClass(config, AB);
 }
 
-// export function createObjectProperty(key, config) {
-//    const ObjectClass = classRegistry.ObjectPropertiesTypes.get(key);
-//    if (!ObjectClass) throw new Error(`Unknown object type: ${key}`);
-//    return new ObjectClass(config);
-//  }
+function createPropertiesObject(key, config, AB) {
+   const ObjectClass = classRegistry.ObjectPropertiesTypes.get(key);
+   if (!ObjectClass) throw new Error(`Unknown object type: ${key}`);
+   return new ObjectClass(config, AB);
+}
 
-// export function createView(type, config) {
-//   const ViewClass = classRegistry.ViewTypes.get(type);
-//   if (!ViewClass) throw new Error(`Unknown object type: ${type}`);
-//   return new ViewClass(config);
-// }
+function allObjectProperties() {
+   return Array.from(classRegistry.ObjectPropertiesTypes.values());
+}
 
-function pluginRegister(pluginClass) {
+function viewClass(platform, key) {
+   const ViewClass = classRegistry.ViewTypes.get(platform)?.get(key);
+   if (!ViewClass) {
+      throw new Error(`Unknown View type: ${key} for platform: ${platform}`);
+   }
+   return ViewClass;
+}
+
+function viewCreate(platform, key, config, application, parent) {
+   const ViewClass = classRegistry.ViewTypes.get(platform)?.get(key);
+   if (!ViewClass) {
+      throw new Error(`Unknown View type: ${key} for platform: ${platform}`);
+   }
+   return new ViewClass(config, application, parent);
+}
+
+function viewAll(platform, fn = () => true) {
+   const byPlatform = classRegistry.ViewTypes.get(platform);
+   if (!byPlatform) return [];
+   return Array.from(byPlatform.values()).filter(fn);
+}
+
+function viewKeys(platform) {
+   const byPlatform = classRegistry.ViewTypes.get(platform);
+   if (!byPlatform) return [];
+   return [...byPlatform.keys()];
+}
+
+function viewPropertiesAll(fn = () => true) {
+   return Array.from(classRegistry.ViewPropertiesTypes.values()).filter(fn);
+}
+
+function viewEditorCreate(key, view, base, ids) {
+   const EditorClass = classRegistry.ViewEditorTypes.get(key);
+   if (!EditorClass) throw new Error(`Unknown View Editor type: ${key}`);
+   return new EditorClass(view, base, ids);
+}
+
+function viewEditorAll(fn = () => true) {
+   return Array.from(classRegistry.ViewEditorTypes.values()).filter(fn);
+}
+
+function pluginRegister(pluginClass, platform = "web") {
    let type = pluginClass.getPluginType();
+   const pluginPlatform =
+      platform || pluginClass.getPluginPlatform?.() || "web";
+
    switch (type) {
       case "object":
-         // eslint-disable-next-line no-case-declarations
-         let { registerObjectType } = getPluginAPI();
-         registerObjectType(pluginClass.getPluginKey(), pluginClass);
+         registerObjectTypes(pluginClass.getPluginKey(), pluginClass);
          break;
-      // case "objectProperty":
-      //    break;
-      // case "field":
-      //    break;
-      // case "view":
-      //    break;
+      case "properties-object":
+         registerObjectPropertiesTypes(pluginClass.getPluginKey(), pluginClass);
+         break;
+      case "view":
+         registerViewType(
+            pluginPlatform,
+            pluginClass.getPluginKey(),
+            pluginClass,
+         );
+         break;
+      case "properties-view":
+         registerViewPropertiesTypes(pluginClass.getPluginKey(), pluginClass);
+         break;
+      case "editor-view":
+         registerViewEditorTypes(pluginClass.getPluginKey(), pluginClass);
+         break;
       default:
          throw new Error(
             `ABClassManager.pluginRegister():: Unknown plugin type: ${type}`,
          );
    }
 }
-///
-/// For development
-///
-let devPlugins = []; // [Import_ObjectNetsuite];
+
+let devPlugins = [];
 
 function registerLocalPlugins(API) {
-   let { registerObjectType } = API;
    devPlugins.forEach((p) => {
       let pluginClass = p(API);
-      registerObjectType(pluginClass.getPluginKey(), pluginClass);
+      pluginRegister(pluginClass, API.platform ?? "web");
    });
 }
 
 export default {
    getPluginAPI,
    createObject,
-   // createField,
-   // createObjectProperty,
-   // createView,
-   // classRegistry, // Expose the registry for testing or introspection
+   createPropertiesObject,
+   allObjectProperties,
+   viewClass,
+   viewCreate,
+   viewAll,
+   viewKeys,
+   viewPropertiesAll,
+   viewEditorCreate,
+   viewEditorAll,
    registerLocalPlugins,
    pluginRegister,
 };

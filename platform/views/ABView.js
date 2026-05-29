@@ -4,29 +4,25 @@
 import ABViewCore from "../../core/views/ABViewCore.js";
 
 export default class ABView extends ABViewCore {
-   constructor(attributes, application, parent) {
-      super(attributes, application, parent);
-
-      this.fromValues(attributes);
-   }
-
+   // constructor(attributes, application, parent) {
+   //    super(attributes, application, parent);
+   //    this.fromValues(attributes);
+   // }
    /**
     * @method fromValues()
     *
     * initialze this object with the given set of values.
     * @param {obj} values
     */
-   fromValues(values) {
-      super.fromValues(values);
-
-      // now properly handle our sub pages.
-      let pages = [];
-      (values.pages || []).forEach((child) => {
-         pages.push(this.viewNew(child));
-      });
-      this._pages = pages;
-   }
-
+   // fromValues(values) {
+   //    super.fromValues(values);
+   //    // now properly handle our sub pages.
+   //    let pages = [];
+   //    (values.pages || []).forEach((child) => {
+   //       pages.push(this.viewNew(child));
+   //    });
+   //    this._pages = pages;
+   // }
    /**
     * @method toObj()
     *
@@ -35,28 +31,22 @@ export default class ABView extends ABViewCore {
     *
     * @return {json}
     */
-   toObj() {
-      let result = super.toObj();
-
-      // compile our pages
-      let pages = [];
-      if (this._pages && this._pages.forEach) {
-         this._pages.forEach((page) => {
-            pages.push(page.toObj());
-         });
-      }
-      result.pages = pages;
-
-      return result;
-   }
-
+   // toObj() {
+   //    let result = super.toObj();
+   //    // Root / nested pages persist as `pageIDs` on page definitions (matches ABViewPageCore).
+   //    if (this.key === "page" && this._pages && this._pages.length) {
+   //       result.pageIDs = this._pages.map((p) => p.id).filter((id) => id);
+   //    }
+   //    delete result.pages;
+   //    return result;
+   // }
    /**
     * @method viewNew()
     *
     *
     * @return {ABView}
     */
-   viewNew(values) {
-      return new ABView(values, this.application, this);
-   }
+   // viewNew(values) {
+   //    return new ABView(values, this.application, this);
+   // }
 }
