@@ -1,3 +1,5 @@
+import ABQLFindCore from "../../core/ql/ABQLFindCore.js";
+
 /*
  * ABQLFind
  *
@@ -5,8 +7,6 @@
  * and can perform a DB query based upon that BASE object.
  *
  */
-const ABQLFindCore = require("../../core/ql/ABQLFindCore.js");
-
 class ABQLFind extends ABQLFindCore {
    // constructor(attributes, prevOP, task, AB) {
    //     super(attributes, ParameterDefinitions, prevOP, task, AB);
@@ -66,7 +66,7 @@ class ABQLFind extends ABQLFindCore {
             }
             var reducedCondition = this.conditionReduce(cond, instance);
             req.retry(() =>
-               context.object.model().findAll(reducedCondition, null, req)
+               context.object.model().findAll(reducedCondition, null, req),
             )
                .then((rows) => {
                   nextContext.data = rows;
@@ -132,7 +132,9 @@ class ABQLFind extends ABQLFindCore {
                   instance,
                   cond.value,
                ]);
-               newCond.value = newCond.value?.uuid ? newCond.value.uuid : newCond.value;
+               newCond.value = newCond.value?.uuid
+                  ? newCond.value.uuid
+                  : newCond.value;
                newCond.rule = cond.rule.split("context_")[1];
             }
          }
@@ -142,4 +144,4 @@ class ABQLFind extends ABQLFindCore {
    }
 }
 
-module.exports = ABQLFind;
+export default ABQLFind;

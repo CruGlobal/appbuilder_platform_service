@@ -1,12 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessGatewayExclusiveCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessGatewayExclusiveCore.js"));
+import ABProcessGatewayExclusiveCore from "../../../core/process/tasks/ABProcessGatewayExclusiveCore.js";
 
-const RowFilter = require(path.join(__dirname, "..", "..", "RowFilter.js"));
-
-module.exports = class ABProcessGatewayExclusive extends (
-   ABProcessGatewayExclusiveCore
-) {
+export default class ABProcessGatewayExclusive extends ABProcessGatewayExclusiveCore {
    ////
    //// Process Instance Methods
    ////
@@ -112,4 +106,4 @@ module.exports = class ABProcessGatewayExclusive extends (
       var nextTask = this.process.elementForDiagramID(connection.to);
       return [nextTask];
    }
-};
+}

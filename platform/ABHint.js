@@ -1,8 +1,9 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-const ABHintCore = require("../core/ABHintCore.js");
+import ABHintCore from "../core/ABHintCore.js";
+// import Import_ABApplication from "./ABApplication.js";
 
-module.exports = class ABHint extends ABHintCore {
+// import ABApplication from "./ABApplication"
+// const ABApplication = Import_ABApplication; // NOTE: change to require()
+export default class ABHint extends ABHintCore {
    constructor(attributes, AB) {
       super(attributes, AB);
 
@@ -117,4 +118,4 @@ module.exports = class ABHint extends ABHintCore {
       //    }).length == 0;
       // return isValid;
    }
-};
+}

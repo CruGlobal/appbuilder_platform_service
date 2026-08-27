@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import crypto from "crypto";
 
 // Encryption settings
 const CRYPTO_ALGORITHM = "aes-256-gcm";
@@ -45,11 +45,14 @@ class SecretManager {
          // seconds. So we'll cache it, but also schedule a cleanup in 5 mins.
          const cacheCleanup = `${cacheKey}_cleanup`;
          clearTimeout(this[cacheCleanup]);
-         this[cacheCleanup] = setTimeout(async () => {
-            await this[cacheKey];
-            delete this[cacheKey];
-            delete this[cacheCleanup];
-         }, 5 * 60 * 1000);
+         this[cacheCleanup] = setTimeout(
+            async () => {
+               await this[cacheKey];
+               delete this[cacheKey];
+               delete this[cacheCleanup];
+            },
+            5 * 60 * 1000,
+         );
       }
       return await this[cacheKey];
    }
@@ -137,7 +140,7 @@ class SecretManager {
       const cipher = crypto.createCipheriv(
          CRYPTO_ALGORITHM,
          Buffer.from(pk, "hex"),
-         iv
+         iv,
       );
       const encrypted = cipher.update(Buffer.from(value, "utf-8"));
       cipher.final();
@@ -160,7 +163,7 @@ class SecretManager {
       const decipher = crypto.createDecipheriv(
          CRYPTO_ALGORITHM,
          Buffer.from(pk, "hex"),
-         iv
+         iv,
       );
       decipher.setAuthTag(authTag);
       let decrypted = decipher.update(text);
@@ -169,4 +172,4 @@ class SecretManager {
    }
 }
 
-module.exports = SecretManager;
+export default SecretManager;

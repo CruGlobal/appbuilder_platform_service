@@ -1,3 +1,5 @@
+import queryDefinitionFind from "./definitionFind.js";
+
 /**
  * allDefinitions.js
  * returns all the {ABDefinition} rows in the appbuilder_definition
@@ -9,9 +11,7 @@
  *        resolve(): {array} [{value}, {value}...]
  */
 
-const queryDefinitionFind = require("./definitionFind");
-
-module.exports = function (req) {
+export default function allDefinitions(req) {
    return queryDefinitionFind(null, req, null);
    // sending null for the condition results in getting all the entries.
-};
+}

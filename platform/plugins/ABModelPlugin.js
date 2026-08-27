@@ -1,3 +1,3 @@
-const ABModel = require("../ABModel");
+import ABModel from "../ABModel.js";
 
-module.exports = class ABModelPlugin extends ABModel {};
+export default class ABModelPlugin extends ABModel {}

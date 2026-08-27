@@ -9,7 +9,7 @@
  *
  */
 
-module.exports = function (AB, where, object, userData, next, req) {
+export default function (AB, where, object, userData, next, req) {
    // Transition: AB, where, object, userConditions
 
    // our QB Conditions look like:
@@ -67,9 +67,9 @@ module.exports = function (AB, where, object, userData, next, req) {
       (err) => {
          next(err);
       },
-      req
+      req,
    );
-};
+}
 
 function findDcEntry(_where) {
    if (!_where) return null;
@@ -158,7 +158,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                parseColumn,
                objectColumn,
                cond.linkCond,
-               req
+               req,
             );
          } else {
             // this is a linkField IN QUERY filter:
@@ -210,7 +210,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                      parseColumn,
                      objectColumn,
                      cond.linkCond,
-                     req
+                     req,
                   );
                   break;
 
@@ -236,7 +236,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                      parseColumn,
                      objectColumn,
                      cond.linkCond,
-                     req
+                     req,
                   );
                   break;
 
@@ -314,7 +314,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                               cb(err);
                            });
                      },
-                     req
+                     req,
                   );
                   break;
             }
@@ -353,7 +353,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
             objectColumn,
             cond,
             done,
-            req
+            req,
          ) {
             let where = defDC.settings.objectWorkspace.filterConditions || {
                glue: "and",
@@ -379,8 +379,8 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                      sort: defDC.settings.objectWorkspace.sortFields || [],
                   },
                   userData,
-                  req
-               )
+                  req,
+               ),
             )
                .then((data) => {
                   // console.log(".... query data : ", data);
@@ -464,7 +464,7 @@ function parseQueryCondition(AB, _where, object, userData, cb, req) {
                      buildCondition(newKey, ids, req);
                   }
                },
-               req
+               req,
             );
          }
       });

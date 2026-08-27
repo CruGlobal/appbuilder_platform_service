@@ -1,15 +1,15 @@
+import moment from "moment";
+
 /*
  * ABFieldDateTime
  *
  * An ABFieldDateTime defines a Date & Time field type.
  *
  */
-const path = require("path");
-const moment = require("moment");
 // prettier-ignore
-const ABFieldDateTimeCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldDateTimeCore.js"));
+import ABFieldDateTimeCore from "../../core/dataFields/ABFieldDateTimeCore.js";
 
-module.exports = class ABFieldDateTime extends ABFieldDateTimeCore {
+export default class ABFieldDateTime extends ABFieldDateTimeCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -72,7 +72,7 @@ module.exports = class ABFieldDateTime extends ABFieldDateTimeCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -166,7 +166,7 @@ module.exports = class ABFieldDateTime extends ABFieldDateTimeCore {
       // convert to SQL date format
       else if (moment(myParameter[this.columnName]).isValid()) {
          myParameter[this.columnName] = this.AB.rules.toSQLDateTime(
-            myParameter[this.columnName]
+            myParameter[this.columnName],
          );
       }
 
@@ -211,7 +211,7 @@ module.exports = class ABFieldDateTime extends ABFieldDateTimeCore {
          console.log(
             `DEBUG: f[${this.label || this.name}][${
                this.id
-            }] defaultDateValue[${this.settings.defaultDateValue}]`
+            }] defaultDateValue[${this.settings.defaultDateValue}]`,
          );
          let defaultDate = moment(this.settings.defaultDateValue);
          if (defaultDate && defaultDate.isValid()) {
@@ -238,4 +238,4 @@ module.exports = class ABFieldDateTime extends ABFieldDateTimeCore {
 
       return this.AB.rules.toSQLDateTime(result);
    }
-};
+}

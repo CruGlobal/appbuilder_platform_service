@@ -1,15 +1,13 @@
+import _ from "lodash";
+import axios from "axios";
+import crypto from "crypto";
+import OAuth from "oauth-1.0a";
+import ABModel from "./ABModel.js";
+
 //
 // ABModelAPINetsuite
 //
 // Represents the Data interface for an ABObjectApiNetsuite object.
-
-const _ = require("lodash");
-const axios = require("axios");
-const crypto = require("crypto");
-// const moment = require("moment");
-const OAuth = require("oauth-1.0a");
-
-const ABModel = require("./ABModel.js");
 
 const CONCURRENCY_LIMIT = 20;
 // {int}
@@ -104,14 +102,14 @@ setInterval(() => {
             displayLog.push(
                `NetSuite API Concurrency: [${concurrency_history[key][
                   lastPendingCount
-               ].join(",")}] ${key}`
+               ].join(",")}] ${key}`,
             );
             return;
          } else {
             displayLog.push(
                `NetSuite API Concurrency: [${concurrency_history[key].join(
-                  ","
-               )}] ${key}`
+                  ",",
+               )}] ${key}`,
             );
          }
       }
@@ -146,7 +144,7 @@ function fetchPending() {
       packet.url,
       packet.method,
       packet.data,
-      packet.headers
+      packet.headers,
    );
 
    // register the request
@@ -200,7 +198,7 @@ function fetchConcurrent(
    url,
    method = "GET",
    data = null,
-   headers = {}
+   headers = {},
 ) {
    let p = new Promise((resolve, reject) => {
       concurrency_count++;
@@ -312,7 +310,7 @@ async function fetch(cred, url, method = "GET", data = null, headers = {}) {
    }
 }
 
-module.exports = class ABModelAPINetsuite extends ABModel {
+export default class ABModelAPINetsuite extends ABModel {
    constructor(object) {
       super(object);
 
@@ -371,13 +369,13 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                      if (field.alias) {
                         prefix = "{alias}_Trans".replace(
                            "{alias}",
-                           field.alias
+                           field.alias,
                         );
                      } else {
                         prefix = "{databaseName}.{tableName}"
                            .replace(
                               "{databaseName}",
-                              field.object.dbSchemaName()
+                              field.object.dbSchemaName(),
                            )
                            .replace("{tableName}", transTable);
                      }
@@ -398,11 +396,11 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                   } else {
                      req.notify.developer(
                         new Error(
-                           "running code to manage external multilingual Tables"
+                           "running code to manage external multilingual Tables",
                         ),
                         {
                            field,
-                        }
+                        },
                      );
                   }
                } else {
@@ -425,7 +423,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                         'JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT({transCol}, SUBSTRING(JSON_UNQUOTE(JSON_SEARCH({transCol}, "one", "{languageCode}")), 1, 4)), \'$."{columnName}"\'))'
                            .replace(/{transCol}/g, transCol)
                            .replace(/{languageCode}/g, userData.languageCode)
-                           .replace(/{columnName}/g, field.columnName)
+                           .replace(/{columnName}/g, field.columnName),
                      );
                }
             }
@@ -441,7 +439,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                var desiredOption = field.settings.options.filter(
                   (option) =>
                      option.id == condition.value ||
-                     option.text == condition.value
+                     option.text == condition.value,
                )[0];
                if (desiredOption) condition.value = desiredOption.id;
             }
@@ -1031,14 +1029,14 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             this.credentials,
             url,
             "POST",
-            baseValues
+            baseValues,
          );
       } catch (err) {
          this.processError(
             `POST ${url}`,
             `Error creatomg ${this.object.dbTableName()} data`,
             err,
-            req
+            req,
          );
       }
 
@@ -1068,7 +1066,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             populate: true,
          },
          condDefaults,
-         req
+         req,
       );
 
       return rows[0];
@@ -1106,7 +1104,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             this.AB,
             this.credentials,
             url,
-            "DELETE"
+            "DELETE",
          );
          // let location = response.headers["location"];
          // let parts = location.split(`${this.object.dbTableName()}/`);
@@ -1117,7 +1115,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             if (response?.headers?.["x-netsuite-jobid"]) {
                req.log(
                   "Netsuite JobID:",
-                  response?.headers?.["x-netsuite-jobid"]
+                  response?.headers?.["x-netsuite-jobid"],
                );
             }
          }
@@ -1131,7 +1129,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             `DELETE ${url}`,
             `Error deleting ${this.object.dbTableName()} data`,
             err,
-            req
+            req,
          );
       }
    }
@@ -1373,7 +1371,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          {
             q: sql,
          },
-         { Prefer: "transient" }
+         { Prefer: "transient" },
       );
 
       let list = response.data.items;
@@ -1384,7 +1382,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          list = list.filter(
             (o) =>
                o[field.settings.joinActiveField] == val ||
-               o[field.settings.joinActiveField.toLowerCase()] == val
+               o[field.settings.joinActiveField.toLowerCase()] == val,
          );
       }
 
@@ -1414,7 +1412,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       let listLinkObj = [];
       if (thatPKs.length > 0) {
          sql = `SELECT * FROM ${linkObj.dbTableName()}  WHERE ${thatPK} IN ( ${thatPKs.join(
-            ", "
+            ", ",
          )} )`;
 
          if (req) {
@@ -1429,7 +1427,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
 
          listLinkObj = responseLinkObj.data.items;
@@ -1532,7 +1530,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          req.log(
             `populating columns : ${columns
                .map((f) => f.columnName)
-               .join(", ")}`
+               .join(", ")}`,
          );
       }
       let allColumns = [];
@@ -1634,7 +1632,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       var noRelationRules = [];
       cond.where = this.queryConditionsPluckRelationConditions(
          cond.where,
-         noRelationRules
+         noRelationRules,
       );
 
       // where is now our "SELECT ... WHERE {where}" values
@@ -1730,7 +1728,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                WHERE = `?? `; // want to find fieldLink's column IS NULL
                // eslint-disable-next-line no-case-declarations
                let todoError = new Error(
-                  "TODO: NoRelationRules: figure out Netsuite many:many connections"
+                  "TODO: NoRelationRules: figure out Netsuite many:many connections",
                );
                throw todoError;
             // break;
@@ -1797,7 +1795,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          dList,
          hasCountUpdated = false,
          dOffset = 0,
-         dLimit = 0
+         dLimit = 0,
       ) => {
          // a recursive function to make sure we get all our expected results.
          // this will detect Netsuite's paging (hasMore) value and pull the
@@ -1823,7 +1821,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
          // response.data has these properties:
          //    links, count, hasMore, items, offset, totalResults
@@ -1857,7 +1855,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                }
                if (dList.length != response.data.totalResults) {
                   req.log(
-                     `Netsuite Paging Error: dList(${dList.length}) != Response(${response.data.totalResults})`
+                     `Netsuite Paging Error: dList(${dList.length}) != Response(${response.data.totalResults})`,
                   );
                } else {
                   req.log("Netsuite Paging: valid number of results");
@@ -1892,7 +1890,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                `POST ${URL}`,
                `Error finding ${this.object.dbTableName()} data`,
                err,
-               req
+               req,
             );
          } else {
             throw err;
@@ -1918,7 +1916,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
    async findCount(cond, conditionDefaults, req) {
       if (!cond.jobID) {
          (req ?? console).log(
-            "ABModelApiNetsuite.findCount() called without jobID"
+            "ABModelApiNetsuite.findCount() called without jobID",
          );
          cond.jobID = cond.jobID ?? req?.jobID ?? this.AB.jobID();
       }
@@ -2004,7 +2002,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          } else {
             // must be many:many
             allColumns.push(
-               this.syncColumnManyMany(id, field, colVals, baseValues, req)
+               this.syncColumnManyMany(id, field, colVals, baseValues, req),
             );
          }
       });
@@ -2033,7 +2031,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          {
             q: sql,
          },
-         { Prefer: "transient" }
+         { Prefer: "transient" },
       );
 
       let oldValues = response.data.items;
@@ -2100,14 +2098,14 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
          try {
             allUpdates.push(
-               fetchConcurrent(this.AB, this.credentials, url, "PATCH", setVal)
+               fetchConcurrent(this.AB, this.credentials, url, "PATCH", setVal),
             );
          } catch (err) {
             this.processError(
                `PATCH ${url}`,
                `Error updating ${this.object.dbTableName()} data`,
                err,
-               req
+               req,
             );
          }
       });
@@ -2169,7 +2167,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          {
             q: sql,
          },
-         { Prefer: "transient" }
+         { Prefer: "transient" },
       );
 
       let oldValues = response.data.items;
@@ -2183,7 +2181,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          oldValues = oldValues.filter(
             (o) =>
                o[field.settings.joinActiveField] == val ||
-               o[field.settings.joinActiveField.toLowerCase()] == val
+               o[field.settings.joinActiveField.toLowerCase()] == val,
          );
       }
 
@@ -2257,7 +2255,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          let entityValue = baseValues[thisEntityField?.columnName];
          if (!entityValue) {
             let errorMissingEntity = new Error(
-               "Could not find Entity value to make many:many joins"
+               "Could not find Entity value to make many:many joins",
             );
             if (req) {
                req.log(errorMissingEntity);
@@ -2273,7 +2271,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             req.log(newVal);
          }
          allRelates.push(
-            fetchConcurrent(this.AB, this.credentials, url, "POST", newVal)
+            fetchConcurrent(this.AB, this.credentials, url, "POST", newVal),
          );
 
          // check concurrency limit
@@ -2302,7 +2300,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       let conditions = [];
       conditions.push(`${field.settings.joinTableReference}=${id}`);
       conditions.push(
-         `${linkField.settings.joinTableReference} IN ( ${values.join(", ")} )`
+         `${linkField.settings.joinTableReference} IN ( ${values.join(", ")} )`,
       );
 
       // Workaround:  manually filter the inactive values
@@ -2322,7 +2320,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          {
             q: sql,
          },
-         { Prefer: "transient" }
+         { Prefer: "transient" },
       );
 
       let oldValues = response.data.items;
@@ -2333,7 +2331,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          oldValues = oldValues.filter(
             (o) =>
                o[field.settings.joinActiveField] == val ||
-               o[field.settings.joinActiveField.toLowerCase()] == val
+               o[field.settings.joinActiveField.toLowerCase()] == val,
          );
       }
 
@@ -2377,8 +2375,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                this.credentials,
                `${url}${pks[i]}`,
                "PATCH",
-               updateValue
-            )
+               updateValue,
+            ),
          );
          parallelCount++;
          if (parallelCount >= CONCURRENCY_LIMIT) {
@@ -2406,8 +2404,8 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                this.AB,
                this.credentials,
                `${url}${pks[i]}`,
-               "DELETE"
-            )
+               "DELETE",
+            ),
          );
          parallelCount++;
          if (parallelCount >= CONCURRENCY_LIMIT) {
@@ -2492,7 +2490,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          .forEach((f) => {
             if (baseValues[f.columnName]) {
                baseValues[f.columnName] = new Date(
-                  baseValues[f.columnName]
+                  baseValues[f.columnName],
                ).toISOString();
             }
          });
@@ -2535,7 +2533,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       if (req) {
          req.log(
             "ABModelApiNetsuite.update(): updating initial params:",
-            baseValues
+            baseValues,
          );
          req.performance.mark("update-base");
       }
@@ -2548,7 +2546,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
                this.credentials,
                url,
                "PATCH",
-               baseValues
+               baseValues,
             );
          }
       } catch (err) {
@@ -2556,7 +2554,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
             `PATCH ${url}`,
             `Error updating ${this.object.dbTableName()} data`,
             err,
-            req
+            req,
          );
       }
 
@@ -2569,7 +2567,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
          id,
          updateRelationParams,
          baseValues,
-         req
+         req,
       );
 
       if (req) {
@@ -2623,7 +2621,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
 
       where = this.queryConditionsPluckRelationConditions(
          where,
-         noRelationRules
+         noRelationRules,
       );
 
       // Now walk through each of our conditions and turn them into their
@@ -2631,7 +2629,7 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       var whereParsed = this.queryConditionsParseConditions(
          where,
          conditionDefaults,
-         req
+         req,
       );
 
       // now join our where statements according to the .glue values
@@ -2642,4 +2640,4 @@ module.exports = class ABModelAPINetsuite extends ABModel {
       super.normalizeData(data);
       this.fromNetsuiteBool(data);
    }
-};
+}

@@ -1,6 +1,6 @@
-const ABMobileViewTimelineCore = require("../../core/mobile/ABMobileViewTimelineCore");
+import ABMobileViewTimelineCore from "../../core/mobile/ABMobileViewTimelineCore.js";
 
-module.exports = class ABMobileViewTimeline extends ABMobileViewTimelineCore {
+export default class ABMobileViewTimeline extends ABMobileViewTimelineCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -14,4 +14,4 @@ module.exports = class ABMobileViewTimeline extends ABMobileViewTimelineCore {
    //       p.warningsEval();
    //    });
    // }
-};
+}

@@ -1,4 +1,4 @@
-const ABProcessTaskUserFormCore = require("../../../core/process/tasks/ABProcessTaskUserFormCore.js");
+import ABProcessTaskUserFormCore from "../../../core/process/tasks/ABProcessTaskUserFormCore.js";
 
 /**
  * @function parseEntryKeys()
@@ -110,9 +110,7 @@ function parseEntryArrayFields(entry) {
    return Object.keys(fieldHash);
 }
 
-module.exports = class ABProcessTaskUserForm extends (
-   ABProcessTaskUserFormCore
-) {
+export default class ABProcessTaskUserForm extends ABProcessTaskUserFormCore {
    ////
    //// Process Instance Methods
    ////
@@ -132,7 +130,6 @@ module.exports = class ABProcessTaskUserForm extends (
    do(instance, trx, req) {
       this._req = req;
       return new Promise((resolve, reject) => {
-
          const userId = this._req?._user?.id;
          if (!userId) return resolve(true);
 
@@ -206,24 +203,27 @@ module.exports = class ABProcessTaskUserForm extends (
          parseEntryArrays(copyComponents, processData);
 
          // Call to display the input form popup.
-         this._req.broadcast([
-            {
-               room: this._req.socketKey(userId),
-               event: "ab.task.userform",
-               data: {
-                  processId: this.process.id,
-                  taskId: this.id,
-                  instanceId: instance.id,
-                  formio: this.formBuilder,
-                  formData: processData,
+         this._req.broadcast(
+            [
+               {
+                  room: this._req.socketKey(userId),
+                  event: "ab.task.userform",
+                  data: {
+                     processId: this.process.id,
+                     taskId: this.id,
+                     instanceId: instance.id,
+                     formio: this.formBuilder,
+                     formData: processData,
+                  },
                },
-            },
-         ], (err) => {
-            if (err) return reject(err);
+            ],
+            (err) => {
+               if (err) return reject(err);
 
-            // Pause before running the next task. It will proceed once it receives the input data.
-            resolve(false);
-         });
+               // Pause before running the next task. It will proceed once it receives the input data.
+               resolve(false);
+            },
+         );
       });
    }
 
@@ -242,7 +242,7 @@ module.exports = class ABProcessTaskUserForm extends (
                      delete values[key];
                      break;
                   }
-            } while(keys.length > 0);
+            } while (keys.length > 0);
          }
          values._isSet = true;
          this.stateCompleted(instance);
@@ -250,4 +250,4 @@ module.exports = class ABProcessTaskUserForm extends (
 
       this.stateUpdate(instance, values);
    }
-};
+}

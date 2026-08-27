@@ -1,8 +1,6 @@
-const ABMobileViewFormDatetimeCore = require("../../core/mobile/ABMobileViewFormDatetimeCore");
+import ABMobileViewFormDatetimeCore from "../../core/mobile/ABMobileViewFormDatetimeCore.js";
 
-module.exports = class ABMobileViewFormDatetime extends (
-   ABMobileViewFormDatetimeCore
-) {
+export default class ABMobileViewFormDatetime extends ABMobileViewFormDatetimeCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormDatetime extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

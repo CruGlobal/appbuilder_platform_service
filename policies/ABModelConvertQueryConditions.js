@@ -24,7 +24,7 @@
  * @param {fn} next
  *       The node style callback(err, data) for this process.
  */
-module.exports = function (AB, where, object, userData, next, req) {
+export default function (AB, where, object, userData, next, req) {
    // our QB Conditions look like:
    // {
    //   "glue": "and",
@@ -80,9 +80,9 @@ module.exports = function (AB, where, object, userData, next, req) {
       (err) => {
          next(err);
       },
-      req
+      req,
    );
-};
+}
 
 /**
  * processQueryValues()
@@ -110,8 +110,8 @@ function processQueryValues(AB, userData, QueryObj, queryColumn, done, req) {
             ignoreIncludeId: true, // we want real id
          },
          userData,
-         req
-      )
+         req,
+      ),
    )
       .then((data) => {
          // sails.log.info(".... query data : ", data);
@@ -150,7 +150,7 @@ function continueSingle(
    newKey,
    queryColumn,
    linkCase,
-   req
+   req,
 ) {
    // let the processQueryValues() perform any retris then format the result
    processQueryValues(
@@ -197,7 +197,7 @@ function continueSingle(
             parseQueryCondition(AB, where, object, userData, cb, req);
          }
       },
-      req
+      req,
    );
 }
 
@@ -268,7 +268,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                location: "ABModelConvertQueryConditions",
                qid: cond.value,
                condition: cond,
-            }
+            },
          );
          cb(err);
          return;
@@ -317,7 +317,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                newKey,
                queryColumn,
                "this_object",
-               req
+               req,
             );
          } else {
             // this is a linkField IN QUERY filter:
@@ -375,7 +375,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
 
                         // make this the queryColumn:
                         queryColumn = `${QueryObj.objectAlias(
-                           field.datasourceLink.id
+                           field.datasourceLink.id,
                         )}.${parseColumn}`;
                      }
                      // ABObject
@@ -391,7 +391,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
 
                         // make this the queryColumn:
                         queryColumn = `${QueryObj.objectAlias(
-                           linkedObject.id
+                           linkedObject.id,
                         )}.${parseColumn}`;
                      }
 
@@ -406,7 +406,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                         newKey,
                         queryColumn,
                         linkCase,
-                        req
+                        req,
                      );
                      break;
 
@@ -414,13 +414,13 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                      // ABObjectQuery
                      if (object.objectAlias) {
                         newKey = `${object.objectAlias(
-                           field.object.id
+                           field.object.id,
                         )}.${field.relationName()}`;
 
                         parseColumn = field.datasourceLink.PK();
 
                         queryColumn = `${QueryObj.objectAlias(
-                           field.datasourceLink.id
+                           field.datasourceLink.id,
                         )}.${parseColumn}`;
                      }
                      // ABObject
@@ -439,7 +439,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                            : field.object.PK();
 
                         queryColumn = `${QueryObj.objectAlias(
-                           field.object.id
+                           field.object.id,
                         )}.${parseColumn}`;
                      }
 
@@ -454,7 +454,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                         newKey,
                         queryColumn,
                         linkCase,
-                        req
+                        req,
                      );
                      break;
 
@@ -484,19 +484,19 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
 
                      // ABObjectQuery
                      if (object.objectAlias) {
-                        debugger;
+                        // debugger;
                         console.error(
-                           "!!! FOUND A IN_QUERY with an object.objectAlias"
+                           "!!! FOUND A IN_QUERY with an object.objectAlias",
                         );
 
                         newKey = `${object.objectAlias(
-                           field.object.id
+                           field.object.id,
                         )}.${field.object.PK()}`;
 
                         parseColumn = field.object.PK();
 
                         queryColumn = `${QueryObj.objectAlias(
-                           field.object.id
+                           field.object.id,
                         )}.${parseColumn}`;
                      }
                      // ABObject
@@ -538,7 +538,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                         // object alias:
                         // BASE_OBJECT.[PK]
                         queryColumn = `${QueryObj.objectAlias(
-                           field.datasourceLink.id
+                           field.datasourceLink.id,
                         )}.${parseColumn}`;
                      }
 
@@ -553,7 +553,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                         newKey,
                         queryColumn,
                         linkCase,
-                        req
+                        req,
                      );
                      break;
                   // case "many:many":

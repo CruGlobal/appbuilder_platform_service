@@ -1,11 +1,11 @@
+import ABModelCore from "../core/ABModelCore.js";
+
 //
 // ABModelAPI
 //
 // Represents the Data interface for an ABObjectQuery data.
 
-const ABModelCore = require("../core/ABModelCore.js");
-
-module.exports = class ABModelAPI extends ABModelCore {
+export default class ABModelAPI extends ABModelCore {
    ///
    /// Instance Methods
    ///
@@ -25,7 +25,7 @@ module.exports = class ABModelAPI extends ABModelCore {
     *    The request object associated with the current tenant/request
     * @return {Promise} resolved with the result of the find()
     */
-   async findAll(cond, conditionDefaults, req) {
+   async findAll(cond /*, _conditionDefaults, _req */) {
       const object = this.object;
       const requestConfigs = object.request ?? {};
       let url = requestConfigs.url;
@@ -61,7 +61,7 @@ module.exports = class ABModelAPI extends ABModelCore {
                (async () => {
                   const secretVal = await object.getSecretValue(secretName);
                   headers[name] = secretVal;
-               })()
+               })(),
             );
       });
       await Promise.all(pullSecretTasks);
@@ -113,4 +113,4 @@ module.exports = class ABModelAPI extends ABModelCore {
 
       return returnData?.length;
    }
-};
+}

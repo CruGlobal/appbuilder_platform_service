@@ -1,4 +1,4 @@
-const ABFieldCombineCore = require("../../core/dataFields/ABFieldCombineCore");
+import ABFieldCombineCore from "../../core/dataFields/ABFieldCombineCore.js";
 
 const MAX_VALUE_LENGTH = 535;
 const DELIMITERS = {
@@ -8,7 +8,7 @@ const DELIMITERS = {
    space: " ",
 };
 
-module.exports = class ABFieldCombine extends ABFieldCombineCore {
+export default class ABFieldCombine extends ABFieldCombineCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -53,7 +53,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                   new Promise((next, bad) => {
                      // if this column doesn't already exist (you never know)
                      req.retry(() =>
-                        knex.schema.hasColumn(tableName, this.columnName)
+                        knex.schema.hasColumn(tableName, this.columnName),
                      )
                         .then((exists) => {
                            return req
@@ -64,9 +64,9 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                                     // Create a new column here.
                                     t.specificType(
                                        this.columnName,
-                                       `VARCHAR(${MAX_VALUE_LENGTH}) NULL`
+                                       `VARCHAR(${MAX_VALUE_LENGTH}) NULL`,
                                     );
-                                 })
+                                 }),
                               )
                               .then(() => {
                                  next();
@@ -74,7 +74,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                               .catch(bad);
                         })
                         .catch(bad);
-                  })
+                  }),
             )
             // Create TRIGGER when INSERT
             .then(
@@ -86,8 +86,8 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                         knex.raw(
                            `CREATE TRIGGER \`${this.createTriggerName}\`
                            BEFORE INSERT ON \`${tableName}\` FOR EACH ROW
-                           ${sqlUpdateCommand}`
-                        )
+                           ${sqlUpdateCommand}`,
+                        ),
                      )
                         .then(() => {
                            next();
@@ -99,7 +99,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                               bad(error);
                            }
                         });
-                  })
+                  }),
             )
             // Create TRIGGER when UPDATE
             .then(
@@ -111,8 +111,8 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                         knex.raw(
                            `CREATE TRIGGER \`${this.updateTriggerName}\`
                            BEFORE UPDATE ON \`${tableName}\` FOR EACH ROW
-                           ${sqlUpdateCommand}`
-                        )
+                           ${sqlUpdateCommand}`,
+                        ),
                      )
                         .then(() => {
                            next();
@@ -124,7 +124,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                               bad(error);
                            }
                         });
-                  })
+                  }),
             )
             // Update this index value to old records
             .then(
@@ -133,8 +133,8 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                      req.retry(() =>
                         knex.raw(
                            `UPDATE ${tableName} SET \`${this.columnName}\` = \`${this.columnName}\`
-                           WHERE \`${this.columnName}\` IS NULL;`
-                        )
+                           WHERE \`${this.columnName}\` IS NULL;`,
+                        ),
                      )
                         .then(() => {
                            next();
@@ -143,7 +143,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                            if (error.code == "ER_DUP_ENTRY") next();
                            else bad(error);
                         });
-                  })
+                  }),
             )
             .catch((err) => {
                req.notify.developer(err, {
@@ -186,7 +186,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
          (f) =>
             f.settings &&
             (f.settings.indexField == this.id ||
-               f.settings.indexField2 == this.id)
+               f.settings.indexField2 == this.id),
       );
       if (linkFields && linkFields.length) {
          let errMessage = `Could not delete this field because it is index of ${linkFields
@@ -201,28 +201,28 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
                new Promise((next, bad) => {
                   req.retry(() =>
                      knex.raw(
-                        `DROP TRIGGER IF EXISTS ${this.createTriggerName}`
-                     )
+                        `DROP TRIGGER IF EXISTS ${this.createTriggerName}`,
+                     ),
                   )
                      .then(() => {
                         next();
                      })
                      .catch(bad);
-               })
+               }),
          )
          .then(
             () =>
                new Promise((next, bad) => {
                   req.retry(() =>
                      knex.raw(
-                        `DROP TRIGGER IF EXISTS ${this.updateTriggerName}`
-                     )
+                        `DROP TRIGGER IF EXISTS ${this.updateTriggerName}`,
+                     ),
                   )
                      .then(() => {
                         next();
                      })
                      .catch(bad);
-               })
+               }),
          )
          .then(() => super.migrateDrop(req, knex));
    }
@@ -269,7 +269,7 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* _allParameters */) {
       var errors = [];
 
       return errors;
@@ -292,4 +292,4 @@ module.exports = class ABFieldCombine extends ABFieldCombineCore {
    get updateTriggerName() {
       return `${this.safeTableName}_${this.safeColumnName}_update`;
    }
-};
+}

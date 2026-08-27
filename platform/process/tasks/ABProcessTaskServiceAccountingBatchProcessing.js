@@ -1,13 +1,10 @@
-const path = require("path");
-// prettier-ignore
-const AccountingBatchProcessingCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskServiceAccountingBatchProcessingCore.js"));
+// import path from "path";
+// import async from "async";
+// import uuid from "uuid/v4";
 
-// const async = require("async");
-// const uuid = require("uuid/v4");
+import AccountingBatchProcessingCore from "../../../core/process/tasks/ABProcessTaskServiceAccountingBatchProcessingCore.js";
 
-module.exports = class AccountingBatchProcessing extends (
-   AccountingBatchProcessingCore
-) {
+export default class AccountingBatchProcessing extends AccountingBatchProcessingCore {
    ////
    //// Process Instance Methods
    ////
@@ -157,4 +154,4 @@ module.exports = class AccountingBatchProcessing extends (
       this.log(instance, "Batch Processed successfully");
       return Promise.resolve(true);
    }
-};
+}

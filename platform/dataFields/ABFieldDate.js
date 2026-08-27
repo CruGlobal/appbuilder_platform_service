@@ -1,16 +1,16 @@
+import _ from "lodash";
+import moment from "moment";
+
 /*
  * ABFieldDate
  *
  * An ABFieldDate defines a Date field type.
  *
  */
-const path = require("path");
-const _ = require("lodash");
-const moment = require("moment");
 // prettier-ignore
-const ABFieldDateCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldDateCore.js"));
+import ABFieldDateCore from "../../core/dataFields/ABFieldDateCore.js";
 
-module.exports = class ABFieldDate extends ABFieldDateCore {
+export default class ABFieldDate extends ABFieldDateCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -73,7 +73,7 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
                            moment(this.settings.default).isValid()
                         ) {
                            var defaultDate = this.AB.rules.toSQLDate(
-                              this.settings.default
+                              this.settings.default,
                            );
 
                            currCol.defaultTo(defaultDate);
@@ -84,7 +84,7 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -186,7 +186,7 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
                if (this.settings.required) {
                   if (this.settings.defaultDateValue)
                      myParameter[this.columnName] = new Date(
-                        this.settings.defaultDateValue
+                        this.settings.defaultDateValue,
                      );
                   else delete myParameter[this.columnName];
                }
@@ -198,7 +198,7 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
             // convert to SQL date format
             else if (moment(myParameter[this.columnName]).isValid()) {
                myParameter[this.columnName] = this.AB.rules.toSQLDate(
-                  myParameter[this.columnName]
+                  myParameter[this.columnName],
                );
             }
          }
@@ -214,7 +214,7 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* _allParameters */) {
       var errors = [];
 
       return errors;
@@ -226,4 +226,4 @@ module.exports = class ABFieldDate extends ABFieldDateCore {
 
       return this.AB.rules.toSQLDate(data);
    }
-};
+}

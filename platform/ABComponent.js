@@ -1,3 +1,3 @@
-const ABComponentCore = require("../core/ABComponentCore");
+import ABComponentCore from "../core/ABComponentCore.js";
 
-module.exports = class ABComponent extends ABComponentCore {};
+export default class ABComponent extends ABComponentCore {}

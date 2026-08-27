@@ -1,3 +1,6 @@
+import ABFieldDate from "../platform/dataFields/ABFieldDate.js";
+import ABFieldUser from "../platform/dataFields/ABFieldUser.js";
+
 /**
  * ABModelConvertQueryFieldConditions
  *
@@ -8,9 +11,6 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-
-const ABFieldDate = require("../platform/dataFields/ABFieldDate.js");
-const ABFieldUser = require("../platform/dataFields/ABFieldUser");
 
 /**
  * ABModelConvertQueryFieldConditions()
@@ -27,7 +27,7 @@ const ABFieldUser = require("../platform/dataFields/ABFieldUser");
  * @param {fn} next
  *       The node style callback(err, data) for this process.
  */
-module.exports = function (AB, where, object, userData, next, req) {
+export default function (AB, where, object, userData, next, req) {
    // our QB Conditions look like:
    // {
    //   "glue": "and",
@@ -83,9 +83,9 @@ module.exports = function (AB, where, object, userData, next, req) {
       (err) => {
          next(err);
       },
-      req
+      req,
    );
-};
+}
 
 /**
  * processQuery()
@@ -126,7 +126,7 @@ function processQuery(
    queryField,
    queryColumn,
    cb,
-   req
+   req,
 ) {
    // run the Query, and parse out that data
    // var query = null;
@@ -137,8 +137,8 @@ function processQuery(
             ignoreIncludeId: true, // we want real id
          },
          userData,
-         req
-      )
+         req,
+      ),
    )
       .then((data) => {
          // sails.log.info(".... query data : ", data);
@@ -181,7 +181,9 @@ function processQuery(
                if (typeof u == "string") {
                   try {
                      u = JSON.parse(u);
-                  } catch (e) {}
+                  } catch (e) {
+                     // just leave u as is
+                  }
                }
 
                (u || [])
@@ -300,45 +302,48 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                location: "ABModelConvertQueryFieldConditions",
                qid: queryID,
                condition: cond,
-            }
+            },
          );
          cb(err3);
          return;
       } else {
-         var queryColumn;
-         // {string} this is the 'tablename'.'colname' of the data to return
-
-         var newKey = cond.key;
-         // {string} this is the colName of the condition statement we want to pass
-         // on.  So for instance, if the condition we received was the 'this_object',
-         // filter, then we want the final condition to be:  id IN [],  and the
-         // QB condition would be:  { key:'id', rule:'in', value:[] }.  So newKey == 'id'
-
-         var parseColumn = cond.key;
-         // {string} this is the column we want our reference query to return so we can
-         // pull out the data for this filter condition.  So for example, the current query
-         // is returning userid and subaccount.id.  However our filter is filtering on
-         // subaccount.accountNum.  So we need to pull our 'accountNum' from the query.
-
          // TODO:
          // TRANSITION:
          // looks like we never defined continueSingle() in this policy. Check to see
          // if this_object + in_query_field  is a valid condition, if so, we need to
          // define this.  If not: remove this check:
 
+         // var queryColumn;
+         // // {string} this is the 'tablename'.'colname' of the data to return
+
+         // var newKey = cond.key;
+         // // {string} this is the colName of the condition statement we want to pass
+         // // on.  So for instance, if the condition we received was the 'this_object',
+         // // filter, then we want the final condition to be:  id IN [],  and the
+         // // QB condition would be:  { key:'id', rule:'in', value:[] }.  So newKey == 'id'
+
+         // var parseColumn = cond.key;
+         // // {string} this is the column we want our reference query to return so we can
+         // // pull out the data for this filter condition.  So for example, the current query
+         // // is returning userid and subaccount.id.  However our filter is filtering on
+         // // subaccount.accountNum.  So we need to pull our 'accountNum' from the query.
+
          // if this is our special 'this_object' 'in_query_field'  queryID  filter:
          if (cond.key == "this_object") {
+            throw new Error("TODO: continueSingle()");
+            /*
             queryColumn = object.dbTableName(true) + "." + object.PK();
             newKey = object.PK(); // 'id';  // the final filter needs to be 'id IN []', so 'id'
             parseColumn = object.PK(); // 'id';  // make sure we pull our 'id' values from the query
 
             continueSingle(newKey, parseColumn, queryColumn, req);
+            */
          } else {
             // this is a linkField IN QUERY filter:
 
             // find field by it's name
             var field = object.fields(
-               (f) => f.columnName == cond.key || f.id == cond.key
+               (f) => f.columnName == cond.key || f.id == cond.key,
             )[0];
             if (!field) {
                var err4 = AB.toError("Unable to resolve condition field.", {
@@ -352,7 +357,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
 
             // get the Query Field we want to pull out
             var queryField = QueryObj.fields(
-               (f) => (f.field ? f.field.id : f.id) == queryFieldID
+               (f) => (f.field ? f.field.id : f.id) == queryFieldID,
             )[0];
             if (!queryField) {
                var err5 = AB.toError("Unable to resolve query field.", {
@@ -386,7 +391,7 @@ function parseQueryCondition(AB, where, object, userData, cb, req) {
                   }
                   parseQueryCondition(AB, where, object, userData, cb, req);
                },
-               req
+               req,
             );
          }
       } // if !QueryObj

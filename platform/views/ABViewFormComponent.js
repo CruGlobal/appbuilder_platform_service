@@ -1,3 +1,3 @@
-const ABViewFormComponentCore = require("../../core/views/ABViewFormComponentCore");
+import ABViewFormComponentCore from "../../core/views/ABViewFormComponentCore.js";
 
-module.exports = class ABViewFormComponent extends ABViewFormComponentCore {};
+export default class ABViewFormComponent extends ABViewFormComponentCore {}

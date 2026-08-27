@@ -1,3 +1,6 @@
+import _ from "lodash";
+import ABProcessParticipantCore from "../../core/process/ABProcessParticipantCore.js";
+
 /**
  * ABProcessParticipant
  * manages the participant lanes in a Process Diagram.
@@ -5,10 +8,7 @@
  * Participants manage users in the system (when there are no lanes defined)
  * and provide a way to lookup a SiteUser.
  */
-const _ = require("lodash");
-const ABProcessParticipantCore = require("../../core/process/ABProcessParticipantCore.js");
-
-module.exports = class ABProcessParticipant extends ABProcessParticipantCore {
+export default class ABProcessParticipant extends ABProcessParticipantCore {
    // constructor(attributes, process, application) {
    //    super(attributes, process, application);
    // }
@@ -203,4 +203,4 @@ module.exports = class ABProcessParticipant extends ABProcessParticipantCore {
             .catch(reject);
       });
    }
-};
+}

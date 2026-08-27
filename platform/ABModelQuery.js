@@ -1,6 +1,6 @@
-const ABModel = require("./ABModel");
+import ABModel from "./ABModel.js";
 
-module.exports = class ABModelQuery extends ABModel {
+export default class ABModelQuery extends ABModel {
    /**
     * @method create
     * performs an update operation
@@ -13,7 +13,7 @@ module.exports = class ABModelQuery extends ABModel {
     */
    create(/* values, trx = null, condDefaults = null, req = null */) {
       var error = new Error(
-         "ABObjectQuery.ABModelQuery.create() should not be called."
+         "ABObjectQuery.ABModelQuery.create() should not be called.",
       );
       return Promise.reject(error);
    }
@@ -166,7 +166,7 @@ module.exports = class ABModelQuery extends ABModel {
                         let addNew = false;
 
                         let newTran = r.translations.filter(
-                           (t) => t.language_code == tran.language_code
+                           (t) => t.language_code == tran.language_code,
                         )[0];
                         if (!newTran) {
                            newTran = {
@@ -295,7 +295,7 @@ module.exports = class ABModelQuery extends ABModel {
     */
    update(/* id, values, trx = null */) {
       var error = new Error(
-         "ABObjectQuery.ABModelQuery.update() should not be called."
+         "ABObjectQuery.ABModelQuery.update() should not be called.",
       );
       return Promise.reject(error);
    }
@@ -320,8 +320,8 @@ module.exports = class ABModelQuery extends ABModel {
     */
    relate(/* id, fieldRef, value, trx = null */) {
       var error = new Error(
-         "ABObjectQuery.ABModelQuery.relate() should not be called."
+         "ABObjectQuery.ABModelQuery.relate() should not be called.",
       );
       return Promise.reject(error);
    }
-};
+}

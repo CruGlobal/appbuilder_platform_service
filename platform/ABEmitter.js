@@ -1,3 +1,3 @@
-const events = require("events");
+import events from "events";
 
-module.exports = class ABEmitter extends events.EventEmitter {};
+export default class ABEmitter extends events.EventEmitter {}

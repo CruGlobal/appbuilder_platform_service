@@ -4,7 +4,7 @@
  * a blank stub. These only operate on the WEB platform, but are
  * referenced by our FORM components.
  */
-module.exports = class ABViewRuleListFormSubmitRules {
+export default class ABViewRuleListFormSubmitRules {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -18,4 +18,4 @@ module.exports = class ABViewRuleListFormSubmitRules {
    //       p.warningsEval();
    //    });
    // }
-};
+}

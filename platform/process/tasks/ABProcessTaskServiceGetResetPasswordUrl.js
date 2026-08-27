@@ -1,10 +1,6 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-const ABProcessTaskServiceGetResetPasswordUrlCore = require("../../../core/process/tasks/ABProcessTaskServiceGetResetPasswordUrlCore.js");
+import ABProcessTaskServiceGetResetPasswordUrlCore from "../../../core/process/tasks/ABProcessTaskServiceGetResetPasswordUrlCore.js";
 
-module.exports = class ABProcessTaskServiceGetResetPasswordUrl extends (
-   ABProcessTaskServiceGetResetPasswordUrlCore
-) {
+export default class ABProcessTaskServiceGetResetPasswordUrl extends ABProcessTaskServiceGetResetPasswordUrlCore {
    /**
     * @method do()
     * this method actually performs the action for this task.
@@ -56,4 +52,4 @@ module.exports = class ABProcessTaskServiceGetResetPasswordUrl extends (
       const myState = this.myState(instance);
       return myState[parts[1]];
    }
-};
+}

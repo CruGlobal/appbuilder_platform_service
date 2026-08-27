@@ -4,11 +4,10 @@
  * An ABFieldTextFormula defines a string field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldTextFormulaCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldTextFormulaCore.js"));
+import ABFieldTextFormulaCore from "../../core/dataFields/ABFieldTextFormulaCore.js";
 
-module.exports = class ABFieldTextFormula extends ABFieldTextFormulaCore {
+export default class ABFieldTextFormula extends ABFieldTextFormulaCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -119,4 +118,4 @@ module.exports = class ABFieldTextFormula extends ABFieldTextFormulaCore {
       }
       return errors;
    }
-};
+}

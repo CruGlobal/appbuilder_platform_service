@@ -13,7 +13,7 @@
  *       resolve() with no value returned.
  */
 
-module.exports = function (AB, req, cond, options = {}) {
+export default function definitionDestroy(AB, req, cond, options = {}) {
    return new Promise((resolve, reject) => {
       let tenantDB = req.queryTenantDB(reject);
       if (!tenantDB) {
@@ -46,4 +46,4 @@ module.exports = function (AB, req, cond, options = {}) {
          }
       });
    });
-};
+}

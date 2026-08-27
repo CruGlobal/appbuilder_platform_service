@@ -1,10 +1,6 @@
-// import ABApplication from "./ABApplication"
-// const ABApplication = require("./ABApplication"); // NOTE: change to require()
-const path = require("path");
-// prettier-ignore
-const ABProcessElementCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessElementCore.js"));
+import ABProcessElementCore from "../../../core/process/tasks/ABProcessElementCore.js";
 
-module.exports = class ABProcessTask extends ABProcessElementCore {
+export default class ABProcessTask extends ABProcessElementCore {
    // constructor(attributes, process, application, defaultValues) {
    //    super(attributes, process, application, defaultValues);
 
@@ -137,4 +133,4 @@ module.exports = class ABProcessTask extends ABProcessElementCore {
       var text = `ProcessTask Error: ${this.key} : ${error.toString()}`;
       console.error(text, { instance: trimedInstance, error: error });
    }
-};
+}

@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 /**
  * ABModelConvertSailsCondition
  *
@@ -7,8 +9,6 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-
-var _ = require("lodash");
 
 var DebugWhere = "";
 
@@ -56,7 +56,7 @@ function packageBetween(field, opValue) {
  * @return {obj}  a Query Builder version of the same condition
  */
 function parseCondition(field, opValue) {
-   result = null;
+   let result = null;
 
    // check for a NULL value:
    if (opValue == "null" || opValue == null) {
@@ -155,7 +155,7 @@ function parseCondition(field, opValue) {
          field: field,
          opValue: opValue,
          debugWhere: DebugWhere,
-      }
+      },
    );
    return null;
 }
@@ -229,7 +229,7 @@ function processCondition(sailsCond) {
    return newCond;
 }
 
-module.exports = function (AB, cond, next) {
+export default function (AB, cond, next) {
    // We need to check a given .where value and determine if it is in our Sails
    // compatible format, and if so convert it to our QueryBuilder format.
    //
@@ -342,4 +342,4 @@ module.exports = function (AB, cond, next) {
    // Must be a Sails compatible condition:
    cond.where = processCondition(cond.where);
    next();
-};
+}

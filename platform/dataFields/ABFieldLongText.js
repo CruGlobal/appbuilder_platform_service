@@ -1,16 +1,15 @@
+import _ from "lodash";
+import async from "async";
+import ABFieldLongTextCore from "../../core/dataFields/ABFieldLongTextCore.js";
+
 /*
  * ABFieldLongText
  *
  * An ABFieldLongText defines a huge string field type.
  *
  */
-const path = require("path");
-const _ = require("lodash");
-const async = require("async");
-// prettier-ignore
-const ABFieldLongTextCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldLongTextCore.js"));
 
-module.exports = class ABFieldLongText extends ABFieldLongTextCore {
+export default class ABFieldLongText extends ABFieldLongTextCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -58,7 +57,7 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
                   // make sure there is a 'translations' json field
                   // included:
                   req.retry(() =>
-                     knex.schema.hasColumn(tableName, "translations")
+                     knex.schema.hasColumn(tableName, "translations"),
                   )
                      .then((exists) => {
                         // create one if it doesn't exist:
@@ -67,7 +66,7 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
                               .retry(() =>
                                  knex.schema.table(tableName, (t) => {
                                     t.json("translations");
-                                 })
+                                 }),
                               )
                               .then(() => {
                                  next();
@@ -90,7 +89,7 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
                   if (this.settings.supportMultilingual) return next();
 
                   req.retry(() =>
-                     knex.schema.hasColumn(tableName, this.columnName)
+                     knex.schema.hasColumn(tableName, this.columnName),
                   )
                      .then((exists) => {
                         return req
@@ -102,7 +101,7 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
 
                                  // alter default value of column
                                  if (exists) currCol.alter();
-                              })
+                              }),
                            )
                            .then(() => {
                               next();
@@ -115,7 +114,7 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
             (err) => {
                if (err) reject(err);
                else resolve();
-            }
+            },
          );
       });
    }
@@ -251,4 +250,4 @@ module.exports = class ABFieldLongText extends ABFieldLongTextCore {
          resolve();
       });
    }
-};
+}

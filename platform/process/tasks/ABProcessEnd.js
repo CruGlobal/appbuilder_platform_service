@@ -1,8 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessEndCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessEndCore.js"));
+import ABProcessEndCore from "../../../core/process/tasks/ABProcessEndCore.js";
 
-module.exports = class ABProcessEnd extends ABProcessEndCore {
+export default class ABProcessEnd extends ABProcessEndCore {
    /**
     * do()
     * this method actually performs the action for this task.
@@ -12,7 +10,7 @@ module.exports = class ABProcessEnd extends ABProcessEndCore {
     *                            false if task is still waiting
     */
    do(instance) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve /*, reject*/) => {
          // An End Event doesn't perform any other actions
          // than to signal it has successfully completed.
          // But it provides no Additional Tasks to work on.
@@ -22,4 +20,4 @@ module.exports = class ABProcessEnd extends ABProcessEndCore {
          resolve(true);
       });
    }
-};
+}

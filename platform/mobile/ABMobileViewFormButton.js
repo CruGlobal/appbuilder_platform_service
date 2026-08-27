@@ -1,8 +1,6 @@
-const ABMobileViewFormButtonCore = require("../../core/mobile/ABMobileViewFormButtonCore");
+import ABMobileViewFormButtonCore from "../../core/mobile/ABMobileViewFormButtonCore.js";
 
-module.exports = class ABMobileViewFormButton extends (
-   ABMobileViewFormButtonCore
-) {
+export default class ABMobileViewFormButton extends ABMobileViewFormButtonCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormButton extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

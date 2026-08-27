@@ -1,3 +1,5 @@
+import queryDefinitionFind from "./definitionFind.js";
+
 /**
  * definitionUpdate.js
  * modify a current definition
@@ -13,8 +15,7 @@
  * @return {Promise}
  *        resolve(): full {value} of the newly updated entry
  */
-const queryDefinitionFind = require("./definitionFind");
-module.exports = function (AB, req, cond, data, options = {}) {
+export default function definitionUpdate(AB, req, cond, data, options = {}) {
    return new Promise((resolve, reject) => {
       let tenantDB = req.queryTenantDB(reject);
       if (!tenantDB) {
@@ -75,4 +76,4 @@ module.exports = function (AB, req, cond, data, options = {}) {
          }
       });
    });
-};
+}

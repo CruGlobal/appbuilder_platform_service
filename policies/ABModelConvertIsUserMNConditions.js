@@ -10,7 +10,7 @@
  *
  */
 
-module.exports = function (AB, where, object, userData, next, req) {
+export default function (AB, where, object, userData, next, req) {
    // our QB Conditions look like:
    // {
    //   "glue": "and",
@@ -66,9 +66,9 @@ module.exports = function (AB, where, object, userData, next, req) {
       (err) => {
          next(err);
       },
-      req
+      req,
    );
-};
+}
 
 /**
  * @function findEntry

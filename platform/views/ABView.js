@@ -1,9 +1,9 @@
-const path = require("path");
+// import path from "path";
 
 // prettier-ignore
-const ABViewCore = require(path.join(__dirname, "..", "..", "core", "views", "ABViewCore.js"));
+import ABViewCore from "../../core/views/ABViewCore.js";
 
-module.exports = class ABView extends ABViewCore {
+export default class ABView extends ABViewCore {
    constructor(attributes, application, parent) {
       super(attributes, application, parent);
 
@@ -59,4 +59,4 @@ module.exports = class ABView extends ABViewCore {
    viewNew(values) {
       return new ABView(values, this.application, this);
    }
-};
+}

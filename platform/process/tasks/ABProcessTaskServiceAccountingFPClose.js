@@ -1,8 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const AccountingFPCloseCore = require(path.join(__dirname, "..", "..", "..", "core", "process","tasks", "ABProcessTaskServiceAccountingFPCloseCore.js"));
+import AccountingFPCloseCore from "../../../core/process/tasks/ABProcessTaskServiceAccountingFPCloseCore.js";
 
-module.exports = class AccountingFPClose extends AccountingFPCloseCore {
+export default class AccountingFPClose extends AccountingFPCloseCore {
    ////
    //// Process Instance Methods
    ////
@@ -61,4 +59,4 @@ module.exports = class AccountingFPClose extends AccountingFPCloseCore {
             });
       });
    }
-};
+}

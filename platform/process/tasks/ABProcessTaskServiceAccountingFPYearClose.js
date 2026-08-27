@@ -1,9 +1,5 @@
-const path = require("path");
-
-// prettier-ignore
-const AccountingFPYearCloseCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskServiceAccountingFPYearCloseCore.js"));
-
-module.exports = class AccountingFPYearClose extends AccountingFPYearCloseCore {
+import AccountingFPYearCloseCore from "../../../core/process/tasks/ABProcessTaskServiceAccountingFPYearCloseCore.js";
+export default class AccountingFPYearClose extends AccountingFPYearCloseCore {
    ////
    //// Process Instance Methods
    ////
@@ -58,4 +54,4 @@ module.exports = class AccountingFPYearClose extends AccountingFPYearCloseCore {
             });
       });
    }
-};
+}

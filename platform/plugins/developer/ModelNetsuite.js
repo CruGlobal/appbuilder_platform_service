@@ -1,14 +1,14 @@
-module.exports = function FNModelNetsuite({ ABModelPlugin }) {
+import _ from "lodash";
+import axios from "axios";
+import crypto from "crypto";
+// import moment from "moment";
+import OAuth from "oauth-1.0a";
+
+export default function FNModelNetsuite({ ABModelPlugin }) {
    //
    // ABModelAPINetsuite
    //
    // Represents the Data interface for an ABObjectApiNetsuite object.
-
-   const _ = require("lodash");
-   const axios = require("axios");
-   const crypto = require("crypto");
-   // const moment = require("moment");
-   const OAuth = require("oauth-1.0a");
 
    const CONCURRENCY_LIMIT = 20;
    // {int}
@@ -80,7 +80,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                break;
             case "Active":
                concurrency_history[key].push(
-                  Object.keys(RequestsActive).length
+                  Object.keys(RequestsActive).length,
                );
                break;
             case "Pending":
@@ -106,14 +106,14 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                displayLog.push(
                   `NetSuite API Concurrency: [${concurrency_history[key][
                      lastPendingCount
-                  ].join(",")}] ${key}`
+                  ].join(",")}] ${key}`,
                );
                return;
             } else {
                displayLog.push(
                   `NetSuite API Concurrency: [${concurrency_history[key].join(
-                     ","
-                  )}] ${key}`
+                     ",",
+                  )}] ${key}`,
                );
             }
          }
@@ -148,7 +148,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          packet.url,
          packet.method,
          packet.data,
-         packet.headers
+         packet.headers,
       );
 
       // register the request
@@ -202,7 +202,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
       url,
       method = "GET",
       data = null,
-      headers = {}
+      headers = {},
    ) {
       let p = new Promise((resolve, reject) => {
          concurrency_count++;
@@ -373,13 +373,13 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                         if (field.alias) {
                            prefix = "{alias}_Trans".replace(
                               "{alias}",
-                              field.alias
+                              field.alias,
                            );
                         } else {
                            prefix = "{databaseName}.{tableName}"
                               .replace(
                                  "{databaseName}",
-                                 field.object.dbSchemaName()
+                                 field.object.dbSchemaName(),
                               )
                               .replace("{tableName}", transTable);
                         }
@@ -400,11 +400,11 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                      } else {
                         req.notify.developer(
                            new Error(
-                              "running code to manage external multilingual Tables"
+                              "running code to manage external multilingual Tables",
                            ),
                            {
                               field,
-                           }
+                           },
                         );
                      }
                   } else {
@@ -427,7 +427,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                            'JSON_UNQUOTE(JSON_EXTRACT(JSON_EXTRACT({transCol}, SUBSTRING(JSON_UNQUOTE(JSON_SEARCH({transCol}, "one", "{languageCode}")), 1, 4)), \'$."{columnName}"\'))'
                               .replace(/{transCol}/g, transCol)
                               .replace(/{languageCode}/g, userData.languageCode)
-                              .replace(/{columnName}/g, field.columnName)
+                              .replace(/{columnName}/g, field.columnName),
                         );
                   }
                }
@@ -443,7 +443,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   var desiredOption = field.settings.options.filter(
                      (option) =>
                         option.id == condition.value ||
-                        option.text == condition.value
+                        option.text == condition.value,
                   )[0];
                   if (desiredOption) condition.value = desiredOption.id;
                }
@@ -1007,14 +1007,14 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                this.credentials,
                url,
                "POST",
-               baseValues
+               baseValues,
             );
          } catch (err) {
             this.processError(
                `POST ${url}`,
                `Error creatomg ${this.object.dbTableName()} data`,
                err,
-               req
+               req,
             );
          }
 
@@ -1044,7 +1044,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                populate: true,
             },
             condDefaults,
-            req
+            req,
          );
 
          return rows[0];
@@ -1079,7 +1079,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                this.AB,
                this.credentials,
                url,
-               "DELETE"
+               "DELETE",
             );
             // let location = response.headers["location"];
             // let parts = location.split(`${this.object.dbTableName()}/`);
@@ -1090,7 +1090,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                if (response?.headers?.["x-netsuite-jobid"]) {
                   req.log(
                      "Netsuite JobID:",
-                     response?.headers?.["x-netsuite-jobid"]
+                     response?.headers?.["x-netsuite-jobid"],
                   );
                }
             }
@@ -1104,7 +1104,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                `DELETE ${url}`,
                `Error deleting ${this.object.dbTableName()} data`,
                err,
-               req
+               req,
             );
          }
       }
@@ -1341,7 +1341,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
 
          let list = response.data.items;
@@ -1352,7 +1352,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             list = list.filter(
                (o) =>
                   o[field.settings.joinActiveField] == val ||
-                  o[field.settings.joinActiveField.toLowerCase()] == val
+                  o[field.settings.joinActiveField.toLowerCase()] == val,
             );
          }
 
@@ -1382,7 +1382,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          let listLinkObj = [];
          if (thatPKs.length > 0) {
             sql = `SELECT * FROM ${linkObj.dbTableName()}  WHERE ${thatPK} IN ( ${thatPKs.join(
-               ", "
+               ", ",
             )} )`;
 
             if (req) {
@@ -1397,7 +1397,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                {
                   q: sql,
                },
-               { Prefer: "transient" }
+               { Prefer: "transient" },
             );
 
             listLinkObj = responseLinkObj.data.items;
@@ -1472,7 +1472,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             // find these specific columns to populate
             cond.populate.forEach((col) => {
                let field = this.object.connectFields(
-                  (f) => f.columnName == col || f.id == col
+                  (f) => f.columnName == col || f.id == col,
                )[0];
                if (field) {
                   columns.push(field);
@@ -1483,7 +1483,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             req.log(
                `populating columns : ${columns
                   .map((f) => f.columnName)
-                  .join(", ")}`
+                  .join(", ")}`,
             );
          }
          let allColumns = [];
@@ -1585,7 +1585,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          var noRelationRules = [];
          cond.where = this.queryConditionsPluckRelationConditions(
             cond.where,
-            noRelationRules
+            noRelationRules,
          );
 
          // where is now our "SELECT ... WHERE {where}" values
@@ -1680,7 +1680,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   ON = ""; // AND HOW DO I FIND THE JOINTABLE.COLUMN in NETSUITE?
                   WHERE = `?? `; // want to find fieldLink's column IS NULL
                   let todoError = new Error(
-                     "TODO: figure out Netsuite many:many connections"
+                     "TODO: figure out Netsuite many:many connections",
                   );
                   throw todoError;
                   break;
@@ -1730,7 +1730,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             dList,
             hasCountUpdated = false,
             dOffset = 0,
-            dLimit = 0
+            dLimit = 0,
          ) => {
             // a recursive function to make sure we get all our expected results.
             // this will detect Netsuite's paging (hasMore) value and pull the
@@ -1756,7 +1756,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                {
                   q: sql,
                },
-               { Prefer: "transient" }
+               { Prefer: "transient" },
             );
             // response.data has these properties:
             //    links, count, hasMore, items, offset, totalResults
@@ -1784,7 +1784,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                      lookups.push(getData([], true, offset, apparentLimit));
                   }
                   req.log(
-                     `Netsuite Paging: spawning ${lookups.length} lookups`
+                     `Netsuite Paging: spawning ${lookups.length} lookups`,
                   );
                   let lookupResults = await Promise.all(lookups);
                   while (lookupResults.length > 0) {
@@ -1792,7 +1792,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   }
                   if (dList.length != response.data.totalResults) {
                      req.log(
-                        `Netsuite Paging Error: dList(${dList.length}) != Response(${response.data.totalResults})`
+                        `Netsuite Paging Error: dList(${dList.length}) != Response(${response.data.totalResults})`,
                      );
                   } else {
                      req.log("Netsuite Paging: valid number of results");
@@ -1827,7 +1827,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   `POST ${URL}`,
                   `Error finding ${this.object.dbTableName()} data`,
                   err,
-                  req
+                  req,
                );
             } else {
                throw err;
@@ -1853,7 +1853,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
       async findCount(cond, conditionDefaults, req) {
          if (!cond.jobID) {
             (req ?? console).log(
-               "ABModelApiNetsuite.findCount() called without jobID"
+               "ABModelApiNetsuite.findCount() called without jobID",
             );
             cond.jobID = cond.jobID ?? req?.jobID ?? this.AB.jobID();
          }
@@ -1939,7 +1939,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             } else {
                // must be many:many
                allColumns.push(
-                  this.syncColumnManyMany(id, field, colVals, baseValues, req)
+                  this.syncColumnManyMany(id, field, colVals, baseValues, req),
                );
             }
          });
@@ -1968,7 +1968,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
 
          let oldValues = response.data.items;
@@ -2040,15 +2040,15 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                      this.credentials,
                      url,
                      "PATCH",
-                     setVal
-                  )
+                     setVal,
+                  ),
                );
             } catch (err) {
                this.processError(
                   `PATCH ${url}`,
                   `Error updating ${this.object.dbTableName()} data`,
                   err,
-                  req
+                  req,
                );
             }
          });
@@ -2110,7 +2110,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
 
          let oldValues = response.data.items;
@@ -2124,7 +2124,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             oldValues = oldValues.filter(
                (o) =>
                   o[field.settings.joinActiveField] == val ||
-                  o[field.settings.joinActiveField.toLowerCase()] == val
+                  o[field.settings.joinActiveField.toLowerCase()] == val,
             );
          }
 
@@ -2202,7 +2202,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             let entityValue = baseValues[thisEntityField?.columnName];
             if (!entityValue) {
                let errorMissingEntity = new Error(
-                  "Could not find Entity value to make many:many joins"
+                  "Could not find Entity value to make many:many joins",
                );
                if (req) {
                   req.log(errorMissingEntity);
@@ -2217,7 +2217,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                req.log(newVal);
             }
             allRelates.push(
-               fetchConcurrent(this.AB, this.credentials, url, "POST", newVal)
+               fetchConcurrent(this.AB, this.credentials, url, "POST", newVal),
             );
 
             // check concurrency limit
@@ -2247,8 +2247,8 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          conditions.push(`${field.settings.joinTableReference}=${id}`);
          conditions.push(
             `${linkField.settings.joinTableReference} IN ( ${values.join(
-               ", "
-            )} )`
+               ", ",
+            )} )`,
          );
 
          // Workaround:  manually filter the inactive values
@@ -2268,7 +2268,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             {
                q: sql,
             },
-            { Prefer: "transient" }
+            { Prefer: "transient" },
          );
 
          let oldValues = response.data.items;
@@ -2279,7 +2279,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             oldValues = oldValues.filter(
                (o) =>
                   o[field.settings.joinActiveField] == val ||
-                  o[field.settings.joinActiveField.toLowerCase()] == val
+                  o[field.settings.joinActiveField.toLowerCase()] == val,
             );
          }
 
@@ -2304,7 +2304,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          let val = false;
          if (
             TruthyValues.indexOf(
-               field.settings.joinInActiveValue.toLowerCase()
+               field.settings.joinInActiveValue.toLowerCase(),
             ) > -1
          ) {
             val = true;
@@ -2324,8 +2324,8 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   this.credentials,
                   `${url}${pks[i]}`,
                   "PATCH",
-                  updateValue
-               )
+                  updateValue,
+               ),
             );
             parallelCount++;
             if (parallelCount >= CONCURRENCY_LIMIT) {
@@ -2353,8 +2353,8 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                   this.AB,
                   this.credentials,
                   `${url}${pks[i]}`,
-                  "DELETE"
-               )
+                  "DELETE",
+               ),
             );
             parallelCount++;
             if (parallelCount >= CONCURRENCY_LIMIT) {
@@ -2427,7 +2427,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             .forEach((f) => {
                if (baseValues[f.columnName]) {
                   baseValues[f.columnName] = new Date(
-                     baseValues[f.columnName]
+                     baseValues[f.columnName],
                   ).toISOString();
                }
             });
@@ -2470,7 +2470,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          if (req) {
             req.log(
                "ABModelApiNetsuite.update(): updating initial params:",
-               baseValues
+               baseValues,
             );
             req.performance.mark("update-base");
          }
@@ -2481,14 +2481,14 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
                this.credentials,
                url,
                "PATCH",
-               baseValues
+               baseValues,
             );
          } catch (err) {
             this.processError(
                `PATCH ${url}`,
                `Error updating ${this.object.dbTableName()} data`,
                err,
-               req
+               req,
             );
          }
 
@@ -2501,7 +2501,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
             id,
             updateRelationParams,
             baseValues,
-            req
+            req,
          );
 
          if (req) {
@@ -2555,7 +2555,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
 
          where = this.queryConditionsPluckRelationConditions(
             where,
-            noRelationRules
+            noRelationRules,
          );
 
          // Now walk through each of our conditions and turn them into their
@@ -2563,7 +2563,7 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          var whereParsed = this.queryConditionsParseConditions(
             where,
             conditionDefaults,
-            req
+            req,
          );
 
          // now join our where statements according to the .glue values
@@ -2575,4 +2575,4 @@ module.exports = function FNModelNetsuite({ ABModelPlugin }) {
          this.fromNetsuiteBool(data);
       }
    };
-};
+}

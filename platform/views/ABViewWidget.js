@@ -1,3 +1,3 @@
-const ABViewWidgetCore = require("../../core/views/ABViewWidgetCore");
+import ABViewWidgetCore from "../../core/views/ABViewWidgetCore.js";
 
-module.exports = class ABViewWidget extends ABViewWidgetCore {};
+export default class ABViewWidget extends ABViewWidgetCore {}

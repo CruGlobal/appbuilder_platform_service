@@ -4,11 +4,10 @@
  * An ABFieldBoolean defines a Date field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldFormulaCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldFormulaCore.js"));
+import ABFieldFormulaCore from "../../core/dataFields/ABFieldFormulaCore.js";
 
-module.exports = class ABFieldFormula extends ABFieldFormulaCore {
+export default class ABFieldFormula extends ABFieldFormulaCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -126,11 +125,11 @@ module.exports = class ABFieldFormula extends ABFieldFormulaCore {
 
       const connectObject = this.AB.objectByID(this.settings.object);
       const linkColumnId = this.object.fields(
-         (f) => f.id == this.settings.field
+         (f) => f.id == this.settings.field,
       )[0].settings.linkColumn;
       const linkColumn = connectObject.fields((f) => f.id == linkColumnId)[0];
       const operationCol = connectObject.fields(
-         (f) => f.id == this.settings.fieldLink
+         (f) => f.id == this.settings.fieldLink,
       )[0].columnName;
       const connectedWhere = `${linkColumn.conditionKey()} = ${this.dbPrefix()}.uuid`;
       // Filter by connection to this object
@@ -147,4 +146,4 @@ module.exports = class ABFieldFormula extends ABFieldFormulaCore {
       // COALESE here replaces null with 0 (when no connected records found)
       return `COALESCE((SELECT ${operation}(\`${operationCol}\`) FROM ${linkColumn.dbPrefix()} WHERE ${connectedWhere}${extraWhere}), 0)`;
    }
-};
+}

@@ -1,12 +1,8 @@
-// prettier-ignore
-const ABApplicationMobileCore = require("../core/ABApplicationMobileCore.js");
+import ABApplicationMobileCore from "../core/ABApplicationMobileCore.js";
+import ABViewPageMobile from "./mobile/ABMobilePage.js";
+// import ABViewManager from "./ABViewManager.js";
 
-const ABViewPageMobile = require("./mobile/ABMobilePage");
-// const ABViewManager = require("./ABViewManager");
-
-module.exports = class ABClassApplicationMobile extends (
-   ABApplicationMobileCore
-) {
+export default class ABClassApplicationMobile extends ABApplicationMobileCore {
    constructor(attributes, AB) {
       super(attributes, AB);
    }
@@ -25,4 +21,4 @@ module.exports = class ABClassApplicationMobile extends (
    pageNew(values) {
       return new ABViewPageMobile(values, this);
    }
-};
+}

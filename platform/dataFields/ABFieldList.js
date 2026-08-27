@@ -4,11 +4,10 @@
  * An ABFieldList defines a List field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldListCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldListCore.js"));
+import ABFieldListCore from "../../core/dataFields/ABFieldListCore.js";
 
-module.exports = class ABFieldList extends ABFieldListCore {
+export default class ABFieldList extends ABFieldListCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -101,7 +100,7 @@ module.exports = class ABFieldList extends ABFieldListCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -194,4 +193,4 @@ module.exports = class ABFieldList extends ABFieldListCore {
    isValidData(/* allParameters */) {
       return [];
    }
-};
+}

@@ -1,8 +1,6 @@
-const ABMobileViewFormSelectSingleCore = require("../../core/mobile/ABMobileViewFormSelectSingleCore");
+import ABMobileViewFormSelectSingleCore from "../../core/mobile/ABMobileViewFormSelectSingleCore.js";
 
-module.exports = class ABMobileViewFormSelectSingle extends (
-   ABMobileViewFormSelectSingleCore
-) {
+export default class ABMobileViewFormSelectSingle extends ABMobileViewFormSelectSingleCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormSelectSingle extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

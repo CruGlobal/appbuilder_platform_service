@@ -1,3 +1,5 @@
+import ABMLClassCore from "../core/ABMLClassCore.js";
+
 /**
  * ABMLClass
  * manage the multilingual information of an instance of a AB Defined Class.
@@ -8,9 +10,7 @@
  * This platform ABMLClass will define 2 methods that allow for the translation
  * untranslation of this data.
  */
-var ABMLClassCore = require("../core/ABMLClassCore");
-
-module.exports = class ABMLClass extends ABMLClassCore {
+export default class ABMLClass extends ABMLClassCore {
    constructor(fieldList, AB) {
       super(fieldList, AB);
    }
@@ -106,4 +106,4 @@ module.exports = class ABMLClass extends ABMLClassCore {
          });
       }
    }
-};
+}

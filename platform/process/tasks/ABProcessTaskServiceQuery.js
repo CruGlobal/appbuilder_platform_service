@@ -1,10 +1,5 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessTaskServiceQueryCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskServiceQueryCore.js"));
-
-module.exports = class ABProcessTaskServiceQuery extends (
-   ABProcessTaskServiceQueryCore
-) {
+import ABProcessTaskServiceQueryCore from "../../../core/process/tasks/ABProcessTaskServiceQueryCore.js";
+export default class ABProcessTaskServiceQuery extends ABProcessTaskServiceQueryCore {
    /**
     * @method exportData()
     * export the relevant data from this object necessary for the operation of
@@ -74,7 +69,7 @@ module.exports = class ABProcessTaskServiceQuery extends (
          // tell our QueryLanguage Operation to .do() it's thang
          this.qlObj
             .do(instance, trx, req)
-            .then((result) => {
+            .then((/* result */) => {
                // this resolves when all the operations are finished
                // so we are done!
 
@@ -93,4 +88,4 @@ module.exports = class ABProcessTaskServiceQuery extends (
             });
       });
    }
-};
+}

@@ -1,3 +1,5 @@
+import ABQLManagerCore from "../../core/ql/ABQLManagerCore.js";
+
 /*
  * ABQLManager
  *
@@ -5,8 +7,6 @@
  * AppBuilder.
  *
  */
-
-const ABQLManagerCore = require("../../core/ql/ABQLManagerCore.js");
 
 var ABQLManager = {
    /**
@@ -23,4 +23,4 @@ var ABQLManager = {
     */
    fromAttributes: ABQLManagerCore.fromAttributes,
 };
-module.exports = ABQLManager;
+export default ABQLManager;

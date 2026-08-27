@@ -1,15 +1,14 @@
+import _ from "lodash";
+import ABFieldNumberCore from "../../core/dataFields/ABFieldNumberCore.js";
+
 /*
  * ABFieldNumber
  *
  * An ABFieldNumber defines a Number field type.
  *
  */
-const _ = require("lodash");
-const path = require("path");
-// prettier-ignore
-const ABFieldNumberCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldNumberCore.js"));
 
-module.exports = class ABFieldNumber extends ABFieldNumberCore {
+export default class ABFieldNumber extends ABFieldNumberCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -61,14 +60,14 @@ module.exports = class ABFieldNumber extends ABFieldNumberCore {
                            currCol = t.integer(this.columnName);
                         } else {
                            var scale = parseInt(
-                              this.settings.typeDecimalPlaces
+                              this.settings.typeDecimalPlaces,
                            );
                            var precision = scale + 8;
 
                            currCol = t.decimal(
                               this.columnName,
                               precision,
-                              scale
+                              scale,
                            );
                         }
 
@@ -110,7 +109,7 @@ module.exports = class ABFieldNumber extends ABFieldNumberCore {
                         if (exists) {
                            currCol.alter();
                         }
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -200,12 +199,12 @@ module.exports = class ABFieldNumber extends ABFieldNumberCore {
             // if this is an integer:
             if (this.settings.typeDecimals == "none") {
                myParameter[this.columnName] = parseInt(
-                  myParameter[this.columnName]
+                  myParameter[this.columnName],
                );
             } else {
                var places = parseInt(this.settings.typeDecimalPlaces) || 2;
                myParameter[this.columnName] = parseFloat(
-                  parseFloat(myParameter[this.columnName]).toFixed(places)
+                  parseFloat(myParameter[this.columnName]).toFixed(places),
                );
             }
 
@@ -255,4 +254,4 @@ module.exports = class ABFieldNumber extends ABFieldNumberCore {
 
       return errors;
    }
-};
+}

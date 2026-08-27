@@ -1,3 +1,7 @@
+// import path from "path";
+import async from "async";
+// import _ from "lodash";
+
 /*
  * ABFieldConnect
  *
@@ -5,11 +9,8 @@
  *
  */
 
-const path = require("path");
-const async = require("async");
-const _ = require("lodash");
 // prettier-ignore
-const ABFieldConnectCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldConnectCore.js"));
+import ABFieldConnectCore from "../../core/dataFields/ABFieldConnectCore.js";
 
 /**
  * @method getJunctionInfo
@@ -22,7 +23,11 @@ const ABFieldConnectCore = require(path.join(__dirname, "..", "..", "core", "dat
  * 		targetColumnName {string}
  * }
  */
-function getJuntionInfo(objectName, linkObjectName) {
+function getJuntionInfo(/* objectName, linkObjectName */) {
+   throw new Error(
+      "getJuntionInfo() DEPRECIATED: sails models are no longer used",
+   );
+   /*
    var sourceModel = _.filter(
       sails.models,
       (m) => m.tableName == objectName,
@@ -82,9 +87,10 @@ function getJuntionInfo(objectName, linkObjectName) {
       sourceColumnName: sourceColumnName,
       targetColumnName: targetColumnName,
    };
+   */
 }
 
-module.exports = class ABFieldConnect extends ABFieldConnectCore {
+export default class ABFieldConnect extends ABFieldConnectCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -166,7 +172,7 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
    getConstraintName(tableName, columnName) {
       return (
          this.AB.rules.toJunctionTableFK(tableName, columnName) || ""
-      ).replace(/[^a-zA-Z0-9\_]/g, "");
+      ).replace(/[^a-zA-Z0-9_]/g, "");
    }
 
    ///
@@ -226,7 +232,6 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
          let indexType = "";
          let indexType2 = "";
 
-         let didExist = false;
          // {bool}
          // Temp attempt to debug a certain case where we are trying to
          // create an existing field.
@@ -244,7 +249,6 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
                         knex.schema.hasColumn(tableName, this.columnName),
                      )
                         .then((exists) => {
-                           didExist = exists;
                            if (exists) {
                               req.log(
                                  `   ... exists O[${this.object.name}].f[${this.columnName}] -> skip create attempt.`,
@@ -798,7 +802,7 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
                   super.migrateDrop(req, knex).then(() => resolve(), reject);
                })
                //	always pass, becuase ignore not found index errors.
-               .catch((err) => {
+               .catch((/* _err */) => {
                   // Drop column
                   super.migrateDrop(req, knex).then(() => resolve(), reject);
                });
@@ -934,7 +938,7 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* _allParameters */) {
       var errors = [];
 
       return errors;
@@ -959,12 +963,12 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
          );
          throw errorNoSails;
 
-         var juntionModel = getJuntionInfo(
-            this.object.tableName,
-            this.datasourceLink.tableName,
-         );
+         // var juntionModel = getJuntionInfo(
+         //    this.object.tableName,
+         //    this.datasourceLink.tableName,
+         // );
 
-         tableName = juntionModel.tableName;
+         // tableName = juntionModel.tableName;
       } else {
          var sourceObjectName, targetObjectName, columnName;
 
@@ -1064,7 +1068,7 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
    }
 
    getIndexColumnType(knex, tableName, columnName) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve /*, _reject */) => {
          knex.schema
             .raw(`SHOW COLUMNS FROM ${tableName} LIKE '${columnName}';`)
             .then((data) => {
@@ -1105,4 +1109,4 @@ module.exports = class ABFieldConnect extends ABFieldConnectCore {
          this.joinColumnNames().targetColumnName
       }`;
    }
-};
+}

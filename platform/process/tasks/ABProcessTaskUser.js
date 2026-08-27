@@ -1,8 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessTaskUserCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskUserCore.js"));
+import ABProcessTaskUserCore from "../../../core/process/tasks/ABProcessTaskUserCore.js";
 
-module.exports = class ABProcessTaskUser extends ABProcessTaskUserCore {
+export default class ABProcessTaskUser extends ABProcessTaskUserCore {
    ////
    //// Process Instance Methods
    ////
@@ -15,7 +13,7 @@ module.exports = class ABProcessTaskUser extends ABProcessTaskUserCore {
     *      resolve(true/false) : true if the task is completed.
     *                            false if task is still waiting
     */
-   do(instance) {
+   do(/* instance */) {
       return new Promise((resolve, reject) => {
          // err objects are returned as simple {} not instances of {Error}
          var error = new Error("Generic UserTask has nothing to do.");
@@ -23,4 +21,4 @@ module.exports = class ABProcessTaskUser extends ABProcessTaskUserCore {
          return;
       });
    }
-};
+}

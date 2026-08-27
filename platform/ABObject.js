@@ -1,26 +1,28 @@
-const path = require("path");
-// const _ = require("lodash");
-
-const ABObjectCore = require(
-   path.join(__dirname, "..", "core", "ABObjectCore.js"),
-);
-// const Model = require("objection").Model;
-// const ABModel = require(path.join(__dirname, "ABModel.js"));
+import path from "path";
+// import Objection from "objection";
+import Import_ABModelConvertSailsCondition from "../policies/ABModelConvertSailsCondition.js";
+import Import_ABModelConvertFilterCondition from "../policies/ABModelConvertFilterCondition.js";
+import Import_ABModelConvertDataCollectionCondition from "../policies/ABModelConvertDataCollectionCondition.js";
+import Import_ABModelConvertIsUserMNConditions from "../policies/ABModelConvertIsUserMNConditions.js";
+import Import_ABModelConvertSameAsUserConditions from "../policies/ABModelConvertSameAsUserConditions.js";
+import Import_ABModelConvertQueryConditions from "../policies/ABModelConvertQueryConditions.js";
+import Import_ABModelConvertQueryFieldConditions from "../policies/ABModelConvertQueryFieldConditions.js";
+import ABObjectCore from "../core/ABObjectCore.js";
 
 const ConversionList = [
-   require("../policies/ABModelConvertSailsCondition"),
-   require("../policies/ABModelConvertFilterCondition"),
+   Import_ABModelConvertSailsCondition,
+   Import_ABModelConvertFilterCondition,
 ];
 // {array} ConversionList
 // an array of policies for converting our condition formats into
 // our standard QueryBuilder format
 
 const PolicyList = [
-   require("../policies/ABModelConvertDataCollectionCondition"),
-   require("../policies/ABModelConvertIsUserMNConditions"),
-   require("../policies/ABModelConvertSameAsUserConditions"),
-   require("../policies/ABModelConvertQueryConditions"),
-   require("../policies/ABModelConvertQueryFieldConditions"),
+   Import_ABModelConvertDataCollectionCondition,
+   Import_ABModelConvertIsUserMNConditions,
+   Import_ABModelConvertSameAsUserConditions,
+   Import_ABModelConvertQueryConditions,
+   Import_ABModelConvertQueryFieldConditions,
 ];
 // {array} PolicyList
 // an array of the conversion policies we run on our conditions to
@@ -30,7 +32,7 @@ const PolicyList = [
 // var __ModelPool = {}; // reuse any previously created Model connections
 // to minimize .knex bindings (and connection pools!)
 
-module.exports = class ABClassObject extends ABObjectCore {
+export default class ABClassObject extends ABObjectCore {
    constructor(attributes, AB) {
       super(attributes || {}, AB);
 
@@ -730,404 +732,6 @@ module.exports = class ABClassObject extends ABObjectCore {
    /// DB Model Services
    ///
 
-   /* modelName() {
-      return this.id.replace(/[^a-zA-Z]/g, ""); // remove special characters and numbers to allow model name to be class name
-
-      // let appName = this.application.name,
-      // 	tableName = this.dbTableName(true);
-
-      // return '#appName##tableName#'
-      // 		.replace('#appName#', appName)
-      // 		.replace('#tableName#', tableName)
-      // 		.replace(/[^a-zA-Z0-9]/g, ""); // remove special characters to allow model name to be class name
-
-      // return this.tableName.replace(/[^a-zA-Z0-9]/g, ""); // remove special characters to allow model name to be class name
-   }
-*/
-   /**
-    * model()
-    * return an instance of ABModel that can operate the data for this ABObject
-    * @return {ABModel}
-    */
-   // model() {
-   //    return super.model();
-   // }
-
-   /**
-    * @method model
-    * return an objection.js model for working with the data in this Object.
-    * @return {Objection.Model}
-    */
-   /*
-   modelKnex() {
-      var modelName = this.modelName(),
-         tableName = this.dbTableName(true);
-
-      if (!__ModelPool[modelName]) {
-         var knex = ABMigration.connection(
-            this.isImported ? this.connName : undefined
-         );
-
-         // Compile our jsonSchema from our DataFields
-         // jsonSchema is only used by Objection.js to validate data before
-         // performing an insert/update.
-         // This does not DEFINE the DB Table.
-         var jsonSchema = {
-            type: "object",
-            required: [],
-            properties: this.modelDefaultFields(),
-         };
-         var currObject = this;
-         var allFields = this.fields();
-         allFields.forEach(function (f) {
-            f.jsonSchemaProperties(jsonSchema.properties);
-         });
-
-         class MyModel extends Model {
-            // Table name is the only required property.
-            static get tableName() {
-               return tableName;
-            }
-
-            static get idColumn() {
-               return currObject.PK();
-            }
-
-            static get jsonSchema() {
-               return jsonSchema;
-            }
-
-            // Move relation setup to below
-            // static get relationMappings () {
-            // }
-         }
-
-         // rename class name
-         // NOTE: prevent cache same table in difference apps
-         Object.defineProperty(MyModel, "name", { value: modelName });
-
-         __ModelPool[modelName] = MyModel;
-
-         // NOTE : there is relation setup here because prevent circular loop when get linked object.
-         // have to define object models to __ModelPool[tableName] first
-         __ModelPool[modelName].relationMappings = () => {
-            return this.modelRelation();
-         };
-
-         // bind knex connection to object model
-         // NOTE : when model is bound, then relation setup will be executed
-         __ModelPool[modelName] = __ModelPool[modelName].bindKnex(knex);
-      }
-
-      return __ModelPool[modelName];
-   }
-   */
-
-   /*   modelRelation() {
-      var tableName = this.dbTableName(true);
-
-      // Compile our relations from our DataFields
-      var relationMappings = {};
-
-      var connectFields = this.connectFields();
-
-      // linkObject: '', // ABObject.id
-      // linkType: 'one', // one, many
-      // linkViaType: 'many' // one, many
-
-      connectFields.forEach((f) => {
-         // find linked object name
-         // var linkObject = this.application.objects((obj) => { return obj.id == f.settings.linkObject; })[0];
-         let linkObject = this.AB.objectByID(f.settings.linkObject);
-         if (linkObject == null) return;
-
-         var linkField = f.fieldLink;
-         if (linkField == null) return;
-
-         var linkModel = linkObject.model();
-         var relationName = f.relationName();
-
-         // 1:1
-         if (f.settings.linkType == "one" && f.settings.linkViaType == "one") {
-            var sourceTable, targetTable, targetPkName, relation, columnName;
-
-            if (f.settings.isSource == true) {
-               sourceTable = tableName;
-               targetTable = linkObject.dbTableName(true);
-               targetPkName = f.indexField
-                  ? f.indexField.columnName
-                  : linkObject.PK();
-               relation = Model.BelongsToOneRelation;
-               columnName = f.columnName;
-            } else {
-               sourceTable = linkObject.dbTableName(true);
-               targetTable = tableName;
-               targetPkName = f.indexField
-                  ? f.indexField.columnName
-                  : this.PK();
-               relation = Model.HasOneRelation;
-               columnName = linkField.columnName;
-            }
-
-            relationMappings[relationName] = {
-               relation: relation,
-               modelClass: linkModel,
-               join: {
-                  from: "{targetTable}.{primaryField}"
-                     .replace("{targetTable}", targetTable)
-                     .replace("{primaryField}", targetPkName),
-
-                  to: "{sourceTable}.{field}"
-                     .replace("{sourceTable}", sourceTable)
-                     .replace("{field}", columnName),
-               },
-            };
-         }
-         // M:N
-         else if (
-            f.settings.linkType == "many" &&
-            f.settings.linkViaType == "many"
-         ) {
-            // get join table name
-            let joinTablename = f.joinTableName(true),
-               joinColumnNames = f.joinColumnNames(),
-               sourceTableName,
-               sourcePkName,
-               targetTableName;
-
-            sourceTableName = f.object.dbTableName(true);
-            sourcePkName = f.object.PK();
-            targetTableName = linkObject.dbTableName(true);
-            targetPkName = linkObject.PK();
-
-            let indexField = f.indexField;
-            if (indexField) {
-               if (indexField.object.id == f.object.id) {
-                  sourcePkName = indexField.columnName;
-               } else if (indexField.object.id == linkObject.id) {
-                  targetPkName = indexField.columnName;
-               }
-            }
-
-            let indexField2 = f.indexField2;
-            if (indexField2) {
-               if (indexField2.object.id == f.object.id) {
-                  sourcePkName = indexField2.columnName;
-               } else if (indexField2.object.id == linkObject.id) {
-                  targetPkName = indexField2.columnName;
-               }
-            }
-
-            // if (f.settings.isSource == true) {
-            // 	sourceTableName = f.object.dbTableName(true);
-            // 	sourcePkName = f.object.PK();
-            // 	targetTableName = linkObject.dbTableName(true);
-            // 	targetPkName = linkObject.PK();
-            // }
-            // else {
-            // 	sourceTableName = linkObject.dbTableName(true);
-            // 	sourcePkName = linkObject.PK();
-            // 	targetTableName = f.object.dbTableName(true);
-            // 	targetPkName = f.object.PK();
-            // }
-
-            relationMappings[relationName] = {
-               relation: Model.ManyToManyRelation,
-               modelClass: linkModel,
-               join: {
-                  from: "{sourceTable}.{primaryField}"
-                     .replace("{sourceTable}", sourceTableName)
-                     .replace("{primaryField}", sourcePkName),
-
-                  through: {
-                     from: "{joinTable}.{sourceColName}"
-                        .replace("{joinTable}", joinTablename)
-                        .replace(
-                           "{sourceColName}",
-                           joinColumnNames.sourceColumnName
-                        ),
-
-                     to: "{joinTable}.{targetColName}"
-                        .replace("{joinTable}", joinTablename)
-                        .replace(
-                           "{targetColName}",
-                           joinColumnNames.targetColumnName
-                        ),
-                  },
-
-                  to: "{targetTable}.{primaryField}"
-                     .replace("{targetTable}", targetTableName)
-                     .replace("{primaryField}", targetPkName),
-               },
-            };
-         }
-         // 1:M
-         else if (
-            f.settings.linkType == "one" &&
-            f.settings.linkViaType == "many"
-         ) {
-            relationMappings[relationName] = {
-               relation: Model.BelongsToOneRelation,
-               modelClass: linkModel,
-               join: {
-                  from: "{sourceTable}.{field}"
-                     .replace("{sourceTable}", tableName)
-                     .replace("{field}", f.columnName),
-
-                  to: "{targetTable}.{primaryField}"
-                     .replace("{targetTable}", linkObject.dbTableName(true))
-                     .replace(
-                        "{primaryField}",
-                        f.indexField ? f.indexField.columnName : linkObject.PK()
-                     ),
-               },
-            };
-         }
-         // M:1
-         else if (
-            f.settings.linkType == "many" &&
-            f.settings.linkViaType == "one"
-         ) {
-            relationMappings[relationName] = {
-               relation: Model.HasManyRelation,
-               modelClass: linkModel,
-               join: {
-                  from: "{sourceTable}.{primaryField}"
-                     .replace("{sourceTable}", tableName)
-                     .replace(
-                        "{primaryField}",
-                        f.indexField ? f.indexField.columnName : this.PK()
-                     ),
-
-                  to: "{targetTable}.{field}"
-                     .replace("{targetTable}", linkObject.dbTableName(true))
-                     .replace("{field}", linkField.columnName),
-               },
-            };
-         }
-      });
-
-      return relationMappings;
-   }
-
-   modelDefaultFields() {
-      return {
-         uuid: { type: "string" },
-         created_at: {
-            type: ["null", "string"],
-            pattern: AppBuilder.rules.SQLDateTimeRegExp,
-         },
-         updated_at: {
-            type: ["null", "string"],
-            pattern: AppBuilder.rules.SQLDateTimeRegExp,
-         },
-         properties: { type: ["null", "object"] },
-      };
-   }
-*/
-   /**
-    * @method modelRefresh
-    * when the definition of a model changes, we need to clear our cached
-    * model definitions.
-    * NOTE: called from our ABField.migrateXXX methods.
-    */
-   /*   modelRefresh() {
-      var modelName = this.modelName();
-      delete __ModelPool[modelName];
-
-      ABMigration.refreshObject(this);
-   }
-*/
-   /**
-    * @method queryFind
-    * return an Objection.js QueryBuilder (basically a knex QueryBuilder with
-    * a few additional methods).
-    * NOTE: ObjectQuery overrides this to return queries already joined with
-    * multiple tables.
-    * @param {obj} options
-    *		A set of optional conditions to add to the find():
-    * @param {obj} userData
-    * 		The current user's data (which can be used in our conditions.)
-    * @return {QueryBuilder}
-    */
-   /*   queryFind(options = {}, userData) {
-      let query = this.model().query();
-
-      return Promise.resolve()
-         .then(() => this.populateFindConditions(query, options, userData))
-         .then(() => {
-            try {
-               // sails.log.debug(
-               //    "ABClassObject.queryFind - SQL:",
-               // query.toString();
-               // );
-            } catch (e) {
-               // sails.log.debug('ABClassObject.queryFind - SQL:', query.debug() );
-            }
-
-            return query;
-         });
-   }
-*/
-   /**
-    * @method queryCount
-    * return an Objection.js QueryBuilder that is already setup for this object.
-    * NOTE: ObjectQuery overrides this to return queries already joined with
-    * multiple tables.
-    * @param {obj} options
-    *		A set of optional conditions to add to the find():
-    * @param {obj} userData
-    * 		The current user's data (which can be used in our conditions.)
-    * @param {string} tableName
-    * 		[optional] the table name to use for the count
-    * @return {QueryBuilder}
-    */
-   /*   queryCount(options = {}, userData, tableName) {
-      if (_.isUndefined(tableName)) {
-         tableName = this.model().tableName;
-      }
-
-      // we don't include relative data on counts:
-      // and get rid of any .sort, .offset, .limit
-      options.populate = false;
-      delete options.sort;
-      delete options.offset;
-      delete options.limit;
-
-      // // added tableName to id because of non unique field error
-      // return this.queryFind(options, userData)
-      // .then((query)=>{
-      //     // TODO:: we need to figure out how to return the count not the full data
-      //     return query.length;
-      // });
-
-      let query = this.model().query();
-
-      return Promise.resolve()
-         .then(() => this.populateFindConditions(query, options, userData))
-         .then(() => {
-            let pkField = `${tableName}.${this.PK()}`;
-
-            query = query
-               .eager("")
-               .clearSelect()
-               .countDistinct(`${pkField} as count`)
-               .whereNotNull(pkField)
-               .first();
-
-            try {
-               // sails.log.debug(
-               //    "ABClassObject.queryCount - SQL:",
-               //    query.toString()
-               // );
-            } catch (e) {
-               // sails.log.debug('ABClassObject.queryFind - SQL:', query.debug() );
-            }
-
-            return query;
-         });
-   }
-*/
    /**
     * @method requestParams
     * Parse through the given parameters and return a subset of data that
@@ -1270,42 +874,6 @@ module.exports = class ABClassObject extends ABObjectCore {
                },
                req,
             );
-            /*
-             * OLD FORMAT:
-             *
-            // run the policy on my data
-            // policy(req, res, cb)
-            //    req.options._where
-            //  req.user.data
-            let myReq = {
-               AB: this.AB,
-               options: {
-                  _where: _where,
-               },
-               user: {
-                  data: userData,
-               },
-               param: (id) => {
-                  if (id == "appID") {
-                     console.error(
-                        "appID being requested from processPolicy: WHY?"
-                     );
-                     return this.application.id;
-                  } else if (id == "objID") {
-                     return this.id;
-                  }
-               },
-            };
-
-            policy(myReq, {}, (err) => {
-               if (err) {
-                  cb(err);
-               } else {
-                  // try the next one
-                  processPolicy(indx + 1, cb);
-               }
-            });
-            */
          }
       };
 
@@ -1404,74 +972,6 @@ module.exports = class ABClassObject extends ABObjectCore {
       });
    }
 
-   /**
-    * @method processFilterPolicy
-    *
-    * @return Promise
-    */
-   /*   processFilterPolicy(_where, userData) {
-      // list of all the condition filtering policies we want our defined
-      // filters to pass through:
-      const PolicyList = [
-         require("../../policies/ABModelConvertSameAsUserConditions"),
-         require("../../policies/ABModelConvertQueryConditions"),
-         require("../../policies/ABModelConvertQueryFieldConditions"),
-      ];
-
-      // These older policies require an incoming req object with some
-      // expected functionality.  The myReq is a mock object to mimic
-      // those legacy features with our current capabilities.
-      let myReq = {
-         options: {
-            _where: _where,
-         },
-         user: {
-            data: userData,
-         },
-         param: (id) => {
-            if (id == "appID") {
-               console.error("appID being requested from processPolicy: WHY?");
-               return this.application.id;
-            } else if (id == "objID") {
-               return this.id;
-            }
-         },
-      };
-
-      // run the options.where through our existing policy filters
-      // get array of policies to run through
-      let processPolicy = (indx, cb) => {
-         if (indx >= PolicyList.length) {
-            cb();
-         } else {
-            // load the policy
-            let policy = PolicyList[indx];
-
-            // run the policy on my data
-            policy(myReq, {}, (err) => {
-               if (err) {
-                  cb(err);
-               } else {
-                  // try the next one
-                  processPolicy(indx + 1, cb);
-               }
-            });
-         }
-      };
-
-      return new Promise((resolve, reject) => {
-         // run each One
-         processPolicy(0, (err) => {
-            // now that I'm through with updating our Conditions
-            if (err) {
-               reject(err);
-            } else {
-               resolve();
-            }
-         });
-      });
-   }
-*/
    selectFormulaFields(query) {
       // Formula fields
       let formulaFields = this.fields((f) => f.key == "formula");
@@ -1665,4 +1165,4 @@ module.exports = class ABClassObject extends ABObjectCore {
          return false;
       return true;
    }
-};
+}

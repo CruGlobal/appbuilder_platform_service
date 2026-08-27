@@ -1,8 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessTriggerCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTriggerCore.js"));
+import ABProcessTriggerCore from "../../../core/process/tasks/ABProcessTriggerCore.js";
 
-module.exports = class ABProcessTaskTrigger extends ABProcessTriggerCore {
+export default class ABProcessTaskTrigger extends ABProcessTriggerCore {
    trigger(data, req, instanceKey, rowLogID = null) {
       // call my process.newInstance with
       if (!this.process) {
@@ -41,4 +39,4 @@ module.exports = class ABProcessTaskTrigger extends ABProcessTriggerCore {
             throw error;
          });
    }
-};
+}

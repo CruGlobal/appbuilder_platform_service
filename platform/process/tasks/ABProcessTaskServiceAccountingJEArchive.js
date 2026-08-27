@@ -1,8 +1,5 @@
-const path = require("path");
-// prettier-ignore
-const AccountingJEArchiveCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskServiceAccountingJEArchiveCore.js"));
-
-module.exports = class AccountingFPYearClose extends AccountingJEArchiveCore {
+import AccountingJEArchiveCore from "../../../core/process/tasks/ABProcessTaskServiceAccountingJEArchiveCore.js";
+export default class AccountingFPYearClose extends AccountingJEArchiveCore {
    ////
    //// Process Instance Methods
    ////
@@ -180,4 +177,4 @@ module.exports = class AccountingFPYearClose extends AccountingJEArchiveCore {
       this.log(instance, "JE Archive process successfully");
       return true;
    }
-};
+}

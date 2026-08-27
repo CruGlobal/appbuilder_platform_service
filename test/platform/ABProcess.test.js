@@ -1,6 +1,6 @@
-const assert = require("assert");
-const sinon = require("sinon");
-const proxyquire = require("proxyquire");
+import assert from "assert";
+import sinon from "sinon";
+import proxyquire from "proxyquire";
 
 const hash = sinon.fake.returns("hash");
 const xml2js = sinon.fake.returns({ test: "test" });

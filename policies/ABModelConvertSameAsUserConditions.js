@@ -9,7 +9,7 @@
  *
  */
 
-module.exports = function (AB, where, object, userData, next, req) {
+export default function (AB, where, object, userData, next, req) {
    // our QB Conditions look like:
    // {
    //   "glue": "and",
@@ -65,9 +65,9 @@ module.exports = function (AB, where, object, userData, next, req) {
       (err) => {
          next(err);
       },
-      req
+      req,
    );
-};
+}
 
 /**
  * @function findEntry
@@ -188,7 +188,7 @@ function parseCondition(AB, where, object, userData, cb, req) {
                            cond.key = field.columnName;
                         } else {
                            var error = new Error(
-                              `Unable to resolve [${cond.key}] into a valid field for object[${object.label}][${object.id}]`
+                              `Unable to resolve [${cond.key}] into a valid field for object[${object.label}][${object.id}]`,
                            );
                            AB.notify.developer(error, {
                               context:
@@ -236,10 +236,10 @@ function parseCondition(AB, where, object, userData, cb, req) {
                   }
                },
                [],
-               req
+               req,
             ); // processLookup()
          },
-         req
+         req,
       ); // processObjectWithUser()
    } // if !cond
 }
@@ -314,7 +314,7 @@ function processObjectWithUser(obj, listAlreadyChecked, userData, cb, req) {
          listAlreadyChecked,
          userData,
          cb,
-         req
+         req,
       );
    } // if !user
 } // function  processObjectWithUser()
@@ -430,7 +430,7 @@ function ProcessField(list, obj, listAlreadyChecked, userData, cb, req) {
                } // end switch
             } // end if(result)
          },
-         req
+         req,
       ); // ProcessObjectWithUser()
    } // if list.length > 0
 } // end ProcessField()
@@ -493,8 +493,8 @@ function processLookup(AB, list, userData, cb, data, req) {
             .findAll(
                { where: lookup.cond, skipExistingConditions: true },
                userData,
-               req
-            )
+               req,
+            ),
       )
          .then((rows) => {
             // now pass these back to the next lookup:
@@ -538,8 +538,8 @@ function processLookup(AB, list, userData, cb, data, req) {
                .findAll(
                   { where: cond, skipExistingConditions: true },
                   userData,
-                  req
-               ) // just send the user data
+                  req,
+               ), // just send the user data
       )
          .then((items) => {
             // now pass these back to the next lookup:

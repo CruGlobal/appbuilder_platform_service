@@ -1,6 +1,7 @@
-const FilterComplexCore = require("../core/FilterComplexCore");
+import FilterComplexCore from "../core/FilterComplexCore.js";
+
 // 3) Just a test to ensure our tests are running the correct version:
-module.exports = class FilterComplex extends FilterComplexCore {
+export default class FilterComplex extends FilterComplexCore {
    constructor(idBase, AB) {
       idBase = idBase || "ab_row_filter";
 
@@ -71,4 +72,4 @@ module.exports = class FilterComplex extends FilterComplexCore {
    toShortHand() {
       return "Add Filters";
    }
-};
+}

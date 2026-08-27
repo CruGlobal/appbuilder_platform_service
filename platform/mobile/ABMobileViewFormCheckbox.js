@@ -1,8 +1,6 @@
-const ABMobileViewFormCheckboxCore = require("../../core/mobile/ABMobileViewFormCheckboxCore");
+import ABMobileViewFormCheckboxCore from "../../core/mobile/ABMobileViewFormCheckboxCore.js";
 
-module.exports = class ABMobileViewFormCheckbox extends (
-   ABMobileViewFormCheckboxCore
-) {
+export default class ABMobileViewFormCheckbox extends ABMobileViewFormCheckboxCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormCheckbox extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

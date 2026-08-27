@@ -4,11 +4,10 @@
  * An ABFieldJson defines a JSON field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldJsonCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldJsonCore.js"));
+import ABFieldJsonCore from "../../core/dataFields/ABFieldJsonCore.js";
 
-module.exports = class ABFieldJson extends ABFieldJsonCore {
+export default class ABFieldJson extends ABFieldJsonCore {
    // constructor(values, object) {
    //    super(values, object);
    // }
@@ -42,7 +41,7 @@ module.exports = class ABFieldJson extends ABFieldJsonCore {
                         currCol.nullable();
 
                         if (exists) currCol.alter();
-                     })
+                     }),
                   )
                   .then(() => {
                      resolve();
@@ -97,4 +96,4 @@ module.exports = class ABFieldJson extends ABFieldJsonCore {
       }
       return [];
    }
-};
+}

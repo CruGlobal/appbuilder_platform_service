@@ -1,6 +1,6 @@
-const ABView = require("./views/ABView");
+import ABView from "./views/ABView.js";
 
-module.exports = class ABViewManager {
+export default class ABViewManager {
    static allViews(fn = () => true) {
       let views = [];
       views.push(ABView);
@@ -11,4 +11,4 @@ module.exports = class ABViewManager {
    static newView(values, application, parent) {
       return new ABView(values, application, parent);
    }
-};
+}

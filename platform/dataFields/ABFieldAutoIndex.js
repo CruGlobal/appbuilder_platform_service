@@ -4,11 +4,10 @@
  * An ABFieldAutoIndex defines a string field type.
  *
  */
-const path = require("path");
 // prettier-ignore
-const ABFieldAutoIndexCore = require(path.join(__dirname, "..", "..", "core", "dataFields", "ABFieldAutoIndexCore.js"));
+import ABFieldAutoIndexCore from "../../core/dataFields/ABFieldAutoIndexCore.js";
 
-module.exports = class ABFieldAutoIndex extends ABFieldAutoIndexCore {
+export default class ABFieldAutoIndex extends ABFieldAutoIndexCore {
    constructor(values, object) {
       super(values, object);
    }
@@ -33,7 +32,7 @@ module.exports = class ABFieldAutoIndex extends ABFieldAutoIndexCore {
 
          // if this column doesn't already exist (you never know)
          req.retry(() =>
-            knex.schema.hasColumn(tableName, this.columnName)
+            knex.schema.hasColumn(tableName, this.columnName),
          ).then((exists) => {
             return req
                .retry(() =>
@@ -42,7 +41,7 @@ module.exports = class ABFieldAutoIndex extends ABFieldAutoIndexCore {
                      if (!exists)
                         t.specificType(
                            this.columnName,
-                           "INT UNSIGNED NULL AUTO_INCREMENT UNIQUE"
+                           "INT UNSIGNED NULL AUTO_INCREMENT UNIQUE",
                         );
 
                      // var currCol = t.integer(this.columnName)
@@ -52,7 +51,7 @@ module.exports = class ABFieldAutoIndex extends ABFieldAutoIndexCore {
                      // 	currCol.alter();
                      // else
                      // 	currCol.unique();
-                  })
+                  }),
                )
                .then(() => {
                   resolve();
@@ -139,9 +138,9 @@ module.exports = class ABFieldAutoIndex extends ABFieldAutoIndexCore {
     * @param {obj} allParameters  a key=>value hash of the inputs to parse.
     * @return {array}
     */
-   isValidData(allParameters) {
+   isValidData(/* _allParameters */) {
       var errors = [];
 
       return errors;
    }
-};
+}

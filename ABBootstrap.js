@@ -1,20 +1,23 @@
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+
+import queryAllDefinitions from "./queries/allDefinitions.js";
+import queryPluginLinks from "./queries/allPluginLinks.js";
+import Create from "./queries/definitionCreate.js";
+import Destroy from "./queries/definitionDestroy.js";
+import Find from "./queries/definitionFind.js";
+import Update from "./queries/definitionUpdate.js";
+import ABFactory from "./ABFactory.js";
+import https from "http";
+import vm from "vm";
+
 /*
  * ABBootstrap
  * This object manages preparing an ABFactory for a Specific Tenant.
  */
 
-const queryAllDefinitions = require("./queries/allDefinitions");
 // {sql} queryAllDefinitions
 // the sql query to load all the Definitions from a specific tenant.
-
-const queryPluginLinks = require("./queries/allPluginLinks");
-
-const Create = require("./queries/definitionCreate");
-const Destroy = require("./queries/definitionDestroy");
-const Find = require("./queries/definitionFind");
-const Update = require("./queries/definitionUpdate");
-
-const ABFactory = require("./ABFactory");
 
 var Factories = {
    /* tenantID : { ABFactory }} */
@@ -68,9 +71,6 @@ var KnexPool = {
 // The Knex connection won't change due to the Definition updates, so let's
 // cache the KnexPools here and reuse them.
 
-const https = require("http");
-const vm = require("vm");
-
 //http://192.168.1.56:8080/assets/ab_plugins/ab-object-netsuite-api/ABObjectNetsuiteAPI.js
 //http://web/assets/ab_plugins/ab-object-netsuite-api/ABObjectNetsuiteAPI.js
 function requireFromURL(url) {
@@ -119,7 +119,7 @@ function requireFromURL(url) {
                resolve(
                   module.exports.Plugin ||
                      module.exports.default ||
-                     module.exports
+                     module.exports,
                );
             } catch (error) {
                console.error(data);
@@ -156,7 +156,7 @@ async function setupFactory(req, tenantID) {
          hashDefs,
          DefinitionManager,
          req.toABFactoryReq(),
-         KnexPool[tenantID]
+         KnexPool[tenantID],
       );
 
       newFactory.id = tenantID;
@@ -203,7 +203,7 @@ async function setupFactory(req, tenantID) {
    }
    // if we get here, we had no definitions for this tenant
    let errorNoDefinitions = new Error(
-      `No Definitions returned for tenant[${tenantID}]`
+      `No Definitions returned for tenant[${tenantID}]`,
    );
    req.notify.developer(errorNoDefinitions, {
       context: "ABBootstrap.queryAllDefinitions()",
@@ -212,12 +212,12 @@ async function setupFactory(req, tenantID) {
    throw errorNoDefinitions;
 }
 
-module.exports = {
+export default {
    init: async (req) => {
       var tenantID = req.tenantID();
       if (!tenantID) {
          var errorNoTenantID = new Error(
-            "ABBootstrap.init(): could not resolve tenantID for request"
+            "ABBootstrap.init(): could not resolve tenantID for request",
          );
          throw errorNoTenantID;
       }

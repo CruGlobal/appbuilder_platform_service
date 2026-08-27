@@ -1,3 +1,6 @@
+import ABQLRowUpdateCore from "../../core/ql/ABQLRowUpdateCore.js";
+import _ from "lodash";
+
 /*
  * ABQLRowUpdate
  *
@@ -5,9 +8,6 @@
  * Row of data.
  *
  */
-
-const ABQLRowUpdateCore = require("../../core/ql/ABQLRowUpdateCore.js");
-const _ = require("lodash");
 
 class ABQLRowUpdate extends ABQLRowUpdateCore {
    // constructor(attributes, prevOP, task, application) {
@@ -87,7 +87,7 @@ class ABQLRowUpdate extends ABQLRowUpdateCore {
                var field = context.object.fieldByID(value.fieldId);
                if (!field) {
                   var missingFieldError = new Error(
-                     `ABQLRowUpdate could not find field[${value.fieldId}] in provided object[${context.object.id}]`
+                     `ABQLRowUpdate could not find field[${value.fieldId}] in provided object[${context.object.id}]`,
                   );
                   reject(missingFieldError);
                   return;
@@ -103,17 +103,16 @@ class ABQLRowUpdate extends ABQLRowUpdateCore {
                         opt &&
                         (opt.key == value.value ||
                            opt.value == value.value ||
-                           opt.label == value.value)
+                           opt.label == value.value),
                   )[0];
 
                   // pull/set the process value
                   if (processField) {
-                     updateParams[
-                        field.columnName
-                     ] = this.task.process.processData(this.task, [
-                        instance,
-                        processField.key,
-                     ]);
+                     updateParams[field.columnName] =
+                        this.task.process.processData(this.task, [
+                           instance,
+                           processField.key,
+                        ]);
                   }
                }
                // Set custom value
@@ -127,9 +126,9 @@ class ABQLRowUpdate extends ABQLRowUpdateCore {
             var id = context.data[PK];
 
             // call .requestParams to set default values and reformat value properly
-            var updateParams = _.merge(
+            updateParams = _.merge(
                context.object.requestParams(updateParams),
-               context.object.requestRelationParams(updateParams)
+               context.object.requestRelationParams(updateParams),
             );
 
             // Perform the update.
@@ -165,7 +164,7 @@ class ABQLRowUpdate extends ABQLRowUpdateCore {
                   // this returns the fully populated & updated row
                   nextContext.data = updatedRow;
                   resolve(nextContext);
-               }
+               },
             );
          });
       });
@@ -178,4 +177,4 @@ class ABQLRowUpdate extends ABQLRowUpdateCore {
    }
 }
 
-module.exports = ABQLRowUpdate;
+export default ABQLRowUpdate;

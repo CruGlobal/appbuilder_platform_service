@@ -1,8 +1,6 @@
-const ABMobileViewFormSelectMultipleCore = require("../../core/mobile/ABMobileViewFormSelectMultipleCore");
+import ABMobileViewFormSelectMultipleCore from "../../core/mobile/ABMobileViewFormSelectMultipleCore.js";
 
-module.exports = class ABMobileViewFormSelectMultiple extends (
-   ABMobileViewFormSelectMultipleCore
-) {
+export default class ABMobileViewFormSelectMultiple extends ABMobileViewFormSelectMultipleCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -16,4 +14,4 @@ module.exports = class ABMobileViewFormSelectMultiple extends (
    //       p.warningsEval();
    //    });
    // }
-};
+}

@@ -1,6 +1,6 @@
-const ABObject = require("../ABObject.js");
+import ABObject from "../ABObject.js";
 
-module.exports = class ABObjectPlugin extends ABObject {
+export default class ABObjectPlugin extends ABObject {
    constructor(attributes, AB) {
       super(attributes || {}, AB);
       this.isPlugin = true;
@@ -87,4 +87,4 @@ module.exports = class ABObjectPlugin extends ABObject {
 
    //    return model;
    // }
-};
+}

@@ -1,6 +1,6 @@
 const AllPlugins = [];
 
-module.exports = {
+export default {
    load: (AB) => {
       AllPlugins.forEach((plugin) => {
          AB.pluginRegister(plugin);

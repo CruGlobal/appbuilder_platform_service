@@ -1,10 +1,6 @@
-const path = require("path");
-// prettier-ignore
-const ABProcessTaskServiceCore = require(path.join(__dirname, "..", "..", "..", "core", "process", "tasks", "ABProcessTaskServiceCore.js"));
-// prettier-ignore
-const ABProcessParticipant = require(path.join(__dirname, "..", "ABProcessParticipant"));
+import ABProcessTaskServiceCore from "../../../core/process/tasks/ABProcessTaskServiceCore.js";
 
-module.exports = class ABProcessTaskService extends ABProcessTaskServiceCore {
+export default class ABProcessTaskService extends ABProcessTaskServiceCore {
    ////
    //// Process Instance Methods
    ////
@@ -24,9 +20,10 @@ module.exports = class ABProcessTaskService extends ABProcessTaskServiceCore {
          var msg =
             "ABProcessTaskService should not be processed in a .do() block.";
          var badCallError = new Error(msg);
+         badCallError.state = myState;
          console.error(msg);
          reject(badCallError);
          return;
       });
    }
-};
+}

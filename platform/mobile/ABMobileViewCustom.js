@@ -1,6 +1,6 @@
-const ABMobileViewCustomCore = require("../../core/mobile/ABMobileViewCustomCore");
+import ABMobileViewCustomCore from "../../core/mobile/ABMobileViewCustomCore.js";
 
-module.exports = class ABMobileViewCustom extends ABMobileViewCustomCore {
+export default class ABMobileViewCustom extends ABMobileViewCustomCore {
    // constructor(values, application, parent, defaultValues) {
    //    super(values, application, parent, defaultValues);
    // }
@@ -9,4 +9,4 @@ module.exports = class ABMobileViewCustom extends ABMobileViewCustomCore {
    //    // Add in here any missing or unfindable setting reference
    //    // like datacollection ...
    // }
-};
+}
