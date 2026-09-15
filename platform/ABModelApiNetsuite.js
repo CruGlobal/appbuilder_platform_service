@@ -995,7 +995,7 @@ export default class ABModelAPINetsuite extends ABModel {
       });
 
       // Save the user that created this record
-      if (req._user?.email) {
+      if (req?._user?.email) {
          this.object
             .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
             .forEach((f) => {
@@ -2479,7 +2479,7 @@ export default class ABModelAPINetsuite extends ABModel {
       this.object
          .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
          .forEach((f) => {
-            if (req._user?.email) {
+            if (req?._user?.email) {
                baseValues[f.columnName] = req._user?.email;
             }
          });
