@@ -1,5 +1,7 @@
 import ABObjectPlugin from "./plugins/ABObjectPlugin.js";
 import ABModelPlugin from "./plugins/ABModelPlugin.js";
+import ABViewContainer from "./views/ABViewContainer.js";
+import ABViewContainerComponent from "./views/viewComponent/ABViewContainerComponent.js";
 import * as webStubs from "./plugins/stubs/web/index.js";
 const viewStubSets = {
    web: webStubs,
@@ -57,7 +59,10 @@ function getPluginAPI(platform = "web") {
    return {
       ABUIPlugin: stubs.ABUIPlugin,
       ABViewPlugin: stubs.ABViewPlugin,
+      ABViewWidgetPlugin: stubs.ABViewWidgetPlugin,
       ABViewComponentPlugin: stubs.ABViewComponentPlugin,
+      ABViewContainer,
+      ABViewContainerComponent,
       ...base,
    };
 }

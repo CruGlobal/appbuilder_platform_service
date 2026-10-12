@@ -62,11 +62,18 @@ export function requireFromURL(url) {
                const exports = {};
                const module = { exports };
                const browserGlobals = createBrowserVmGlobals(nodeRequire);
+               browserGlobals.window.TextDecoder = TextDecoder;
+               browserGlobals.window.TextEncoder = TextEncoder;
                const context = vm.createContext({
                   Buffer,
                   console,
                   exports,
-                  global: { require: nodeRequire, ...browserGlobals },
+                  global: {
+                     require: nodeRequire,
+                     TextDecoder,
+                     TextEncoder,
+                     ...browserGlobals,
+                  },
                   module,
                   process,
                   require: nodeRequire,
@@ -77,6 +84,8 @@ export function requireFromURL(url) {
                   fetch,
                   https,
                   URL,
+                  TextDecoder,
+                  TextEncoder,
                   ...browserGlobals,
                });
                script.runInContext(context);

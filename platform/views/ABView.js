@@ -49,4 +49,58 @@ export default class ABView extends ABViewCore {
    // viewNew(values) {
    //    return new ABView(values, this.application, this);
    // }
+
+   /**
+    * @method componentList
+    * return the list of components available on this view to display in the editor.
+    * Mirrors ab_platform_web ABView.componentList so MCP tools can validate children.
+    * @param {bool} [_isEdited]  unused; kept for designer API parity
+    * @return {array} of ABView classes
+    */
+   componentList(_isEdited) {
+      // views not allowed to drop onto this View:
+      const viewsToIgnore = [
+         "view",
+         "page",
+         "formpanel",
+         "viewcontainer",
+         "viewwidget",
+         // not allowed Detail's widgets
+         "detailcheckbox",
+         "detailcustom",
+         "detailconnect",
+         "detailimage",
+         "detailselectivity",
+         "detailtext",
+         "detailtree",
+         // not allowed Form's widgets
+         "button",
+         "checkbox",
+         "connect",
+         "datepicker",
+         "fieldcustom",
+         "textbox",
+         "numberbox",
+         "selectsingle",
+         "selectmultiple",
+         "formtree",
+         "fieldreadonly",
+         "json",
+         // not allowed Chart's Widgets
+         "pie",
+         "bar",
+         "line",
+         "area",
+         // not allowed Report page
+         "report",
+         "reportPage",
+         "reportPanel",
+      ];
+
+      const allComponents = this.application.viewAll();
+      return allComponents.filter((c) => {
+         const key = c.common?.()?.key;
+         return key && viewsToIgnore.indexOf(key) === -1;
+      });
+   }
 }

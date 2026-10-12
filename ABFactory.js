@@ -379,15 +379,28 @@ class ABFactory extends ABFactoryCore {
    /**
     * definitionDestroy()
     * delete an ABDefinition
-    * @param {string} id
+    * @param {ABUtil.reqService|string} req
+    *        the service request, or (when called as `.definitionDestroy(id)`
+    *        from ABMLClass.destroy) the definition uuid.
+    * @param {string} [id]
     *        the uuid of the ABDefinition to delete
     * @return {Promise}
     */
    definitionDestroy(req, id, options = {}) {
-      return this.Definitions.Destroy(this, req, { id }, options).then(() => {
-         delete this._definitions[id];
-         this.emit("definition.destroyed", id);
-      });
+      // ABMLClass.destroy() calls definitionDestroy(id) with one argument.
+      // Resolve the id the same way mcpDefinitionManager.resolveDestroyId does.
+      let destroyId = id;
+      if (typeof destroyId !== "string" || destroyId === "") {
+         if (typeof req === "string" && req !== "") {
+            destroyId = req;
+         }
+      }
+      return this.Definitions.Destroy(this, req, { id: destroyId }, options).then(
+         () => {
+            delete this._definitions[destroyId];
+            this.emit("definition.destroyed", destroyId);
+         },
+      );
    }
 
    /**
