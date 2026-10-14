@@ -67,7 +67,7 @@ export default class ABMLClass extends ABMLClassCore {
       var def = this.toDefinition().toObj();
       if (def.id) {
          // here ABDefinition is our sails.model()
-         return this.definitionDestroy(def.id);
+         return this.AB.definitionDestroy(def.id);
       } else {
          return Promise.resolve();
       }

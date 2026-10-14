@@ -4,8 +4,6 @@ import _ from "lodash";
 // prettier-ignore
 import ABApplicationCore from "../core/ABApplicationCore.js";
 
-import ABView from "./views/ABView.js";
-
 export default class ABClassApplication extends ABApplicationCore {
    static applications(/*fn = () => true*/) {
       console.error(
@@ -265,13 +263,46 @@ export default class ABClassApplication extends ABApplicationCore {
    }
 
    /**
-    * @method viewNew()
-    *
-    *
-    * @return {ABView}
+    * @method pageNew()
+    * @return {ABViewPage}
     */
    pageNew(values) {
-      return new ABView(values, this);
+      values = { ...(values || {}) };
+      values.key = "page";
+      return this.ViewManager.newView(values, this, null);
+   }
+
+   /**
+    * @method pageInsert()
+    * Attach a saved root page to this application and persist `json.pageIDs`.
+    * @param {ABView} page
+    * @return {Promise}
+    */
+   pageInsert(page) {
+      this._pages = this._pages || [];
+      const isIncluded = this.pages((p) => p.id === page.id).length > 0;
+      if (!isIncluded) {
+         this._pages.push(page);
+         return this.save();
+      }
+      return Promise.resolve();
+   }
+
+   /**
+    * @method pageRemove()
+    * Remove a root page reference from this application and persist.
+    * @param {ABView} page
+    * @return {Promise}
+    */
+   pageRemove(page) {
+      const origLen = (this._pages || []).length;
+      this._pages = this.pages(function (p) {
+         return p.id != page.id;
+      });
+      if (this._pages.length < origLen) {
+         return this.save();
+      }
+      return Promise.resolve();
    }
 
    /**

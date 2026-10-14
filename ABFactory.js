@@ -15,6 +15,23 @@ import { v4 as uuidv4 } from "uuid";
 import ABFactoryCore from "./core/ABFactoryCore.js";
 import SecretManager from "./platform/ABSecretManager.js";
 import LocalPlugins from "./platform/plugins/included/index.js";
+import queryPluginLinks from "./queries/allPluginLinks.js";
+import { loadPluginFromURL } from "./utils/pluginLoader.js";
+
+const AB_PLUGINS_PATH_PREFIX = "/assets/ab_plugins";
+const AB_WEB_SERVICE_ORIGIN =
+   process.env.AB_WEB_SERVICE_ORIGIN ?? process.env.SITE_URL ?? "http://web:80";
+
+/** Relative plugin URLs from SITE_PLUGIN_LINK are served by the web container. */
+function resolvePluginLinkUrl(url) {
+   if (typeof url !== "string" || url === "") {
+      return url;
+   }
+   if (url.startsWith(AB_PLUGINS_PATH_PREFIX)) {
+      return `${AB_WEB_SERVICE_ORIGIN.replace(/\/$/, "")}${url}`;
+   }
+   return url;
+}
 
 function stringifyErrors(param) {
    if (param instanceof Error) {
@@ -362,15 +379,28 @@ class ABFactory extends ABFactoryCore {
    /**
     * definitionDestroy()
     * delete an ABDefinition
-    * @param {string} id
+    * @param {ABUtil.reqService|string} req
+    *        the service request, or (when called as `.definitionDestroy(id)`
+    *        from ABMLClass.destroy) the definition uuid.
+    * @param {string} [id]
     *        the uuid of the ABDefinition to delete
     * @return {Promise}
     */
    definitionDestroy(req, id, options = {}) {
-      return this.Definitions.Destroy(this, req, { id }, options).then(() => {
-         delete this._definitions[id];
-         this.emit("definition.destroyed", id);
-      });
+      // ABMLClass.destroy() calls definitionDestroy(id) with one argument.
+      // Resolve the id the same way mcpDefinitionManager.resolveDestroyId does.
+      let destroyId = id;
+      if (typeof destroyId !== "string" || destroyId === "") {
+         if (typeof req === "string" && req !== "") {
+            destroyId = req;
+         }
+      }
+      return this.Definitions.Destroy(this, req, { id: destroyId }, options).then(
+         () => {
+            delete this._definitions[destroyId];
+            this.emit("definition.destroyed", destroyId);
+         },
+      );
    }
 
    /**
@@ -529,6 +559,92 @@ class ABFactory extends ABFactoryCore {
     */
    pluginLocalLoad() {
       return LocalPlugins.load(this);
+   }
+
+   /**
+    * @method pluginAPI(viewPlatform)
+    * API passed to plugin factory functions. Uses platform-specific view stubs.
+    * @param {string} [viewPlatform]
+    * @return {Object}
+    */
+   pluginAPI(viewPlatform) {
+      const platform =
+         viewPlatform ?? this._importingViewPlatform ?? this.platform ?? "web";
+      let api = this.ClassManager.getPluginAPI(platform);
+      api.AB = this;
+      api.platform = platform;
+      return api;
+   }
+
+   /**
+    * @method pluginRegister(plugin)
+    * Register a plugin module factory with this ABFactory instance.
+    * @param {function} plugin
+    */
+   pluginRegister(plugin) {
+      const platform = this._importingViewPlatform ?? "web";
+      let pluginClass = plugin(this.pluginAPI(platform));
+      if (Array.isArray(pluginClass)) {
+         pluginClass.forEach((p) => {
+            this.ClassManager.pluginRegister(p, platform);
+         });
+      } else {
+         this.ClassManager.pluginRegister(pluginClass, platform);
+      }
+   }
+
+   /**
+    * @method importPlugins(platform)
+    * Load plugin modules from SITE_PLUGIN_LINK for the given platform.
+    * Idempotent per platform on this factory instance.
+    * @param {string} platform  e.g. "service", "web"
+    * @return {Promise}
+    */
+   async importPlugins(platform) {
+      if (!platform) {
+         throw new Error("ABFactory.importPlugins(): platform required");
+      }
+
+      this._importedPluginPlatforms =
+         this._importedPluginPlatforms || new Set();
+      if (this._importedPluginPlatforms.has(platform)) {
+         return;
+      }
+
+      const pluginLinks = await queryPluginLinks(this.req, {
+         platform,
+         type: { "!=": "properties" },
+      });
+
+      const prevPlatform = this._importingViewPlatform;
+      this._importingViewPlatform = platform;
+
+      try {
+         await Promise.all(
+            pluginLinks.map(async (p) => {
+               const url = resolvePluginLinkUrl(p.url);
+               try {
+                  await loadPluginFromURL({ ...p, url }, this);
+               } catch (e) {
+                  console.error(`Error loading plugin from ${url}:`, e);
+               }
+            }),
+         );
+      } finally {
+         this._importingViewPlatform = prevPlatform;
+      }
+
+      this._importedPluginPlatforms.add(platform);
+   }
+
+   /**
+    * @method viewsForPlatform(platform)
+    * Return registered view plugin classes for a platform.
+    * @param {string} platform
+    * @return {Array}
+    */
+   viewsForPlatform(platform) {
+      return this.ClassManager.viewAll(platform);
    }
 
    //

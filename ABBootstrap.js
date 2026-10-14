@@ -1,23 +1,14 @@
-import { createRequire } from "module";
-const require = createRequire(import.meta.url);
-
 import queryAllDefinitions from "./queries/allDefinitions.js";
-import queryPluginLinks from "./queries/allPluginLinks.js";
 import Create from "./queries/definitionCreate.js";
 import Destroy from "./queries/definitionDestroy.js";
 import Find from "./queries/definitionFind.js";
 import Update from "./queries/definitionUpdate.js";
 import ABFactory from "./ABFactory.js";
-import https from "http";
-import vm from "vm";
 
 /*
  * ABBootstrap
  * This object manages preparing an ABFactory for a Specific Tenant.
  */
-
-// {sql} queryAllDefinitions
-// the sql query to load all the Definitions from a specific tenant.
 
 var Factories = {
    /* tenantID : { ABFactory }} */
@@ -64,85 +55,8 @@ var PendingFactory = {
 var KnexPool = {
    /* tenantID : AB.Knex.connection() */
 };
-// {hash}
-// When definitions are updated, we destroy the existing ABFactory and create
-// a new one.  However each new ABFactory will create a NEW KNEX DB POOL and
-// eventually we use up all our DB Connections ( error: ER_CON_COUNT_ERROR).
-// The Knex connection won't change due to the Definition updates, so let's
-// cache the KnexPools here and reuse them.
 
-//http://192.168.1.56:8080/assets/ab_plugins/ab-object-netsuite-api/ABObjectNetsuiteAPI.js
-//http://web/assets/ab_plugins/ab-object-netsuite-api/ABObjectNetsuiteAPI.js
-function requireFromURL(url) {
-   return new Promise((resolve, reject) => {
-      https.get(url, (res) => {
-         let data = "";
-         res.on("data", (chunk) => {
-            data += chunk;
-         });
-         res.on("end", () => {
-            try {
-               const script = new vm.Script(data);
-               const exports = {};
-               const module = { exports };
-               // const context = vm.createContext({ module, exports, require });
-               const context = vm.createContext({
-                  // Node.js globals
-                  Buffer,
-                  console,
-                  exports,
-                  global: {},
-                  module,
-                  process,
-                  require,
-                  setTimeout,
-                  clearTimeout,
-                  setInterval,
-                  clearInterval,
-
-                  // Browser globals
-                  fetch,
-                  https,
-                  URL,
-
-                  // NOTE: when adding these, I start getting errors about not
-                  // being able to find the stream module ...
-                  // so we'll leave them out for now and include them as fallback
-                  // in webpack.common.js config.
-                  // vm,
-                  // crypto,
-                  // stream,
-               });
-               /*const exported = */ script.runInContext(context);
-
-               // resolve(exported.Plugin || exported.default || exported);
-               resolve(
-                  module.exports.Plugin ||
-                     module.exports.default ||
-                     module.exports,
-               );
-            } catch (error) {
-               console.error(data);
-               reject(error);
-            }
-         });
-         res.on("error", (error) => {
-            reject(error);
-         });
-      });
-   });
-}
-
-async function loadPlugin(p, newFactory) {
-   try {
-      let plgn = await requireFromURL(p.url);
-      newFactory.pluginRegister(plgn);
-   } catch (e) {
-      console.error(`Error loading plugin from ${p.url}:`, e);
-   }
-}
-
-async function setupFactory(req, tenantID) {
+async function setupFactory(req, tenantID, platformDefinitionMgr = null) {
    let defs = await queryAllDefinitions(req);
    if (defs && Array.isArray(defs) && defs.length) {
       var hashDefs = {};
@@ -154,7 +68,7 @@ async function setupFactory(req, tenantID) {
 
       var newFactory = new ABFactory(
          hashDefs,
-         DefinitionManager,
+         platformDefinitionMgr || DefinitionManager,
          req.toABFactoryReq(),
          KnexPool[tenantID],
       );
@@ -181,19 +95,7 @@ async function setupFactory(req, tenantID) {
          });
       });
 
-      let pluginLinks = await queryPluginLinks(req, {
-         platform: newFactory.platform,
-      });
-
-      // console.log("::::::::::::::::::::::::");
-      // console.log(pluginLinks);
-
-      let allPluginLoads = [];
-      pluginLinks.forEach((p) => {
-         allPluginLoads.push(loadPlugin(p, newFactory));
-      });
-
-      await Promise.all(allPluginLoads);
+      await newFactory.importPlugins(newFactory.platform);
 
       await newFactory.init();
 
@@ -213,7 +115,7 @@ async function setupFactory(req, tenantID) {
 }
 
 export default {
-   init: async (req) => {
+   init: async (req, platformDefinitionMgr = null) => {
       var tenantID = req.tenantID();
       if (!tenantID) {
          var errorNoTenantID = new Error(
@@ -226,7 +128,9 @@ export default {
          req.log(`:: Loading Definitions for tenant[${tenantID}]`);
          if (!PendingFactory[tenantID]) {
             PendingFactory[tenantID] = new Promise((resolve, reject) => {
-               setupFactory(req, tenantID).then(resolve).catch(reject);
+               setupFactory(req, tenantID, platformDefinitionMgr)
+                  .then(resolve)
+                  .catch(reject);
             });
          }
 

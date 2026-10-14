@@ -708,6 +708,16 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                }
                break;
 
+            case "is_current_email":
+               operator = "=";
+               value = quoteMe(userData.email);
+               break;
+
+            case "is_not_current_email":
+               operator = "<>";
+               value = quoteMe(userData.email);
+               break;
+
             case "is_null":
                operator = "IS NULL";
                value = "";
@@ -810,8 +820,16 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                break;
             case "is_empty":
             case "is_not_empty":
-               // returns NULL if they are equal. Otherwise, the first expression is returned.
-               columnName = `NULLIF(${columnName}, '')`;
+               switch (field.key) {
+                  case "date":
+                  case "datetime":
+                     operator = "IS NULL";
+                     break;
+                  default:
+                     // returns NULL if they are equal. Otherwise, the first expression is returned.
+                     columnName = `NULLIF(${columnName}, '')`;
+                     break;
+               }
                value = "";
                break;
 
@@ -958,8 +976,11 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
        *    The request object associated with the current tenant/request
        * @return {Promise} resolved with the result of the find()
        */
-      // eslint-disable-next-line no-unused-vars
       async create(values, trx = null, condDefaults = null, req = null) {
+         if (trx) {
+            console.log("ABModelAPINetsuite.create() does not support trx");
+         }
+
          if (!this.credentials) {
             this.credentials = this.pullCredentials();
          }
@@ -980,6 +1001,15 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                baseValues[this.object.columnRef[field]] = val;
             }
          });
+
+         // Save the user that created this record
+         if (req?._user?.email) {
+            this.object
+               .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+               .forEach((f) => {
+                  baseValues[f.columnName] = req._user?.email;
+               });
+         }
 
          // Boolean Fields
          // in our AB system, we use 1/0 for true/false values.  Netsuite will
@@ -1059,8 +1089,11 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
        *
        * @return {Promise} resolved with {int} numRows : the # rows affected
        */
-      // eslint-disable-next-line no-unused-vars
       async delete(id, trx = null, req = null) {
+         if (trx) {
+            console.log("ABModelAPINetsuite.delete() does not support trx");
+         }
+
          // make sure we have built our credentials
          if (!this.credentials) {
             this.credentials = this.pullCredentials();
@@ -1135,6 +1168,11 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          for (let i = 0; i < data.length; i++) {
             let row = data[i];
             let v = row[field.columnName];
+
+            // if v is a string of comma separated values, split it into an array
+            if (typeof v == "string" && v.indexOf(","))
+               v = v.split(",").map((vv) => vv.trim());
+
             if (typeof v != "undefined") {
                if (Array.isArray(v)) {
                   v.forEach((vv) => {
@@ -1153,7 +1191,7 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          pks = pks
             .filter((v) => v)
             .map((val) => val[PK] || val)
-            .filter((v) => v);
+            .filter((v, pos) => v && pks.indexOf(v) == pos); // Remove duplicates
 
          let values = [];
          let where = {};
@@ -1455,14 +1493,32 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          // don't need to populate anything if there is no data.
          if (data.length == 0) return;
 
+         // by default, we will populate any columns that are used in a formula field.
+         // this way, if a formula field is being requested,
+         // it will have the data it needs to calculate the formula.
+         this.object.fields().forEach((f) => {
+            switch (f.key) {
+               case "TextFormula":
+                  f.settings.textFormula
+                     .match(/{[^{}]+}/gm)
+                     .map((col) => col.replace(/{|}|"/g, ""))
+                     .forEach((colName) => {
+                        this.object
+                           .connectFields((fld) => fld.columnName == colName)
+                           .forEach((field) => {
+                              columns.push(field);
+                           });
+                     });
+                  break;
+            }
+         });
+
          // if .populate == false
          // if .populate not set, assume no
-         if (!cond.populate || cond.populate === "false") return;
+         if ((!cond.populate || cond.populate === "false") && columns.length < 1)
+            return;
          // if .populate == true
-         else if (
-            typeof cond.populate == "boolean" ||
-            cond.populate === "true"
-         ) {
+         else if (cond.populate == true || cond.populate === "true") {
             // pick ALL relations and populate them
             columns = this.object.connectFields();
          }
@@ -1471,12 +1527,11 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          else if (Array.isArray(cond.populate)) {
             // find these specific columns to populate
             cond.populate.forEach((col) => {
-               let field = this.object.connectFields(
-                  (f) => f.columnName == col || f.id == col,
-               )[0];
-               if (field) {
-                  columns.push(field);
-               }
+               this.object
+                  .connectFields((f) => f.columnName == col || f.id == col)
+                  .forEach((field) => {
+                     columns.push(field);
+                  });
             });
          }
          if (req) {
@@ -1679,11 +1734,12 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                   JOINTABLE = "?? many:many ?? "; // HOW DO I FIND THE JOIN TABLE IN NETSUITE?
                   ON = ""; // AND HOW DO I FIND THE JOINTABLE.COLUMN in NETSUITE?
                   WHERE = `?? `; // want to find fieldLink's column IS NULL
+                  // eslint-disable-next-line no-case-declarations
                   let todoError = new Error(
-                     "TODO: figure out Netsuite many:many connections",
+                     "TODO: NoRelationRules: figure out Netsuite many:many connections",
                   );
                   throw todoError;
-                  break;
+               // break;
             }
 
             let join = `LEFT JOIN ${JOINTABLE} ON ${ON}`;
@@ -1693,8 +1749,25 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
             }
          });
 
+         // Define our SELECT columns:
+         let selectCols = "*";
+         if (cond.select) {
+            selectCols = cond.select;
+
+            if (!Array.isArray(selectCols)) selectCols = [selectCols];
+
+            selectCols = selectCols
+               .map((fldId) => {
+                  if (!this.AB.rules.isUUID(fldId)) return fldId;
+
+                  const field = this.object.fieldByID(fldId);
+                  return field?.columnName ?? fldId;
+               })
+               .join(",");
+         }
+
          // Now put this SQL together:
-         let sql = `SELECT * FROM ${tableNJoin.join(" ")}`;
+         let sql = `SELECT ${selectCols} FROM ${tableNJoin.join(" ")}`;
          if (where.length) {
             sql = `${sql} WHERE ${where.join(" AND ")}`;
          }
@@ -1933,7 +2006,7 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
 
             let colVals = this.AB.cloneDeep(values[k]);
 
-            let linkType = `${field.linkType}:${field.linkViaType}`;
+            let linkType = `${field.linkType()}:${field.linkViaType()}`;
             if (linkType == "many:one") {
                allColumns.push(this.syncColumnManyOne(id, field, colVals, req));
             } else {
@@ -1982,7 +2055,7 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          let removeThese = [];
          oldValues.forEach((v) => {
             // if v is in values,
-            let newV = values.find((nV) => nV == v);
+            let newV = values?.find?.((nV) => nV == v);
             if (newV) {
                // if we found it, then remove that entry from values
                values = values.filter((nV) => nV != v);
@@ -1992,16 +2065,13 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
             }
          });
 
-         let addDrop = [];
-
-         addDrop.push(this.relate(id, field, values, req));
-         addDrop.push(this.unRelate(id, field, removeThese, req));
-
-         await Promise.all(addDrop);
+         await this.unRelate(id, field, removeThese, req);
+         await this.relate(id, field, values, req);
       }
 
       async relate(id, field, values, req) {
-         if (values.length == 0) return;
+         if (values && !Array.isArray(values)) values = [values];
+         if (!values?.length) return;
 
          let linkField = field.fieldLink;
          let object = field.object;
@@ -2014,7 +2084,8 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
       }
 
       async unRelate(id, field, values, req) {
-         if (values.length == 0) return;
+         if (values && !Array.isArray(values)) values = [values];
+         if (!values?.length) return;
 
          let linkField = field.fieldLink;
          let setVal = {};
@@ -2029,6 +2100,8 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
 
          let allUpdates = [];
          values.forEach((vid) => {
+            if (vid == null) return;
+
             let url = `${
                this.credentials.NETSUITE_BASE_URL
             }/${linkObject.dbTableName()}/${vid}`;
@@ -2146,12 +2219,8 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
             }
          });
 
-         let addDrop = [];
-
-         addDrop.push(this.relateMany(id, field, values, baseValues, req));
-         addDrop.push(this.unRelateMany(id, field, removeThese, req));
-
-         await Promise.all(addDrop);
+         await this.unRelateMany(id, field, removeThese, req);
+         await this.relateMany(id, field, values, baseValues, req);
       }
 
       async relateMany(id, field, values, baseValues, req) {
@@ -2209,7 +2278,8 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                }
                throw errorMissingEntity;
             }
-            newVal[field.settings.joinTableEntity] = entityValue;
+            if (field.settings?.joinTableEntity)
+               newVal[field.settings.joinTableEntity] = entityValue;
 
             if (req) {
                req.log("relateMany:");
@@ -2378,8 +2448,11 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
        *
        * @return {Promise} resolved with the result of the find()
        */
-      // eslint-disable-next-line no-unused-vars
       async update(id, values, userData, trx = null, req = null) {
+         if (trx) {
+            console.log("ABModelAPINetsuite.update() does not support trx");
+         }
+
          let PK = this.object.PK();
          id = id[PK] || id.id || id.uuid || id;
          // id should be just the .uuid or .id value of the row we are updating
@@ -2420,6 +2493,15 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
                baseValues[this.object.columnRef[field]] = val;
             }
          });
+
+         // Save the user that updated this record
+         this.object
+            .fields((f) => f.settings?.autoSaveModifiedByEmail == 1)
+            .forEach((f) => {
+               if (req?._user?.email) {
+                  baseValues[f.columnName] = req._user?.email;
+               }
+            });
 
          // All Netsuite DateTime fields need to be in ISOFormat:
          this.object
@@ -2476,13 +2558,16 @@ export default function FNModelNetsuite({ ABModelPlugin }) {
          }
 
          try {
-            await fetchConcurrent(
-               this.AB,
-               this.credentials,
-               url,
-               "PATCH",
-               baseValues,
-            );
+            // if the object set readonly skip the update, but still do the relation updates
+            if (!this.object.readonly) {
+               await fetchConcurrent(
+                  this.AB,
+                  this.credentials,
+                  url,
+                  "PATCH",
+                  baseValues,
+               );
+            }
          } catch (err) {
             this.processError(
                `PATCH ${url}`,
