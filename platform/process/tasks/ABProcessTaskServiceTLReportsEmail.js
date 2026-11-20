@@ -57,6 +57,8 @@ export default class TLReportsEmail extends TLReportsEmailCore {
             req.serviceRequest(
                "custom_reports.tl-reports-email-all",
                jobData,
+               // custom_reports loads every Team Leader before it replies
+               { longRequest: true },
                (err, results) => (err ? reject(err) : resolve(results)),
             );
          });
