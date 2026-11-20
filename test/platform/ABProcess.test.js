@@ -1,124 +1,185 @@
 import assert from "assert";
 import sinon from "sinon";
-import proxyquire from "proxyquire";
+import hash from "object-hash";
+import convert from "xml-js";
+import ABProcess from "../../platform/ABProcess.js";
 
-const hash = sinon.fake.returns("hash");
-const xml2js = sinon.fake.returns({ test: "test" });
+// ABProcess is an ES module, so its imports (object-hash, xml-js) can not be
+// swapped out. The tests use the real libraries and stub only the models.
 
-const ABProcess = proxyquire("../../platform/ABProcess", {
-   hash,
-   convert: { xml2js },
-});
+const xmlDefinition = "<test>test</test>";
+const parsedDefinition = convert.xml2js(xmlDefinition, { compact: true });
+const defHash = hash(parsedDefinition);
 
-const modelResponse = {
+const definitionRecord = {
    uuid: "uuid",
-   hash: "hash",
-   definition: '{test:"test"}',
-};
-const find = sinon.stub();
-const create = sinon.fake.resolves(modelResponse);
-const mockModel = { find, create };
-const mockAB = {
-   objectProcessDefinition: () => {
-      return {
-         model: () => mockModel,
-      };
-   },
-   objectProcessInstance: () => {
-      return {
-         model: () => mockModel,
-      };
-   },
+   hash: defHash,
+   definition: parsedDefinition,
 };
 
 describe("ABProcess", function () {
-   let process;
+   let defModel, instanceModel, mockAB, process, req;
+
    beforeEach(function () {
-      process = new ABProcess({}, mockAB);
-      hash.resetHistory();
-      xml2js.resetHistory();
-      find.resetHistory();
-      create.resetHistory();
+      defModel = { find: sinon.stub(), create: sinon.stub() };
+      instanceModel = {
+         create: sinon.stub(),
+         update: sinon.stub().resolves({}),
+      };
+      mockAB = {
+         objectProcessDefinition: () => ({ model: () => defModel }),
+         objectProcessInstance: () => ({ model: () => instanceModel }),
+         notify: { developer: sinon.fake() },
+      };
+      req = {
+         jobID: "jobID",
+         username: () => "tester",
+         userDefaults: () => ({}),
+         retry: (fn) => fn(),
+      };
+      process = new ABProcess({ id: "processID" }, mockAB);
+      process.xmlDefinition = xmlDefinition;
+   });
+
+   afterEach(function () {
+      sinon.restore();
    });
 
    describe("instanceDefinition", function () {
-      const xmlDefinition = "<test>test</test>";
+      it("returns the saved definition when one has the same hash", async function () {
+         defModel.find.resolves([definitionRecord]);
 
-      beforeEach(function () {
-         process.xmlDefinition = xmlDefinition;
+         const result = await process.instanceDefinition(req);
+
+         assert(defModel.find.calledOnce);
+         assert.deepEqual(defModel.find.firstCall.args, [
+            { hash: defHash },
+            req,
+         ]);
+         assert(defModel.create.notCalled);
+         assert.deepEqual(result, definitionRecord);
       });
 
-      it("returns the process definiton", function () {
-         find.resolves([modelResponse]);
-         process.instanceDefinition().then((result) => {
-            assert(hash.calledOnce);
-            assert(hash.calledWith(xmlDefinition));
-            assert(find.calledOnce);
-            assert.deepEqual(find.firstCall.firstArg, { hash: "hash" });
-            assert(create.notCalled);
-            assert.deepEqual(result, modelResponse);
+      it("saves a new definition when none has the same hash", async function () {
+         defModel.find.resolves([]);
+         defModel.create.resolves(definitionRecord);
+
+         const result = await process.instanceDefinition(req);
+
+         assert(defModel.create.calledOnce);
+         assert.deepEqual(defModel.create.firstCall.firstArg, {
+            hash: defHash,
+            definition: parsedDefinition,
          });
+         assert.deepEqual(result, definitionRecord);
       });
 
-      it("saves a new process definition", function () {
-         find.resolves([]);
-         process.instanceDefinition().then((result) => {
-            assert(hash.calledOnce);
-            assert(hash.calledWith(xmlDefinition));
-            assert(find.calledOnce);
-            assert.deepEqual(find.firstCall.firstArg, { hash: "hash" });
-            assert(create.calledOnce);
-            assert.deepEqual(create.firstCall.firstArg, {
-               hash: "hash",
-               definiton: { test: "test" },
-            });
-            assert.deepEqual(result, modelResponse);
-         });
+      it("looks again when a parallel call saved it first (ER_DUP_ENTRY)", async function () {
+         defModel.find.onFirstCall().resolves([]);
+         defModel.find.onSecondCall().resolves([definitionRecord]);
+         defModel.create.rejects(new Error("ER_DUP_ENTRY: Duplicate entry"));
+
+         const result = await process.instanceDefinition(req);
+
+         assert(defModel.find.calledTwice);
+         assert.deepEqual(result, definitionRecord);
+         assert(mockAB.notify.developer.notCalled);
+      });
+
+      it("reports and throws other errors", async function () {
+         const error = new Error("database down");
+         defModel.find.rejects(error);
+
+         await assert.rejects(process.instanceDefinition(req), error);
+         assert(mockAB.notify.developer.calledOnce);
       });
    });
 
    describe("instanceNew", function () {
-      it("calls this.instanceDefintion", function () {
-         find.resolves([modelResponse]);
-         const process = new ABProcess({}, mockAB);
-         // const instanceDefintion = sinon.fake.returns(modelResponse);
-         sinon.replace(
-            process,
-            "instanceDefinition",
-            sinon.fake.resolves(modelResponse),
-         ); //instanceDefinition);
-         sinon.replace(process, "run", sinon.fake()); //instanceDefinition);
-         process.instanceNew().then(() => {
-            assert(process.instanceDefintion.calledOnce);
-            assert(process.run.calledOnce);
-            assert(create.calledOnce);
-            assert.equal(create.firstCall.firstArg.definition, "uuid");
-            assert.deepEqual(
-               process.run.firstCall.firstArg.jsonDefinition,
-               modelResponse,
-            );
-         });
+      it("saves a new instance that points to the definition, then runs it", async function () {
+         const newInstance = { id: 1, status: "created" };
+         defModel.find.resolves([definitionRecord]);
+         instanceModel.create.resolves(newInstance);
+         const run = sinon.stub(process, "run").resolves("ran");
+
+         const result = await process.instanceNew(
+            { input: "data" },
+            null,
+            null,
+            req,
+            "instanceKey",
+         );
+
+         assert(instanceModel.create.calledOnce);
+         const values = instanceModel.create.firstCall.firstArg;
+         assert.equal(values.processID, "processID");
+         assert.equal(values.definition, "uuid");
+         assert.equal(values.instanceKey, "instanceKey");
+         assert.equal(values.triggeredBy, "tester");
+         assert(run.calledOnce);
+         assert.equal(run.firstCall.args[0], newInstance);
+         assert.deepEqual(newInstance.jsonDefinition, definitionRecord);
+         assert.equal(result, "ran");
       });
    });
 
    describe("run", function () {
-      it("loads missing jsonDefinitons", function () {
-         find.resolves([modelResponse]);
-         process.run({ definition: "uuid" }, undefined, {}).then(() => {
-            assert(find.calledOnce);
-            assert.deepEqual(find.firstCall.firstArg, { uuid: "uuid" });
-         });
+      let instanceClose;
+      beforeEach(function () {
+         instanceClose = sinon.stub(process, "instanceClose").resolves();
       });
-      it("doesn't load jsonDefinitons when instance has", function () {
-         process
-            .run(
-               { definition: "uuid", jsonDefintion: { test: "test" } },
-               undefined,
-               {},
-            )
-            .then(() => {
-               assert(find.notCalled);
-            });
+
+      it("loads a missing jsonDefinition", async function () {
+         defModel.find.resolves([definitionRecord]);
+         const instance = {
+            definition: "uuid",
+            status: "created",
+            context: { startTaskID: "start" },
+         };
+
+         await process.run(instance, null, req);
+
+         assert(defModel.find.calledOnce);
+         assert.deepEqual(defModel.find.firstCall.args, [
+            { uuid: "uuid" },
+            req,
+         ]);
+         assert.deepEqual(instance.jsonDefinition, definitionRecord);
+      });
+
+      it("does not load the definition when the instance has it", async function () {
+         const instance = {
+            definition: "uuid",
+            status: "created",
+            context: { startTaskID: "start" },
+            jsonDefinition: definitionRecord,
+         };
+
+         await process.run(instance, null, req);
+
+         assert(defModel.find.notCalled);
+      });
+
+      it("closes an instance with no pending tasks", async function () {
+         const instance = {
+            definition: "uuid",
+            status: "created",
+            context: { startTaskID: "start" },
+            jsonDefinition: definitionRecord,
+         };
+
+         await process.run(instance, null, req);
+
+         assert(instanceClose.calledOnce);
+      });
+
+      it("does nothing for a completed instance", async function () {
+         const instance = { definition: "uuid", status: "completed" };
+
+         await process.run(instance, null, req);
+
+         assert(defModel.find.notCalled);
+         assert(instanceClose.notCalled);
       });
    });
 });
